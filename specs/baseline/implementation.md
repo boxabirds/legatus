@@ -20,7 +20,9 @@ pi extensions are TypeScript and run in pi's existing runtime. The adapter's few
 | --- | --- | --- |
 | `legatus-router` on the client machine (includes the lease table and journal) | Rust | Always on; replaces an interpreted gateway; owns routing so engines stay swappable |
 | `legatus-node` agent (health, load, machine readings) | Rust | Runs beside inference on every node, so footprint matters most |
-| `pi-legatus` adapter (acquire, release, config generation) | TypeScript | Runs in pi's process; calls the router's admin listener over HTTP |
+| `legatus-admin` (dashboard and MCP) | Rust | Always on, small and stateless; a thin client of the router's admin API, kept out of the router so its footprint does not grow |
+| `pi-legatus` adapter (`can_spawn`, `request_llm`, `release_llm`, config generation) | TypeScript | Runs in pi's process; calls the router's admin listener over HTTP |
+| Adapter contract | TypeScript | `packages/adapter-contract` (`@legatus/adapter-contract`), the three-capability contract every adapter imports |
 | Apple on-device node shim | Swift | Apple's on-device model is reachable only through Apple's own framework; the shim exposes an OpenAI-compatible endpoint. The spike used Hummingbird 2.27.0 |
 | Calibration probe | Rust, once promoted | The spike probe is stdlib Python; see the exemption below |
 
@@ -30,6 +32,16 @@ There is no separate coordination service, no MCP server and no harness-side gua
 
 **Exemption for verification tools.** On-demand verification tools (spikes, probes, conformance and compatibility checks) may be written in Python (run with `uv run`) or Node. They are not resident, do not run on inference nodes in normal operation, and carry none of the footprint cost. Anything that stays running follows the rule above.
 
+## Workspace layout (PROPOSED)
+
+| Kind | Members |
+| --- | --- |
+| Crates | `legatus-common` (shared types, the upstream tap trait, `ThermalBand`), `legatus-router`, `legatus-node` (also hosts the machine readings), `legatus-telemetry` (identity, behavioural record, energy, thermal, event stream), `legatus-eventlog` (the router event log), `legatus-admin`, `legatus-simcluster` (stub engines, virtual clock; layer `testkit`, depends on common only, other crates use it only as a dev-dependency), `legatus-simtests` (layer `verification`; depends on router, node, common and simcluster; `publish = false`; nothing depends on it) |
+| Packages | `pi-legatus`, `adapter-contract`, `legatus-registry`, the admin contract package (routes, metrics and panels registries) |
+| Tools | canary, calibrate, role-guide, fleet-check, smoke-test, verify-add-node, keyscan, measure, compat, chaos, adapter-conformance, the admin parity and browser test tools, apple-node (Swift, optional) |
+
+Rules: the router may depend on telemetry only through one small trait in `legatus-common` (the upstream tap); `legatus-admin` may depend only on `legatus-common` and the admin contract package; package-to-package edges are allowed; the layout test asserts the required members and these rules, not a closed list, so members can be added. Capture crates are not members until the capture product starts. There is no coordination crate, no MCP crate in the router and no pi-subagents dependency.
+
 ## Candidate crates
 
-`tokio`, `axum` for the OpenAI-compatible router and its admin listener, `reqwest` for node polling, `serde` for the JSONL lease journal.
+`tokio`, `axum` for the OpenAI-compatible router and its admin listener, `reqwest` for node polling, `serde` for JSONL records. One `axum` version is used across the workspace: 0.8.9 PROPOSED, settled by the version pins task. There is **no embedded database**: the lease journal, the decision log, the event log, the behavioural record and the verdict files are JSONL or JSON. Adding a database crate would be a deliberate decision with a pinned version, not a default. The MCP server in `legatus-admin` is hand-written minimal JSON-RPC on these crates (PROPOSED), with a pinned library as the fallback if a spike against pi 1.0.3 says so; NOT TESTED.
