@@ -1,102 +1,92 @@
-# Coordination service
+# LLM pool allocation (leases)
 
-Agents coordinate through `legatus-coord`, one service every agent, local or frontier, connects to. No existing open protocol covers this: ACP connects client to agent, A2A has a task lifecycle but no shared resources, and MCP is just tools. Exposing it as MCP tools keeps it portable across harnesses. Coord is harness-neutral; the enforcement in front of it (the guard) is a per-harness adapter. See [architecture](architecture.md#harness-neutral-boundary).
+Status: PROPOSED. The owner described this in one line (a subagent gets a lease on an LLM endpoint and frees it at the end); the design below is the coordinator's proposal and the owner will iterate. Everything marked PROPOSED is open.
 
-## Capabilities
+Legatus owns allocation of the LLM pool and nothing else. The filename stays `coordination.md` so existing links resolve. The earlier coordination design (file and branch leases, task board, messaging, negotiation, guard, event store) is archived in [coordination-full-design](../archive/coordination-full-design.md) and is not v1 scope; see the [scope reset](../decisions/2026-10-scope-reset.md).
 
-| Capability | Tools | Purpose |
+## What a lease is
+
+A **lease** is an explicit allocation of capacity on one node of the LLM pool for the duration of a subagent task. The holder asks for an LLM by its semantic needs, is told which node, uses it, and frees it.
+
+- It lives inside the router process. There is no separate coordination server, no MCP, no Unix socket and no event-store service.
+- It generalises the session pin ([dispatcher](dispatcher.md#affinity-session-pin-and-lease-stickiness)). A pin is an implicit lease; an explicit lease is the same record with an explicit holder and lifetime. One lease table replaces the pin store; `PinView::nodes_in_use()` stays.
+- A lease never moves from one node to another in v1. A leased node that is unavailable returns its error to the agent.
+
+## API (PROPOSED)
+
+Served on the router's admin listener, HTTP and JSON.
+
+| Call | Purpose |
+| --- | --- |
+| `POST /legatus/lease` | Acquire. Body: `needs` and `holder`. |
+| `POST /legatus/lease/{id}/release` | Release. Idempotent. |
+| `GET /legatus/leases` | List live leases, with node, holder, age and last request. |
+
+`needs` is a role, or required capabilities, plus `endpoint_kind`, `protocol` and `context_tokens`. `holder` is a session id, an optional agent id and an optional label.
+
+A grant returns `{lease_id, node, base_url, model_id, protocol, expires_at}`. A refusal is `no_capacity` or `no_candidate`; `no_candidate` carries the same per-node drop reasons as the router filter (see [dispatcher](dispatcher.md#selection-per-call)).
+
+Requests then carry `x-legatus-lease: <id>`, with or without the session header, and the router sends them to the leased node. Requests with no lease keep working through the implicit session pin, which expires after an idle TTL.
+
+## Capacity
+
+Each node has a number of slots (concurrency), taken from the registry or from engine facts: Ollama is serial (one slot), llama-server has several (4 in the spike), and mlx_lm is treated as one slot by default although the spike saw continuous batching, so its slot count comes from the registry. A lease takes one slot, or all of them when the role is `exclusive`.
+
+With no free slot the call is refused at once. There is no waiting queue in v1; the caller decides whether to retry, pick another need, or report.
+
+## Lifetime
+
+A lease ends on release, after `LEASE_IDLE_TTL_S` with no requests, or at `LEASE_MAX_LIFETIME_S`. Both are PROPOSED parameters with no value chosen yet; story 9 owns the catalogue entries.
+
+There is no heartbeat, no renewal timer, no guard cache and no dual-clock machinery in the harness. The router observes the requests it already sees, so a harness that forgets to release is reclaimed by the idle TTL.
+
+## Persistence
+
+The lease table is an append-only JSONL journal inside the router, replayed at start. After a restart a surviving lease gets one fresh idle TTL. Nothing else is persisted for leases.
+
+## What it does not do
+
+- It does not lock files, branches, worktrees, GPUs or any resource other than LLM capacity.
+- It does not spawn, supervise or collect results from agents, and it does not verify what an agent did. Agents lie, so `done` is never a Legatus claim.
+- It does not move a lease on failure, retry, or queue.
+- It does not need MCP, a blocking hook, a delegate tool or a background timer in the harness.
+
+## Acceptance tests (real process)
+
+Each runs the real router, with real engine processes where the behaviour depends on the engine, and records engine and harness versions beside the result. Scripted fakes are used only where a real failure cannot be produced on demand.
+
+- **Grant and release.** A real client acquires a lease, sends requests with `x-legatus-lease` through the real router to a real engine, releases, and the lease is gone from `GET /legatus/leases`.
+- **Capacity.** On a serial engine (Ollama) a second acquire is refused with `no_capacity` while the first is live and granted after release. An `exclusive` role takes every slot.
+- **Refusal reasons.** An acquire whose needs no node meets returns `no_candidate` with a drop reason per node, matching the router filter.
+- **Idle and maximum lifetime.** A lease with no requests ends at `LEASE_IDLE_TTL_S`; a lease kept busy ends at `LEASE_MAX_LIFETIME_S`.
+- **Restart.** After SIGKILL and restart of the router, live leases are back with a fresh idle TTL and released leases stay released.
+- **Implicit pin.** A real pi session with no explicit lease stays on one node across turns and across a router restart.
+- **Real harness.** A real pi 1.0.3 process, through the adapter's acquire and release surface, runs a task on the leased node.
+
+## Failure modes
+
+| Failure | Effect | Behaviour |
 | --- | --- | --- |
-| Leases | `claim(resource, ttl, mode)`, `claim_many`, `renew`, `release`, `who_holds`, `transfer` | Exclusive or shared hold on a named resource: `release`, or a shared resource such as `gpu:rtx4090` or a test environment |
-| Task board | `post_task`, `update_status`, `depends_on`, `list_tasks` | Status (queued, running, blocked, done, failed), owner, dependencies, outputs |
-| Messages | `post(to, body)`, `inbox`, `ask(to, question)` | Findings, questions, handoffs between agents and to the orchestrator |
+| No free slot | Acquire cannot be granted | Refused with `no_capacity`; the caller decides. |
+| No node meets the needs | Acquire cannot be granted | Refused with `no_candidate` and per-node drop reasons. |
+| Harness never releases | Capacity held | Reclaimed at the idle TTL or the maximum lifetime. |
+| Router restarts | In-memory table lost | Journal replay; survivors get one fresh idle TTL. |
+| Journal unreadable | Table cannot be rebuilt | Router starts with an empty table and says so; running agents' next request with an unknown lease id returns a clear error. PROPOSED. |
+| Leased node down | Requests fail | The error goes to the agent; the lease does not move. |
+| Unknown or released lease id on a request | Cannot route | Error naming the lease id; the router does not fall back to another node. PROPOSED. |
 
-## Lease scope
+## Parameters (PROPOSED)
 
-Isolate first; lock only what cannot be isolated or merged.
+| Parameter | Value | Used for |
+| --- | --- | --- |
+| `LEASE_IDLE_TTL_S` | not chosen | Lease ends after this long with no requests |
+| `LEASE_MAX_LIFETIME_S` | not chosen | Upper bound on any lease |
+| `SESSION_PIN_IDLE_TTL_S` | not chosen | Idle expiry of the implicit pin, kept while the implicit pin remains |
+| `LEASE_JOURNAL_*` | only if journal recovery needs them | Journal settings |
 
-- **Worktree confinement is not a lease.** Each writer gets its own git worktree and branch, and the guard allows a write only inside the agent's own worktree. That needs no coord call per edit.
-- **`release` is a lease.** Only one agent may release at a time; the release manager claims it, and its task depends on the tester's. The releaser merges through a structurally constrained guard.
-- **Generic named resources are leases.** A shared GPU (`gpu:rtx4090`), a shared test environment, or any name a role lists in `exclusive`. `delegate` claims these before it spawns the child. A failed claim returns `blocked` with the holder.
-- **Branch leases are dropped.** Branches are per writer, so there is nothing to contend for.
-- **Path-glob leases are deferred** to an optional later phase, for the case where two writers genuinely need the same files in one worktree. Until then the glob-overlap rules below are not needed.
-- **`tester` is a writer** (proposed default P-2): it gets its own worktree like any other writer.
+## Seams for later
 
-## Lease rules
-
-- Every lease has a TTL (default `LEASE_TTL_S`) and must be renewed, so a crashed agent cannot hold a resource forever.
-- Modes are `exclusive` and `shared`; shared leases coexist, an exclusive one waits.
-- A claim by the same holder on a resource and mode it already holds renews it (idempotent).
-- A failed claim returns the holder, its stated reason and expected expiry, so the agent can wait, message the holder, or report blocked.
-- An expired lease cannot be renewed; the holder must claim again.
-
-## Two clocks
-
-A lease is live only if the wall clock and a monotonic clock both say it is. A backward wall-clock jump extended leases when expiry used the wall clock alone. The spike showed this by simulating the jump in code, not by changing the OS clock, so laptop sleep and real clock changes are still untested. Expiry never extends a lease: any disagreement resolves toward expired.
-
-## Guard failure behaviour
-
-The guard is a per-harness extension that checks every write, commit and release command before it runs. Its only coord traffic is lease checks for named resources, plus its own registration and heartbeat. It caches its own agent's positive decisions to stay in-process.
-
-- **Fails closed for writes.** If coord is unreachable, or the cache is older than `HOOK_CACHE_TTL_S`, the guard blocks the write, commit or release and tells the agent why. Reads are not blocked. A throwing hook also fails closed.
-- **Own deadline on every coord call.** The harness gives a hook no timeout: in the spike a hung call stalled pi for more than 70 s. The guard therefore races every coord call against `COORD_CALL_DEADLINE_S` and fails closed on expiry.
-- **Cache is shorter than the lease.** `HOOK_CACHE_TTL_S` is below `LEASE_TTL_S`, and a cached decision is capped at the lease's expiry minus a margin, so a transferred or expired lease is noticed before the old holder's TTL would have run out.
-- **A block is an event.** Each blocked action is logged with agent, resource and reason.
-
-## Guard registration and startup self-check
-
-A guard that fails to load does not stop the harness: a wrong extension filename or a throw in `session_start` left pi running unguarded with exit code 0.
-
-- **Startup self-check.** On start the guard pings coord and registers itself. If either fails it prints a loud banner and refuses writes.
-- **Registration check.** `delegate` and the dispatcher-side watcher confirm that each child has registered (`guard_registered`) before and while it runs. A child that never registers is killed (the spike's watcher did this in 1.2 s).
-- **Foreground subagents** run in the parent's process and load an extension only if the agent lists it in `extensions:`; every agent definition must list the guard (proposed default P-4).
-- **A textual check for `-ne` is not enough.** The guard cannot stop a child launched without it; see defence in depth in [architecture](architecture.md#defence-in-depth).
-
-## Transport
-
-- **Unix socket** for in-process extensions (the guard and `delegate`), one persistent connection per agent. In the spike a handler held one connection across calls.
-- **Loopback streamable-HTTP MCP** for MCP clients, because pi's MCP supports only stdio and streamable HTTP, not a Unix socket or legacy SSE. Per-call overhead was about 0.4 ms over the socket and 1 ms over HTTP.
-- Both are a **proposed default (P-1)**. If coord is down when the harness starts, its MCP tools are silently absent and never appear later, so the harness must be started after coord and the self-check must confirm the tools are present. MCP tools are declared to the model only with `exposure: "direct"` in pi 1.0.3.
-
-Unix socket paths on macOS are limited to 104 bytes, so the socket lives in a short directory.
-
-## Lease expiry and renewal
-
-- **Automatic renewal.** The guard renews each held lease when `LEASE_RENEW_FRACTION` of its TTL remains, so an agent busy in a long model turn does not lose its lease by forgetting to call `renew`.
-- **Renewal is a background timer.** pi's `setInterval` fired through a 10 s model wait and a 5 s tool run, so the timer works, but a synchronous busy loop starves it. Timers and sockets must be `unref()`d or `pi -p` never exits. Confirm in phase 4a on each harness.
-- **On expiry.** The guard blocks further writes to that resource until the agent claims it again. Work already done stays on the agent's own worktree and branch, so nothing is lost and nothing overwrites another agent's files. If another agent now holds the resource, the original agent gets the holder and reason, as with any failed claim.
-
-## Deadlock
-
-- **Multi-resource claims are all-or-nothing.** An agent that needs several resources claims them in one call (`claim_many`); if any is unavailable, none is taken. This removes the hold-and-wait pattern behind deadlocks. A claim that cannot be satisfied returns every blocking holder.
-- **Negotiation has a limit.** After `NEGOTIATION_MAX_ROUNDS` messages between two agents about one resource without a lease transfer or release, the task is posted as `blocked` and the orchestrator is notified. Two agents cannot negotiate forever.
-- **Deferred with path globs.** If path-glob leases are added later, overlapping globs (`tests/**` and `tests/unit/**`) conflict, decided by comparing the globs rather than listing files.
-
-## Negotiate in language, enforce in leases
-
-Capable agents given a free-text channel negotiate resource contention on their own ("I'm using the 4090, hold off until I've finished"). This has been seen emerging in Claude Code agent teams, whose mailboxes carry plain messages. Legatus uses that behaviour but does not depend on it.
-
-- **Language layer.** Agents negotiate who needs what, why, for how long, and whether work can be reordered. Rigid locks cannot express this.
-- **Enforcement layer.** Leases with TTLs and an audit log, enforced by the guard on every write, commit and release command, not left to the agent's discretion.
-- **The join.** A failed claim returns the holder and reason, so the blocked agent can message the holder. Only the agreed outcome is recorded, as a lease transfer or release, so the log shows what was settled.
-
-Why both: weaker local models negotiate unreliably (they may never read the inbox), spoken agreements leave no audit trail, and an agent that compacts or restarts forgets what it promised.
-
-## Task board rules
-
-- The dispatcher posts each delegation; agents update their own status.
-- Dependencies gate work: the release manager's task depends on the tester's, and it cannot claim `release` until that task is done.
-- Outputs are pointers (branch, file path, artifact link), not pasted content, to keep the frontier orchestrator's context lean.
-- **Done is not "process exited 0".** In the spike a real 1.7B model was delegated correctly, the child never created the file, and the board reported `done` with no changes. Completion needs an acceptance check that the work changed something (or passed its gate), and completion is idempotent.
-
-## Storage and event log
-
-SQLite on the client machine is enough for one owner and a handful of agents. Every lease and status change is an append-only event, giving an audit trail of who touched what.
-
-- **Append-only.** The event log is the source of truth; the derived lease table is rebuilt from it.
-- **Replay on start.** After a crash, state is rebuilt by replaying the log. Leases whose term ended while coord was down are expired, never extended, and survivors are clamped to at most one TTL of remaining time.
-- **Idempotent claims.** Repeating a claim by the same holder renews rather than duplicates.
-- **Verifiable.** An independent replay of the log can check that no two holders of overlapping exclusive leases were ever live together. The spike ran 8 race rounds with scripted models and found none.
-
-## Limitation
-
-pi-subagents' foreground mode blocks the parent while subagents run, so the orchestrator cannot react mid-flight. Async mode (separate child processes, completions arriving as new user messages, results as pointers) lets the orchestrator keep working; `delegate` uses it. A naive orchestrator can loop on those completion messages, which `delegate` has to guard against. Agents can also coordinate through this service while the orchestrator waits.
+- A waiting queue instead of immediate refusal, if callers need it.
+- Moving a lease on node failure, with the resilience work in [dispatcher](dispatcher.md#v2-resilience).
+- Leases on non-LLM resources, if that is ever reopened; the old design is in the [archive](../archive/coordination-full-design.md).
+- Per-machine power and thermal readings as an input to the capacity decision (see the [roadmap](roadmap.md)).

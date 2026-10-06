@@ -1,6 +1,6 @@
 # Architecture decisions from the October 2026 spike phase
 
-**Status: the baseline docs in `../baseline/` have been updated to match this record (not committed). D-1 to D-5 are approved; P-1 to P-5 remain proposed and are marked as proposed in those docs. Ceetrix stories have not been changed.**
+**Status: partially superseded by [2026-10-scope-reset](2026-10-scope-reset.md) (2026-10-06). The sections about the guard, coordination, delegation, worktrees, remote execution, budget and the acceptance check (D-3, P-1, P-2, P-4, 2, 3.3, 3.4 and the matching story and correction lists) describe archived scope, kept as spike evidence. The router, pi, engine, harness, Apple and capability findings, D-1, D-2, D-4, D-5 and P-3, P-5 still stand. The statement that router timeouts are mandatory is deferred to v2. Original status: the baseline docs in `../baseline/` were updated to match this record (not committed). D-1 to D-5 are approved; P-1 to P-5 remain proposed. Ceetrix stories were not changed at that time.**
 
 Method: each claim below comes from a spike that installed the real software and ran it against scripted fakes or small real models (Qwen3 1.7B on an Apple M2, 16 GB). Spike agents wrote the reports; the coordinator re-ran only the router regression suite (12 of 12 passed). Evidence lives in the Legatus session scratchpad under `spikes/`, `spike-pi-*`, `spike-dsh-*`. Small models prove plumbing and protocol conformance, not tool-calling quality, and nothing here was tested on CUDA, Vulkan/Strix Halo or models larger than 1.7B.
 

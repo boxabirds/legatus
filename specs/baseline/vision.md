@@ -1,37 +1,45 @@
 # Product vision
 
-One coding session on a laptop directs a team of specialist agents. Each agent runs on whichever home-lab machine or frontier model suits its role and is free right now. Local models do the volume work; a frontier model does the scarce, high-value thinking.
+Legatus is a heterogeneous proxy that semantically links a subagent task with a local inference resource. It owns the LLM pool it exposes, and nothing else. See the [scope reset](../decisions/2026-10-scope-reset.md).
 
 ## Problem
 
-Home labs now hold several capable but very different machines: Apple Silicon, AMD Strix Halo, Nvidia GPUs, and soon DGX Spark. Today a harness session uses one model on one machine. The rest of the fleet sits idle, and there is no open way to hand work to it, balance load across it, or stop agents colliding over shared files and releases.
+Home labs now hold several capable but very different machines: Apple Silicon, AMD Strix Halo, Nvidia GPUs, and soon DGX Spark. Today a harness session uses one model on one machine. The rest of the fleet sits idle, and there is no open way to match a subagent's task to the machine that suits it, or to hand that machine to the subagent for the length of its task.
 
 ## Goals
 
-1. A single pi session on the client machine can spawn role-specific subagents whose models run on other machines.
-2. Role assignment follows the nature of the task: architect, researcher, tester, spec writer, tech writer, marketing comms, release manager.
-3. Node choice follows live health and load, while keeping each session on one node so prompt caches stay warm.
-4. Agents coordinate over shared resources (files, branches, GPUs, releases) without stepping on each other.
-5. Adding a machine (a 5060 Ti, a DGX Spark) is one registry entry, not a redesign.
-6. Roles are defined by the capabilities and endpoint kind the work needs, so a new kind of node (an embedder, a speech model, an on-device model) joins without changing the roles.
+1. A subagent asks for an LLM by its semantic needs (a role, or capabilities, an endpoint kind, a protocol and a context size), is given a node, and frees it at the end of its task. See [LLM pool allocation](coordination.md).
+2. Node choice follows capability, health and load, while keeping each session on one node so prompt caches stay warm.
+3. Adding a machine (a 5060 Ti, a DGX Spark) is one registry entry, not a redesign.
+4. Roles are defined by the capabilities and endpoint kind the work needs, so a new kind of node (an embedder, a speech model, an on-device model) joins without changing the roles.
+5. Each node is described by what its model can do, what its engine exposes and how it behaves when measured, including power and thermal readings per machine.
+6. Behavioural telemetry on how nodes perform in use, observed and recorded. Whether this stays in v1 is open (see the [scope reset](../decisions/2026-10-scope-reset.md#open-items)); the collection consent switch is off by default.
 
 ## Non-goals
 
+- Coordinating anything other than LLM capacity: files, branches, worktrees, a task board, messaging, merges.
+- Delegation: spawning subagents, collecting their results, or verifying them. Agents lie, so Legatus never says work is done.
+- Guard and sandbox: confining what an agent may write is a harness concern.
+- Remote execution.
+- Router resilience (timeouts, retries, circuit breakers, failover) in v1: an endpoint failure goes to the agent. It is v2 or later; see [dispatcher](dispatcher.md#v2-resilience).
+- Price and budget.
+- Escalation gating: deciding when a role may be called.
 - Splitting one model across machines (exo-style). Each request is served whole by one node.
-- Replacing the harness. The harness stays the agent runtime and Legatus adds routing and coordination around it. pi 1.0.3 is the first harness; Claude Code, opencode and DeepSeek Harness are later adapters, not non-goals.
+- Replacing the harness. The harness stays the agent runtime. pi 1.0.3 is the first harness; Claude Code, opencode and DeepSeek Harness are later adapters, not non-goals.
 - Multi-user or cloud scale. This is a single-owner home lab. No Kubernetes.
+- Conversation capture is likely a separate product; that is an open decision.
+
+All of the removed designs are kept in the [archive](../archive/); the isolate-first principle for resources lives there too.
 
 ## Principles
 
-- **Frontier drives, local executes.** The frontier model orchestrates and takes the deepest reasoning roles. Traffic to it is small but valuable, and it benefits from very large context windows. Local models take everything else by preference.
 - **Own the routing; keep engines swappable.** Routing logic never lives inside an inference server. Putting it there ties you to that engine, and at the state of the art you cannot afford to be wedded to one. Engines are leaves behind an OpenAI-compatible contract.
 - **Roles require capabilities.** A role declares what it needs (capabilities, an endpoint kind and one protocol), and a node qualifies by what its model, its engine and a measurement say it can do. Declared claims never outrank measured ones.
-- **Harnesses are adapters.** The router and coordination service are harness-neutral. Only the guard, `delegate` and the config generator are per-harness, so a second harness is an adapter, not a rewrite.
-- **Isolate first, lock only what cannot be isolated or merged.** One worktree per writer; leases are for the few shared things that remain.
-- **Open standards at every boundary.** OpenAI-compatible and Anthropic Messages for inference, MCP for tools and coordination, ACP for spawning agents remotely, AGENTS.md for repo instructions.
-- **Pin, don't spray.** Sessions stick to a node; load balancing is failover and overflow, not round-robin.
-- **Negotiate in language, enforce in leases.** Capable agents may resolve contention in plain English; leases guarantee the outcome.
-- **Minimal footprint.** Anything shared, long-lived or on an inference node is Rust; anything that runs per tool call stays in-process in the harness. See [implementation](implementation.md).
+- **Harnesses are adapters.** The router is harness-neutral. Only the thin adapter (the config generator and the acquire and release surface) is per-harness, so a second harness is an adapter, not a rewrite.
+- **Open standards at every boundary.** OpenAI-compatible and Anthropic Messages for inference, AGENTS.md for repo instructions.
+- **Pin, don't spray.** Sessions stick to a node; load balancing is placement at acquire time, not round-robin.
+- **Select at the subagent task, not the request.** A subagent is spawned with a task and a model endpoint and returns a result; Legatus is the part that matches that task with a model. The task is the deliberate unit of selection, because the host agent chooses the granularity: "summarise this document", "build this spec" and "research this topic" are all legitimate subagent calls. Within a task the model does not change for quality or preference reasons. Choosing clever models by role is a large body of prior work that Legatus does not extend. It declares coarse requirements (capabilities, context, endpoint kind) and, inside the resulting set of interchangeable nodes, keeps affinity.
+- **Minimal footprint.** Anything shared, long-lived or on an inference node is Rust. See [implementation](implementation.md).
 - **Lightweight harness.** Built on pi for its small system prompt, which matters when every subagent call pays prefill on slower hardware.
 - **Deterministic routing.** Rules and a registry choose nodes, not another LLM.
-- **Least privilege.** Every agent, tool, credential and lease is scoped to the minimum its role needs, and anything not granted is denied. Roles get explicit tool profiles; leases cover the narrowest resource that works; the frontier API key, and the key of any hosted node, lives only in the router, never in an agent. The network is assumed to be a trusted local one, so privilege is enforced at the agent and resource level, not by network controls.
+- **Credential custody in the router.** The key of a hosted or frontier node lives only in the router, never in an agent. This is the whole of least privilege in v1.

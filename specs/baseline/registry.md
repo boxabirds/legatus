@@ -1,6 +1,6 @@
 # Role registry
 
-The registry is one YAML file and the single source of truth. It generates the pi provider config (`models.json`), the pi-subagents agent definitions, and the router's routing table. It describes nodes (what each machine can do) and roles (what each kind of work needs, with nodes in priority order). Routing parameters, such as per-node request patches, live in the registry, not in the engines (D1).
+The registry is one YAML file and the single source of truth. It generates the pi provider config (`models.json`) and the router's routing table. It describes nodes (what each machine can do) and roles (what each kind of work needs, with nodes in priority order). Routing parameters, such as per-node request patches, live in the registry, not in the engines (D1).
 
 ## Nodes: three layers
 
@@ -56,32 +56,31 @@ nodes:
       limits: { n_ctx: 4096, on_overflow: error, max_output_override: true }
     measured: { concurrency_useful: 1 }
 
-  system-one:                    # hosted node: same custody and budget rules as frontier
+  system-one:                    # hosted node: key held by the router
     model_card: { id: jev-latest, modalities: { in: [text], out: [decision] } }
     server_card:
       provider: typesafe
       endpoints: [ { kind: decide, protocol: decide-v1 } ]
-    budget_gbp_day: 1
 
-  frontier: { provider: anthropic, model: frontier-main, max_ctx: 1000000, budget_gbp_day: 10 }
+  frontier: { provider: anthropic, model: frontier-main, max_ctx: 1000000 }   # hosted node: key held by the router
 
 roles:
-  # work roles: require capabilities, then a tools allow-list
-  architect:       { candidates: [frontier],        requires: [tool-calling],                   endpoint: chat, protocol: anthropic-messages, tools: read, escalation_only: true }
-  tester:          { candidates: [rtx4090, m5max],  requires: [tool-calling, structured-output], endpoint: chat, protocol: openai-chat,        tools: read+exec }
-  release-manager: { candidates: [rtx4090, m5max],  requires: [tool-calling],                   endpoint: chat, protocol: openai-chat,        tools: read+git+exec, exclusive: [release] }
+  # work roles: require capabilities
+  architect:       { candidates: [frontier],        requires: [tool-calling],                   endpoint: chat, protocol: anthropic-messages }
+  tester:          { candidates: [rtx4090, m5max],  requires: [tool-calling, structured-output], endpoint: chat, protocol: openai-chat }
+  bulk-review:     { candidates: [rtx4090],         requires: [tool-calling],                   endpoint: chat, protocol: openai-chat, exclusive: true }
   # capability roles: one capability each, called by services rather than by pi
   summarise:       { candidates: [apple, m5max],    requires: [text-in, text-out],              endpoint: chat,   protocol: openai-chat }
   triage:          { candidates: [system-one],      requires: [decide],                         endpoint: decide, protocol: decide-v1 }
 ```
 
-`decide-v1` is the proposed `decide` request and response contract from the capability research (typed questions in, typed answers with probabilities out), not an existing standard. Hostnames, versions and numbers above are illustrative (the hosted node's `budget_gbp_day` included); model and engine values come from the spike machine (Qwen3 1.7B, Apple M2) and the rest are assumed; confirm per machine. The Apple node and the hosted `decide` node are examples of the descriptor, not commitments (proposed default P-5 in the [decision record](../decisions/2026-10-spike-decisions.md)). The full set of work roles (spec-writer, researcher, tech-writer, marcomms) follows the same shape as `tester`.
+`decide-v1` is the proposed `decide` request and response contract from the capability research (typed questions in, typed answers with probabilities out), not an existing standard. Hostnames, versions and numbers above are illustrative; model and engine values come from the spike machine (Qwen3 1.7B, Apple M2) and the rest are assumed; confirm per machine. The Apple node and the hosted `decide` node are examples of the descriptor, not commitments (proposed default P-5 in the [decision record](../decisions/2026-10-spike-decisions.md)). The full set of work roles (spec-writer, researcher, tech-writer, marcomms) follows the same shape as `tester`. Price and budget fields are not part of the descriptor; the old design is in the [archive](../archive/budget-design.md).
 
 ## Role rules
 
 - **One protocol and one endpoint kind per role.** Every candidate of a role must share both. The router rejects a role that mixes them at load, so a frontier role keeps its own protocol as a separate role rather than sharing a candidate list with local nodes.
 - **`requires` is a capability list.** A node is a candidate only if its model card and server card cover every entry. Declared capabilities are never trusted once a canary for them has failed (see [smoke test](#smoke-test)).
-- **Every `tools` value is an allow-list:** a role can use only what its profile names (least privilege).
+- **`exclusive` takes every slot.** An acquire for an `exclusive` role takes all the node's slots, so nothing else is leased on it for the task (see [LLM pool allocation](coordination.md#capacity)).
 
 ## Two role tiers
 
@@ -96,11 +95,11 @@ roles:
 | Capability | `embed` | `embeddings` | `embed` |
 | Capability | `rerank` | `rerank` | `rerank` |
 | Capability | `classify` | `classify` | `classify` |
-| Capability | `decide` (escalation triage, intent routing, guardrail check) | `decide` | `decide` |
+| Capability | `decide` (typed triage, intent routing, guardrail check) | `decide` | `decide` |
 | Capability | `summarise`, `structured-extract` | `chat` | `text-in`, `text-out`, and `structured-output` for extraction |
-| Work | `architect`, `spec-writer`, `researcher`, `tester`, `tech-writer`, `marcomms`, `release-manager` | `chat` | `tool-calling`, `structured-output`, and a context floor, plus the `tools` allow-list |
+| Work | `architect`, `spec-writer`, `researcher`, `tester`, `tech-writer`, `marcomms` | `chat` | `tool-calling`, `structured-output`, and a context floor |
 
-Capability roles are written around one capability; work roles keep their one-paragraph description written around the work, not the hardware. Those descriptions are what the orchestrator reads when choosing a role. Non-chat capability roles are called by services, not by pi, so they need a router path and the node's own path but no pi-side protocol. Web search, document conversion and git are tool services: they sit behind the `tools` allow-list, not in `candidates`.
+Capability roles are written around one capability; work roles keep their one-paragraph description written around the work, not the hardware. Those descriptions are what the orchestrator reads when choosing a role. Non-chat capability roles are called by services, not by pi, so they need a router path and the node's own path but no pi-side protocol. Web search, document conversion and git are tool services, not model candidates.
 
 ## Fields
 
@@ -110,13 +109,14 @@ Capability roles are written around one capability; work roles keep their one-pa
 | `requires` | Capabilities a node must have; the router filters on this before health and context |
 | `endpoint`, `protocol` | The endpoint kind and the wire protocol; one of each per role |
 | `max_ctx` | The effective loaded context, per request slot, not the trained context. The router skips a node whose `max_ctx` is smaller than prompt plus expected output |
-| `tools` | Permission profile handed to the subagent; the architect never edits |
-| `escalation_only` | The orchestrator may call the role only on stated triggers (architecture, repeated failure, reviewer flag) |
-| `exclusive` | A list of named resources (leases) the role must hold before running, so two release managers never overlap. See [coordination](coordination.md#lease-scope) |
+| `exclusive` | When true, a lease on this role takes every slot of its node. See [LLM pool allocation](coordination.md#capacity) |
 | `request_patch` | Per-node edits to the request body (remove or set fields), because engines differ, for example in thinking controls |
 | `limits.on_overflow` | What the node does with a prompt that does not fit: `error_400`, `error`, or `silent_truncate`. Drives the router's truncation guard in [dispatcher](dispatcher.md#protecting-against-silent-truncation) |
-| `budget_gbp_day` | Spend cap for any hosted pay-per-token node, frontier or otherwise; behaviour at exhaustion is defined in [dispatcher](dispatcher.md#frontier-budget-exhaustion) |
-| `always_on` | Laptop nodes that may sleep are demoted quickly by health checks |
+| `always_on` | Laptop nodes that may sleep; the health filter drops them when they are down |
+
+## Machines (PROPOSED)
+
+A **machine** entity, separate from a node, would describe the physical host: its power and thermal behaviour and the regimes it runs in (for example plugged in, on battery, thermally throttled), with readings supplied by `legatus-node`. One machine can host several nodes. This is a request to the registry owner and is pending; the descriptor above has no machine fields yet. Power and thermal readings are in v1 scope, per machine (see the [scope reset](../decisions/2026-10-scope-reset.md)).
 
 ## Declared versus measured
 
