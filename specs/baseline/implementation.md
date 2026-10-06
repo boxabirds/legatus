@@ -25,7 +25,16 @@ The case against Rust is interoperability. pi extensions are TypeScript and run 
 | Lease-enforcement hook | TypeScript (`pi-legatus`) | Runs on every edit and commit; caches its own agent's leases so most checks never leave the process |
 | Role definitions and registry lookup at spawn | TypeScript (`pi-legatus`) | Read once per spawn inside pi |
 
-Rust services are started once and reached over a persistent connection (MCP over HTTP or a unix socket), so each call costs a message, not a process spawn.
+Rust services are started once and reached over a persistent connection (a Unix socket for in-process extensions, loopback MCP over HTTP for MCP clients), so each call costs a message, not a process spawn.
+
+| Component | Language | Reason |
+| --- | --- | --- |
+| Apple on-device node shim | Swift | Apple's on-device model is reachable only through Apple's own framework; the shim exposes an OpenAI-compatible endpoint. The spike used Hummingbird 2.27.0 |
+| Calibration probe | Rust, once promoted | The spike probe is stdlib Python; see the exemption below |
+
+**Evidence for the rule.** In the spike the Rust router added 0.06 ms to first byte and 0.05 ms per streamed chunk, with 3 to 6 MB resident memory, and streamed byte-identical output. The harness-side guard and `delegate` ran in TypeScript inside pi with no process spawn per tool call. The numbers come from scripted fakes on one Apple M2, not from a loaded fleet.
+
+**Exemption for verification tools.** On-demand verification tools (spikes, probes, conformance and compatibility checks) may be written in Python (run with `uv run`) or Node. They are not resident, do not run on inference nodes in normal operation, and carry none of the footprint cost. Anything that stays running, or runs per tool call, follows the rule above.
 
 ## Escape hatch
 
