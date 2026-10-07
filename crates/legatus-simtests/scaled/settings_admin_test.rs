@@ -89,3 +89,17 @@ fn w1_lowering_the_hold_limit_to_280_removes_the_warning() {
     assert!(!stderr.contains("hold_limit_above_budget"), "{stderr}");
     assert!(stderr.contains("(0 warnings)"), "{stderr}");
 }
+
+#[test]
+fn tc22_the_setting_views_are_handed_to_the_admin_state_with_the_values_of_the_file() {
+    use legatus_proxy::lifecycle::start::{publish_setting_views, AdminSettingViews};
+    let loaded = read_registry(&registry_file("state", 280, 0)).unwrap();
+    let state = AdminSettingViews::default();
+    assert!(state.get().is_empty());
+    publish_setting_views(&loaded, &state);
+    let held = state.get();
+    assert_eq!(held.len(), 38);
+    assert_eq!(held.iter().find(|v| v.name == "hold_limit_s").unwrap().value, "280");
+    publish_setting_views(&read_registry(&registry_file("state2", 200, 0)).unwrap(), &state);
+    assert_eq!(state.get().iter().find(|v| v.name == "hold_limit_s").unwrap().value, "200", "the state is replaced whole");
+}

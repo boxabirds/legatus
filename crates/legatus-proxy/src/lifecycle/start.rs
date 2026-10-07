@@ -2,6 +2,7 @@
 use crate::config::node::{node_config_views, NodeConfigView};
 use crate::config::read::{print_errors, read_registry};
 use crate::config::registry::{LoadedRegistry, RegistryWarning};
+use crate::config::settings::{setting_views, SettingView};
 use crate::config::validate::{report_warnings, WarningSink};
 use crate::lifecycle::exit::EXIT_REGISTRY_INVALID;
 use crate::obs::log_sink::{LogRecord, LogSink, SystemRecord};
@@ -38,6 +39,26 @@ impl AdminNodeViews {
     pub fn get(&self) -> Vec<NodeConfigView> {
         self.0.lock().map(|held| held.clone()).unwrap_or_default()
     }
+}
+
+/// The setting view that the admin read serves at `/v1/status` (story 159).
+#[derive(Default)]
+pub struct AdminSettingViews(Mutex<Vec<SettingView>>);
+
+impl AdminSettingViews {
+    pub fn replace(&self, views: Vec<SettingView>) {
+        if let Ok(mut held) = self.0.lock() {
+            *held = views;
+        }
+    }
+    pub fn get(&self) -> Vec<SettingView> {
+        self.0.lock().map(|held| held.clone()).unwrap_or_default()
+    }
+}
+
+/// Build the setting views from a loaded registry and hand them to the admin state.
+pub fn publish_setting_views(loaded: &LoadedRegistry, state: &AdminSettingViews) {
+    state.replace(setting_views(&loaded.settings));
 }
 
 /// Build the node views from a loaded registry and hand them to the admin state.
