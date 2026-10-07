@@ -1,5 +1,7 @@
 //! Scaled tier: real sockets, compressed time.
 #[cfg(test)]
+mod alias_routing_test;
+#[cfg(test)]
 mod chat_wire_forms_test;
 #[cfg(test)]
 mod node_flags_admin_test;
