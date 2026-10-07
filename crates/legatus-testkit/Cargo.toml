@@ -1,0 +1,9 @@
+[package]
+name = "legatus-testkit"
+description = "Stub nodes, captures and invariants shared by the simulation tests"
+edition.workspace = true
+version.workspace = true
+publish.workspace = true
+
+[dependencies]
+legatus-common.workspace = true

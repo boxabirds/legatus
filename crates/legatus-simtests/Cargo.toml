@@ -1,0 +1,15 @@
+[package]
+name = "legatus-simtests"
+description = "Simulation tests in three tiers: virtual, scaled, real"
+edition.workspace = true
+version.workspace = true
+publish.workspace = true
+
+[features]
+tier-virtual = []
+tier-scaled = []
+tier-real = []
+
+[dependencies]
+legatus-testkit.workspace = true
+legatus-proxy.workspace = true

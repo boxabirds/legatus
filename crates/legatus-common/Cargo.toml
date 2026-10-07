@@ -1,0 +1,6 @@
+[package]
+name = "legatus-common"
+description = "Types shared by every Legatus program"
+edition.workspace = true
+version.workspace = true
+publish.workspace = true

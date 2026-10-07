@@ -1,0 +1,9 @@
+[package]
+name = "legatus-node-agent"
+description = "Legatus node-agent program"
+edition.workspace = true
+version.workspace = true
+publish.workspace = true
+
+[dependencies]
+legatus-common.workspace = true

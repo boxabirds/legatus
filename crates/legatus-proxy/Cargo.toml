@@ -1,0 +1,17 @@
+[package]
+name = "legatus-proxy"
+description = "The Legatus model-port reverse proxy"
+edition.workspace = true
+version.workspace = true
+publish.workspace = true
+
+[lib]
+name = "legatus_proxy"
+path = "src/lib.rs"
+
+[[bin]]
+name = "legatus"
+path = "src/main.rs"
+
+[dependencies]
+legatus-common.workspace = true

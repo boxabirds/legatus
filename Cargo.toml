@@ -1,8 +1,13 @@
-# Workspace manifest, pins only. Members are added by story 128 task 2.
-# Every version below is an exact pin; see PINS.md for the evidence of each.
+# Workspace manifest (contract C01). Every version below is an exact pin;
+# see PINS.md for the evidence of each.
 [workspace]
-members = []
+members = ["crates/*"]
 resolver = "2"
+
+[workspace.package]
+edition = "2021"
+version = "0.0.0"
+publish = false
 
 [workspace.dependencies]
 tokio = { version = "=1.53.2" }
@@ -11,3 +16,6 @@ hyper-util = { version = "=0.1.21" }
 tower = { version = "=0.5.3" }
 axum = { version = "=0.7.9" }
 reqwest = { version = "=0.13.5", default-features = false } # test kit only
+legatus-common = { path = "crates/legatus-common" }
+legatus-proxy = { path = "crates/legatus-proxy" }
+legatus-testkit = { path = "crates/legatus-testkit" }
