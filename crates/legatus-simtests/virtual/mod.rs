@@ -1,11 +1,11 @@
 //! Virtual tier: no sockets, paused time (story 144). Every test starts paused.
 #[cfg(test)]
-mod clocks;
+mod clocks_test;
 #[cfg(test)]
-mod router_build;
+mod router_build_test;
 #[cfg(test)]
-mod router_duplex;
+mod router_duplex_test;
 #[cfg(test)]
-mod sim_point;
+mod sim_point_test;
 #[cfg(test)]
-mod transport;
+mod transport_test;

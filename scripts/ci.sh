@@ -3,9 +3,9 @@
 # Usage: ci.sh. Exit 0 pass, 1 fail. Stops at the first failing step.
 # Steps: toolchain, pins, build, clippy (with the lint canary), virtual-guard,
 # unit tests, virtual tier, capture-redact, lint-ste, scaled tier.
-# A step whose script belongs to a later story (virtual-guard.sh story 144,
-# capture-redact.sh story 120, lint-ste.sh no owner yet) is skipped with a
-# warning while the script is missing.
+# A step whose script belongs to a later story (capture-redact.sh story 120,
+# lint-ste.sh no owner yet) is skipped with a warning while the script is
+# missing. virtual-guard.sh (story 144) is present and runs.
 set -u
 ROOT="${ROOT:-$(cd "$(dirname "$0")/.." && pwd)}"
 cd "$ROOT" || exit 1
