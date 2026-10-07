@@ -22,4 +22,10 @@ order=$(echo "$OUT" | grep -E '^(pass|skip|FAIL)' | awk '{print $2}' | tr '\n' '
 want="toolchain pins build clippy virtual-guard unit-tests virtual-tier capture-redact lint-ste scaled-tier "
 [ "$order" = "$want" ] && ok "TC-18 step order: $order" || bad "TC-18 step order '$order'"
 expect_out "TC-18 a missing script is skipped with a warning" "skip  lint-ste"
+
+# TC-15: wrong toolchain exits 1 and prints both versions
+tmp=$(mktemp -d); trap 'rm -rf "$tmp"' EXIT
+fixture_copy "$tmp/ws"; printf '[toolchain]\nchannel = "1.0.0"\n' > "$tmp/ws/rust-toolchain.toml"
+RUSTUP_TOOLCHAIN=1.94.0 ROOT="$tmp/ws" expect_exit "TC-15 wrong toolchain exits 1" 1 "$tmp/ws/scripts/ci.sh"
+expect_out "TC-15 prints pinned and installed versions" "pinned 1\\.0\\.0, installed [0-9.]+"
 finish
