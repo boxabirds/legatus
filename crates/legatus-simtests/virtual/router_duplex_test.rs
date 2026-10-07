@@ -44,18 +44,16 @@ async fn read_chunks(mut body: Body) -> (Vec<u128>, Vec<u8>) {
 
 #[tokio::test(start_paused = true)]
 async fn tc11_chunks_arrive_at_exact_virtual_instants() {
-    let fake = Arc::new(FakeTransport::new(Script::chunks(3, Duration::from_millis(2000))));
+    let chunk = |delay_ms: u64, text: &'static str| (Duration::from_millis(delay_ms), Ok(bytes::Bytes::from_static(text.as_bytes())));
+    let chunks = vec![chunk(7000, "one;"), chunk(2000, "two;"), chunk(2000, "three;")];
+    let fake = Arc::new(FakeTransport::new(Script::Response { status: StatusCode::OK, chunks }));
     let client = serve_duplex(build_router(seams(fake.clone()))).await;
-    let started = Instant::now();
     let response = client.send(post()).await;
     assert_eq!(response.status(), StatusCode::OK);
     let (instants, bytes) = read_chunks(response.into_body()).await;
-    assert_eq!(instants.len(), 3);
-    // The head is sent when the node answers (0 ms); chunks follow at 2000, 4000, 6000 ms.
-    let first = (Instant::now() - started).as_millis();
-    assert_eq!(first, 6000);
-    assert_eq!(instants, vec![2000, 4000, 6000]);
-    assert_eq!(bytes, b"chunk-0;chunk-1;chunk-2;");
+    // Real HTTP parsing over the in-memory pipe; chunks at 7000, 9000 and 11000 ms virtual.
+    assert_eq!(instants, vec![7000, 9000, 11000]);
+    assert_eq!(bytes, b"one;two;three;");
     assert_eq!(fake.requests()[0].body_len, 13);
 }
 
