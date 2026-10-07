@@ -6,7 +6,6 @@ use legatus_proxy::config::node::TriState;
 use legatus_proxy::config::read::read_registry;
 use legatus_proxy::config::registry::WarningCode;
 use legatus_proxy::lifecycle::start::{publish_node_views, AdminNodeViews};
-use std::io::Read;
 use std::net::TcpStream;
 use std::path::PathBuf;
 use std::process::{Command, Stdio};
@@ -47,11 +46,7 @@ fn tc21_the_binary_loads_the_mlx_responses_claim_with_one_warning_and_keeps_serv
     let probe = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
     let port = probe.local_addr().unwrap().port();
     drop(probe);
-    let exe = std::env::current_exe().unwrap();
-    let bin = exe.parent().and_then(|p| p.parent()).unwrap().join("legatus");
-    // Same feature set as the registry binary test, so parallel builds do not swap the binary.
-    let built = Command::new("cargo").args(["build", "-p", "legatus-proxy", "--bin", "legatus", "--features", "test-hooks"]).status().unwrap();
-    assert!(built.success());
+    let bin = crate::legatus_bin::legatus_binary();
     let mut child = Command::new(bin)
         .arg("--registry")
         .arg(registry_file())
@@ -66,10 +61,9 @@ fn tc21_the_binary_loads_the_mlx_responses_claim_with_one_warning_and_keeps_serv
         waited += POLL;
     }
     let serving = TcpStream::connect(("127.0.0.1", port)).is_ok();
+    let stderr = crate::legatus_bin::read_until_listening(&mut child);
     let _ = child.kill();
     let _ = child.wait();
-    let mut stderr = String::new();
-    child.stderr.take().unwrap().read_to_string(&mut stderr).unwrap();
     assert!(serving, "{stderr}");
     assert!(stderr.contains("warning responses_engine_mismatch at nodes.mlx-claims-responses.responses: The engine answers 404 on the Responses path."), "{stderr}");
     assert!(stderr.contains("(1 warnings)"), "{stderr}");

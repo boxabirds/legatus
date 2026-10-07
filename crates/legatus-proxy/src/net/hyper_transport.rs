@@ -5,15 +5,53 @@ use bytes::Bytes;
 use futures_util::StreamExt;
 use http_body_util::{BodyStream as HttpBodyStream, Full};
 use hyper_util::client::legacy::{connect::HttpConnector, Client};
-use hyper_util::rt::TokioExecutor;
+use hyper_util::rt::{TokioExecutor, TokioTimer};
+use std::sync::OnceLock;
+use std::time::Duration;
+
+/// Idle time after which a pooled connection is not reused when nothing else is set: the
+/// catalogue default of `upstream_idle_reuse_max_s` (story 165).
+const DEFAULT_IDLE_REUSE_MAX: Duration = Duration::from_secs(4);
+
+type NodeClient = Client<HttpConnector, Full<Bytes>>;
 
 pub struct HyperTransport {
-    client: Client<HttpConnector, Full<Bytes>>,
+    /// The pooled client and the idle time it was built with. Built on first use or by `configure`.
+    client: OnceLock<(NodeClient, Duration)>,
+}
+
+fn build_client(idle_timeout: Duration) -> (NodeClient, Duration) {
+    let client = Client::builder(TokioExecutor::new()).pool_idle_timeout(idle_timeout).pool_timer(TokioTimer::new()).build_http();
+    (client, idle_timeout)
 }
 
 impl HyperTransport {
+    /// A transport with the default idle time.
     pub fn new() -> HyperTransport {
-        HyperTransport { client: Client::builder(TokioExecutor::new()).build_http() }
+        HyperTransport::with_idle_timeout(DEFAULT_IDLE_REUSE_MAX)
+    }
+
+    /// A connection idle longer than `idle_timeout` is dropped from the pool, so it is never
+    /// reused (`upstream_idle_reuse_max_s`; story 151 tests the node side).
+    pub fn with_idle_timeout(idle_timeout: Duration) -> HyperTransport {
+        let transport = HyperTransport::unconfigured();
+        transport.configure(idle_timeout);
+        transport
+    }
+
+    /// A transport whose idle time is set later by `configure`; the first send uses the default
+    /// if nothing was set.
+    pub fn unconfigured() -> HyperTransport {
+        HyperTransport { client: OnceLock::new() }
+    }
+
+    /// Set the idle time once. Returns false when the pool already exists.
+    pub fn configure(&self, idle_timeout: Duration) -> bool {
+        self.client.set(build_client(idle_timeout)).is_ok()
+    }
+
+    pub fn idle_timeout(&self) -> Duration {
+        self.client.get_or_init(|| build_client(DEFAULT_IDLE_REUSE_MAX)).1
     }
 }
 
@@ -31,7 +69,8 @@ impl UpstreamTransport for HyperTransport {
             *h = req.headers;
         }
         let request = builder.body(Full::new(req.body)).map_err(|_| UpstreamError::Connect)?;
-        let response = self.client.request(request).await.map_err(|_| UpstreamError::Connect)?;
+        let client = &self.client.get_or_init(|| build_client(DEFAULT_IDLE_REUSE_MAX)).0;
+        let response = client.request(request).await.map_err(|_| UpstreamError::Connect)?;
         let (parts, body) = response.into_parts();
         let stream = HttpBodyStream::new(body).filter_map(|frame| async move {
             match frame {

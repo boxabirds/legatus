@@ -7,7 +7,13 @@ use hyper_util::rt::TokioExecutor;
 use legatus_proxy::obs::log_sink::DiscardSink;
 use legatus_proxy::sim::SimPoints;
 use legatus_proxy::time::WallTime;
-use legatus_proxy::{build_router, Seams, CHAT_COMPLETIONS_PATH};
+use legatus_proxy::{Seams, CHAT_COMPLETIONS_PATH};
+use legatus_testkit::fleet::{one_node_deps, FLEET_REQUEST_BODY};
+
+/// The router of the one-node fleet over the given seams.
+fn build_router(seams: Seams) -> axum::Router {
+    legatus_proxy::build_router(one_node_deps(seams))
+}
 use legatus_testkit::virt::{FakeTransport, Script, SimWall};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
@@ -35,7 +41,7 @@ async fn tc15_chunks_over_real_sockets_arrive_within_the_lateness_band() {
     let request = Request::builder()
         .method("POST")
         .uri(format!("http://{addr}{CHAT_COMPLETIONS_PATH}"))
-        .body(Body::from("{}"))
+        .body(Body::from(FLEET_REQUEST_BODY))
         .unwrap();
     let started = Instant::now();
     let response = client.request(request).await.unwrap();

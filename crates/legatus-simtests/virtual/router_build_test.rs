@@ -6,7 +6,13 @@ use legatus_proxy::sim::SimPoints;
 use legatus_proxy::sorted::sorted_keys;
 use legatus_proxy::spawn_named;
 use legatus_proxy::time::WallTime;
-use legatus_proxy::{build_router, Seams, CHAT_COMPLETIONS_PATH};
+use legatus_proxy::{Seams, CHAT_COMPLETIONS_PATH};
+use legatus_testkit::fleet::{one_node_deps, FLEET_REQUEST_BODY};
+
+/// The router of the one-node fleet over the given seams.
+fn build_router(seams: Seams) -> axum::Router {
+    legatus_proxy::build_router(one_node_deps(seams))
+}
 use legatus_testkit::virt::{serve_duplex, FakeTransport, Script, SimWall};
 use std::collections::BTreeMap;
 use std::sync::Arc;
@@ -22,7 +28,7 @@ fn seams(transport: Arc<FakeTransport>) -> Seams {
 }
 
 fn post() -> Request<Body> {
-    Request::builder().method("POST").uri(CHAT_COMPLETIONS_PATH).header("host", "proxy").body(Body::from("{}")).unwrap()
+    Request::builder().method("POST").uri(CHAT_COMPLETIONS_PATH).header("host", "proxy").body(Body::from(FLEET_REQUEST_BODY)).unwrap()
 }
 
 #[test]

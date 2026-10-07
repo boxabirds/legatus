@@ -6,6 +6,7 @@ pub mod node;
 pub mod read;
 pub mod routes;
 pub mod settings;
+pub mod typed;
 pub mod registry;
 pub mod schema;
 pub mod validate;

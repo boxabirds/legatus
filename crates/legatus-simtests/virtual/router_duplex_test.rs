@@ -5,7 +5,13 @@ use http_body_util::BodyExt;
 use legatus_proxy::obs::log_sink::DiscardSink;
 use legatus_proxy::sim::SimPoints;
 use legatus_proxy::time::{Instant, WallTime};
-use legatus_proxy::{build_router, Seams, CHAT_COMPLETIONS_PATH};
+use legatus_proxy::{Seams, CHAT_COMPLETIONS_PATH};
+use legatus_testkit::fleet::{one_node_deps, FLEET_ALIAS, FLEET_NODE_MODEL, FLEET_REQUEST_BODY};
+
+/// The router of the one-node fleet over the given seams.
+fn build_router(seams: Seams) -> axum::Router {
+    legatus_proxy::build_router(one_node_deps(seams))
+}
 use legatus_testkit::virt::{serve_duplex, FakeTransport, Script, SimWall};
 use std::sync::Arc;
 use std::time::Duration;
@@ -24,7 +30,7 @@ fn post() -> Request<Body> {
         .method("POST")
         .uri(CHAT_COMPLETIONS_PATH)
         .header("host", "proxy")
-        .body(Body::from("{\"model\":\"m\"}"))
+        .body(Body::from(FLEET_REQUEST_BODY))
         .unwrap()
 }
 
@@ -54,7 +60,8 @@ async fn tc11_chunks_arrive_at_exact_virtual_instants() {
     // Real HTTP parsing over the in-memory pipe; chunks at 7000, 9000 and 11000 ms virtual.
     assert_eq!(instants, vec![7000, 9000, 11000]);
     assert_eq!(bytes, b"one;two;three;");
-    assert_eq!(fake.requests()[0].body_len, 13);
+    // The node receives the body with only the model replaced by the node's own model name.
+    assert_eq!(fake.requests()[0].body_len, FLEET_REQUEST_BODY.replace(FLEET_ALIAS, FLEET_NODE_MODEL).len());
 }
 
 #[test]

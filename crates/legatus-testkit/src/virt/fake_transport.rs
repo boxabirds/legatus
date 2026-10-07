@@ -33,6 +33,8 @@ pub struct RecordedRequest {
     pub uri: Uri,
     pub headers: HeaderMap,
     pub body_len: usize,
+    /// The body as the node received it.
+    pub body: Bytes,
 }
 
 pub struct FakeTransport {
@@ -64,6 +66,7 @@ impl UpstreamTransport for FakeTransport {
                 uri: req.uri,
                 headers: req.headers,
                 body_len: req.body.len(),
+                body: req.body,
             });
         }
         match &self.script {

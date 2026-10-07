@@ -1,2 +1,8 @@
-//! Request handling. Story 121 owns this module; story 153 adds the model lookup call site.
+//! Request handling: paths, the pipeline, the byte-faithful rewrite, headers and refusals.
+pub mod chat;
+pub mod ctx;
+pub mod errors;
+pub mod headers;
+pub mod paths;
+pub mod rewrite;
 pub mod route;

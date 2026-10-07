@@ -3,28 +3,16 @@ use std::io::Read;
 use std::net::TcpStream;
 use std::path::PathBuf;
 use std::process::{Child, Command, Stdio};
-use std::sync::OnceLock;
 use std::time::Duration;
 
 const SPEC_EXAMPLE: &str = include_str!("../fixtures/registry/spec_example.yaml");
-const BIN: &str = "legatus";
 const EXIT_REGISTRY_INVALID: i32 = 2;
 /// How long the test waits for the binary to exit or to open its port.
 const WAIT: Duration = Duration::from_secs(10);
 const POLL: Duration = Duration::from_millis(50);
 
 fn binary() -> PathBuf {
-    static BUILT: OnceLock<PathBuf> = OnceLock::new();
-    BUILT
-        .get_or_init(|| {
-            // Always run cargo: a stale binary would test old code. The test-hooks feature adds the
-            // warning check that the warning test switches on with an environment variable.
-            let status = Command::new("cargo").args(["build", "-p", "legatus-proxy", "--bin", BIN, "--features", "test-hooks"]).status().expect("run cargo build");
-            assert!(status.success());
-            let exe = std::env::current_exe().unwrap();
-            exe.parent().and_then(|p| p.parent()).unwrap().join(BIN)
-        })
-        .clone()
+    crate::legatus_bin::legatus_binary()
 }
 
 fn free_port() -> u16 {
@@ -109,10 +97,10 @@ fn w1_fix_the_file_and_the_binary_starts_and_says_so() {
         waited += POLL;
     }
     let open = port_open(port);
+    let stderr = crate::legatus_bin::read_until_listening(&mut good);
     let _ = good.kill();
     let _ = good.wait();
     assert!(open, "the binary serves after the file is fixed");
-    let stderr = read_stderr(&mut good);
     assert!(stderr.contains("registry loaded:") && stderr.contains("(0 warnings)"), "{stderr}");
 }
 
@@ -132,10 +120,10 @@ fn tc14_a_valid_file_with_a_warning_starts_and_the_warning_is_printed_and_counte
         waited += POLL;
     }
     let open = port_open(port);
+    let stderr = crate::legatus_bin::read_until_listening(&mut child);
     let _ = child.kill();
     let _ = child.wait();
     assert!(open, "a warning does not stop the start");
-    let stderr = read_stderr(&mut child);
     assert!(stderr.contains(&format!("warning flag_mismatch at {WARNING_PATH}: Declared value differs from the tested one.")), "{stderr}");
     assert!(stderr.contains("(1 warnings)"), "{stderr}");
 }

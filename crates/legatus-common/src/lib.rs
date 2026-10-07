@@ -2,3 +2,4 @@
 #![deny(clippy::disallowed_types, clippy::disallowed_methods)]
 pub mod event;
 pub mod ids;
+pub mod protocol;

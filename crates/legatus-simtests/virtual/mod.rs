@@ -6,6 +6,8 @@ mod alias_helpers;
 #[cfg(test)]
 mod alias_lookup_test;
 #[cfg(test)]
+mod chat_path_test;
+#[cfg(test)]
 mod clocks_test;
 #[cfg(test)]
 mod node_flags_test;
@@ -20,9 +22,13 @@ mod registry_redact_test;
 #[cfg(test)]
 mod registry_schema_test;
 #[cfg(test)]
+mod rewrite_test;
+#[cfg(test)]
 mod router_build_test;
 #[cfg(test)]
 mod router_duplex_test;
+#[cfg(test)]
+mod send_site_test;
 #[cfg(test)]
 mod settings_catalogue_test;
 #[cfg(test)]

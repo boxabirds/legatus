@@ -1,0 +1,66 @@
+[
+ [
+  "connection",
+  "keep-alive"
+ ],
+ [
+  "accept",
+  "application/json"
+ ],
+ [
+  "x-stainless-retry-count",
+  "0"
+ ],
+ [
+  "x-stainless-timeout",
+  "300"
+ ],
+ [
+  "x-stainless-lang",
+  "js"
+ ],
+ [
+  "x-stainless-package-version",
+  "7.19.0"
+ ],
+ [
+  "x-stainless-os",
+  "MacOS"
+ ],
+ [
+  "x-stainless-arch",
+  "arm64"
+ ],
+ [
+  "x-stainless-runtime",
+  "node"
+ ],
+ [
+  "x-stainless-runtime-version",
+  "v24.15.0"
+ ],
+ [
+  "authorization",
+  "Bearer local"
+ ],
+ [
+  "user-agent",
+  "pi (darwin 25.6.0; arm64)"
+ ],
+ [
+  "content-type",
+  "application/json"
+ ],
+ [
+  "accept-language",
+  "*"
+ ],
+ [
+  "sec-fetch-mode",
+  "cors"
+ ],
+ [
+  "accept-encoding",
+  "gzip, deflate"
+ ]
+]

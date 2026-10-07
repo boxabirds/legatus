@@ -3,7 +3,6 @@
 //! setting view is read in-process from the file and the warning is read from the error output.
 use legatus_proxy::config::read::read_registry;
 use legatus_proxy::config::settings::{setting_views, Source};
-use std::io::Read;
 use std::net::TcpStream;
 use std::path::PathBuf;
 use std::process::{Command, Stdio};
@@ -30,10 +29,7 @@ fn registry_file(name: &str, hold_limit_s: u32, port: u16) -> PathBuf {
 /// Start the binary (the environment listen override is removed so that the registry decides),
 /// wait for the port, stop it and return what it wrote on the error output.
 fn run_binary(file: &PathBuf, port: u16) -> (bool, String) {
-    let built = Command::new("cargo").args(["build", "-p", "legatus-proxy", "--bin", "legatus", "--features", "test-hooks"]).status().unwrap();
-    assert!(built.success());
-    let exe = std::env::current_exe().unwrap();
-    let bin = exe.parent().and_then(|p| p.parent()).unwrap().join("legatus");
+    let bin = crate::legatus_bin::legatus_binary();
     let mut child = Command::new(bin).arg("--registry").arg(file).env_remove("LEGATUS_LISTEN").stderr(Stdio::piped()).stdout(Stdio::null()).spawn().unwrap();
     let mut waited = Duration::ZERO;
     while TcpStream::connect(("127.0.0.1", port)).is_err() && waited < WAIT {
@@ -41,10 +37,9 @@ fn run_binary(file: &PathBuf, port: u16) -> (bool, String) {
         waited += POLL;
     }
     let serving = TcpStream::connect(("127.0.0.1", port)).is_ok();
+    let stderr = crate::legatus_bin::read_until_listening(&mut child);
     let _ = child.kill();
     let _ = child.wait();
-    let mut stderr = String::new();
-    child.stderr.take().unwrap().read_to_string(&mut stderr).unwrap();
     (serving, stderr)
 }
 

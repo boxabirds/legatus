@@ -44,7 +44,12 @@ pub fn read_registry(path: &Path) -> Result<LoadedRegistry, Vec<RegistryError>> 
     let Ok(text) = String::from_utf8(bytes) else {
         return Err(vec![error_fixed(ErrorCode::FileUnparsable, &label, TEXT_FILE_NOT_UTF8)]);
     };
-    let raw = parse_registry_text(&text, &label).map_err(|e| vec![e])?;
+    read_registry_text(&text, &label)
+}
+
+/// The same as `read_registry` for text that is already in memory (no file is read).
+pub fn read_registry_text(text: &str, label: &str) -> Result<LoadedRegistry, Vec<RegistryError>> {
+    let raw = parse_registry_text(text, label).map_err(|e| vec![e])?;
     let report = validate_registry(&raw);
     if report.errors.is_empty() {
         let mut scratch = ValidationReport::default();
