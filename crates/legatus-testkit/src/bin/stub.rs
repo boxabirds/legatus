@@ -10,21 +10,30 @@ use legatus_proxy::upstream::transport::{UpstreamRequest, UpstreamTransport};
 use legatus_testkit::stubs::scenario::parse_scenario;
 use legatus_testkit::stubs::start_in_memory;
 use std::io::Read;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::time::Duration;
 
 type BoxErr = Box<dyn std::error::Error + Send + Sync>;
 
-async fn handle(transport: Arc<dyn UpstreamTransport>, req: Request<Incoming>) -> Result<Response<UnsyncBoxBody<Bytes, BoxErr>>, BoxErr> {
+async fn handle(transport: Arc<dyn UpstreamTransport>, reset: Arc<AtomicBool>, req: Request<Incoming>) -> Result<Response<UnsyncBoxBody<Bytes, BoxErr>>, BoxErr> {
     let (parts, body) = req.into_parts();
     let bytes = body.collect().await?.to_bytes();
     let uri = format!("http://stub{}", parts.uri.path_and_query().map(|p| p.as_str()).unwrap_or("/")).parse()?;
     let upstream = UpstreamRequest { method: parts.method, uri, headers: parts.headers, body: bytes };
-    // A connect or reset fault closes the connection without a response.
-    let reply = transport.send(upstream).await.map_err(|e| -> BoxErr { Box::new(e) })?;
-    let frames = reply.body.map(|item| match item {
+    // A connect or reset fault closes the connection without a response; a reset
+    // marks the connection so that it is closed with linger zero (a TCP RST).
+    let reply = transport.send(upstream).await.map_err(|e| -> BoxErr {
+        reset.store(true, Ordering::SeqCst);
+        Box::new(e)
+    })?;
+    let flag = reset.clone();
+    let frames = reply.body.map(move |item| match item {
         Ok(b) => Ok(Frame::data(b)),
-        Err(e) => Err(Box::new(e) as BoxErr),
+        Err(e) => {
+            flag.store(true, Ordering::SeqCst);
+            Err(Box::new(e) as BoxErr)
+        }
     });
     let mut response = Response::new(BodyExt::boxed_unsync(StreamBody::new(frames)));
     *response.status_mut() = reply.status;
@@ -45,13 +54,26 @@ async fn main() {
     loop {
         let Ok((socket, _)) = listener.accept().await else { continue };
         let transport = transport.clone();
+        // A duplicate handle shares the socket, so linger zero can be set on it after a
+        // reset fault and takes effect when the last handle closes.
+        let Ok(std_socket) = socket.into_std() else { continue };
+        let Ok(dup) = std_socket.try_clone() else { continue };
+        let Ok(socket) = tokio::net::TcpStream::from_std(std_socket) else { continue };
+        let Ok(dup) = tokio::net::TcpStream::from_std(dup) else { continue };
         tokio::spawn(async move {
-            let service = hyper::service::service_fn(move |req| handle(transport.clone(), req));
+            let reset = Arc::new(AtomicBool::new(false));
+            let flag = reset.clone();
+            let service = hyper::service::service_fn(move |req| handle(transport.clone(), flag.clone(), req));
             let _ = hyper::server::conn::http1::Builder::new()
                 .timer(TokioTimer::new())
                 .header_read_timeout(idle)
                 .serve_connection(TokioIo::new(socket), service)
                 .await;
+            if reset.load(Ordering::SeqCst) {
+                #[allow(deprecated)]
+                let _ = dup.set_linger(Some(Duration::ZERO));
+            }
+            drop(dup);
         });
     }
 }

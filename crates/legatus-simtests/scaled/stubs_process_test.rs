@@ -87,3 +87,17 @@ async fn tc29_stub_half_of_the_idle_check_fresh_connection_at_4s_and_reuse_fails
     assert_eq!(assert_fresh_connection_after_idle(&stub, 4).await, Ok(()), "a client idle 4 s opens a new connection and is served");
     assert_eq!(reuse_after_idle(&stub, 6).await, Err(IdleError::Reused), "reusing a connection idle 6 s fails: the stub closed it at 5 s");
 }
+
+#[tokio::test]
+async fn tc28_a_reset_fault_is_a_tcp_reset_not_a_clean_close() {
+    use tokio::io::{AsyncReadExt, AsyncWriteExt};
+    let stub = start_process(&spec(StubKind::MultiSlotLlama), &[rule(FaultAction::Reset { once: false }, Limit::Always)]).await;
+    let mut socket = tokio::net::TcpStream::connect(stub.addr).await.unwrap();
+    let body = "{\"messages\":[],\"prompt_tokens\":26,\"output_tokens\":4}";
+    let request = format!("POST /v1/chat/completions HTTP/1.1\r\nHost: stub\r\nContent-Length: {}\r\n\r\n{body}", body.len());
+    socket.write_all(request.as_bytes()).await.unwrap();
+    let mut buf = [0u8; 64];
+    let read = tokio::time::timeout(Duration::from_secs(5), socket.read(&mut buf)).await.expect("the stub answers or closes");
+    let err = read.err().expect("a reset is an error, a clean close would read zero bytes");
+    assert_eq!(err.kind(), std::io::ErrorKind::ConnectionReset, "{err:?}");
+}
