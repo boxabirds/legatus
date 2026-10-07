@@ -3,7 +3,7 @@
 #![deny(clippy::disallowed_types, clippy::disallowed_methods)]
 use legatus_proxy::config::validate::WarningSink;
 use legatus_proxy::lifecycle::exit::{EXIT_BIND_FAILED, EXIT_REGISTRY_INVALID};
-use legatus_proxy::lifecycle::start::{load_registry, AdminWarnings, LoadReporter};
+use legatus_proxy::lifecycle::start::{load_registry, publish_node_views, AdminNodeViews, AdminWarnings, LoadReporter};
 use legatus_proxy::net::hyper_transport::HyperTransport;
 use legatus_proxy::net::wall_system::SystemWallClock;
 use legatus_proxy::obs::log_sink::DiscardSink;
@@ -40,6 +40,8 @@ async fn main() {
         Ok(loaded) => loaded,
         Err(code) => std::process::exit(i32::from(code)),
     };
+    let node_views = AdminNodeViews::default();
+    publish_node_views(&loaded, &node_views);
     eprintln!("registry loaded: {} ({} warnings)", path.display(), loaded.warnings.len());
     let listen = std::env::var(LISTEN_ENV).unwrap_or_else(|_| DEFAULT_LISTEN.to_string());
     let seams = Seams {

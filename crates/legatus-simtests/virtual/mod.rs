@@ -2,6 +2,14 @@
 #[cfg(test)]
 mod clocks_test;
 #[cfg(test)]
+mod node_flags_test;
+#[cfg(test)]
+mod node_helpers;
+#[cfg(test)]
+mod node_shape_test;
+#[cfg(test)]
+mod node_warnings_test;
+#[cfg(test)]
 mod registry_redact_test;
 #[cfg(test)]
 mod registry_schema_test;

@@ -1,4 +1,5 @@
 //! Registry loading at start. Story 121 adds the rest of the start sequence and owns this file.
+use crate::config::node::{node_config_views, NodeConfigView};
 use crate::config::read::{print_errors, read_registry};
 use crate::config::registry::{LoadedRegistry, RegistryWarning};
 use crate::config::validate::{report_warnings, WarningSink};
@@ -22,6 +23,26 @@ impl AdminWarnings {
     pub fn get(&self) -> Vec<RegistryWarning> {
         self.0.lock().map(|held| held.clone()).unwrap_or_default()
     }
+}
+
+/// The node view that the admin read serves (story 159).
+#[derive(Default)]
+pub struct AdminNodeViews(Mutex<Vec<NodeConfigView>>);
+
+impl AdminNodeViews {
+    pub fn replace(&self, views: Vec<NodeConfigView>) {
+        if let Ok(mut held) = self.0.lock() {
+            *held = views;
+        }
+    }
+    pub fn get(&self) -> Vec<NodeConfigView> {
+        self.0.lock().map(|held| held.clone()).unwrap_or_default()
+    }
+}
+
+/// Build the node views from a loaded registry and hand them to the admin state.
+pub fn publish_node_views(loaded: &LoadedRegistry, state: &AdminNodeViews) {
+    state.replace(node_config_views(&loaded.nodes, &loaded.warnings));
 }
 
 /// Shows each warning on the terminal, writes one warning event and stores the list.

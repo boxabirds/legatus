@@ -38,11 +38,74 @@ pub struct SchemaNode {
     pub kind: Kind,
     pub fields: &'static [(&'static str, SchemaNode)],
     pub required: bool,
+    /// For a `Map` whose keys are names chosen by the owner (nodes, machines): the shape of
+    /// every value. `fields` must be empty then.
+    pub each: Option<&'static SchemaNode>,
 }
 
 const fn leaf(kind: Kind, required: bool) -> SchemaNode {
-    SchemaNode { kind, fields: &[], required }
+    SchemaNode { kind, fields: &[], required, each: None }
 }
+
+const fn table(kind: Kind, fields: &'static [(&'static str, SchemaNode)], required: bool) -> SchemaNode {
+    SchemaNode { kind, fields, required, each: None }
+}
+
+const fn named(each: &'static SchemaNode, required: bool) -> SchemaNode {
+    SchemaNode { kind: Kind::Map, fields: &[], required, each: Some(each) }
+}
+
+const ENDPOINT: &[(&str, SchemaNode)] = &[("protocol", leaf(Kind::Str, true)), ("base_url", leaf(Kind::Str, true))];
+
+const ENGINE: &[(&str, SchemaNode)] = &[("name", leaf(Kind::Str, true)), ("version", leaf(Kind::Str, false))];
+
+const CONTEXT: &[(&str, SchemaNode)] = &[("per_slot", leaf(Kind::Int, false)), ("on_overflow", leaf(Kind::Str, false))];
+
+const CACHE: &[(&str, SchemaNode)] = &[("kind", leaf(Kind::Str, false)), ("prompt_tokens_details", leaf(Kind::Bool, false))];
+
+const ENGINE_FLAGS: &[(&str, SchemaNode)] = &[
+    ("jinja", leaf(Kind::Bool, false)),
+    ("np", leaf(Kind::Int, false)),
+    ("ctx_checkpoints", leaf(Kind::Int, false)),
+    ("checkpoint_min_step", leaf(Kind::Int, false)),
+    ("cache_ram_mib", leaf(Kind::Int, false)),
+    ("num_parallel", leaf(Kind::Int, false)),
+    ("keep_alive_s", leaf(Kind::Int, false)),
+    ("kv_unified", leaf(Kind::Bool, false)),
+    ("prefix_caching", leaf(Kind::Any, false)),
+    ("speculative_decoding", leaf(Kind::Any, false)),
+    ("ctx_size", leaf(Kind::Int, false)),
+    ("vllm_block_size", leaf(Kind::Int, false)),
+];
+
+/// Fields of one node (contract C11). `patch` and `auth` are accepted as open maps; their
+/// checks belong to stories 190 and 135.
+const NODE: &[(&str, SchemaNode)] = &[
+    ("engine", table(Kind::Map, ENGINE, true)),
+    ("model", leaf(Kind::Str, true)),
+    ("quantisation", leaf(Kind::Str, false)),
+    ("machine", leaf(Kind::Str, false)),
+    ("endpoints", table(Kind::List, ENDPOINT, true)),
+    ("responses", leaf(Kind::Bool, false)),
+    ("stateful_responses", leaf(Kind::Bool, false)),
+    ("ignores_previous_response_id", leaf(Kind::Bool, false)),
+    ("warm_capacity", leaf(Kind::Any, false)),
+    ("paths", leaf(Kind::List, false)),
+    ("slots", leaf(Kind::Any, false)),
+    ("context", table(Kind::Map, CONTEXT, false)),
+    ("cache", table(Kind::Map, CACHE, false)),
+    ("engine_flags", table(Kind::Map, ENGINE_FLAGS, false)),
+    ("patch", leaf(Kind::Map, false)),
+    ("auth", leaf(Kind::Map, false)),
+    ("always_on", leaf(Kind::Bool, false)),
+    ("affinity_mode", leaf(Kind::Str, false)),
+    ("cold_allowance_tokens", leaf(Kind::Int, false)),
+];
+
+const MACHINE: &[(&str, SchemaNode)] = &[("host", leaf(Kind::Str, false)), ("mem_gb", leaf(Kind::Any, false)), ("agent", leaf(Kind::Str, false))];
+
+static NODE_ROW: SchemaNode = table(Kind::Map, NODE, false);
+static MACHINE_ROW: SchemaNode = table(Kind::Map, MACHINE, false);
 
 const HARNESS_ROW: &[(&str, SchemaNode)] = &[
     ("name", leaf(Kind::Str, true)),
@@ -58,11 +121,11 @@ const HARNESS_ROW: &[(&str, SchemaNode)] = &[
 pub const TOP_LEVEL: &[(&str, SchemaNode)] = &[
     ("version", leaf(Kind::Any, false)),
     ("settings", leaf(Kind::Map, false)),
-    ("machines", leaf(Kind::Map, false)),
-    ("nodes", leaf(Kind::Map, true)),
+    ("machines", named(&MACHINE_ROW, false)),
+    ("nodes", named(&NODE_ROW, true)),
     ("aliases", leaf(Kind::Map, true)),
     ("routes", leaf(Kind::Any, false)),
-    ("harnesses", SchemaNode { kind: Kind::List, fields: HARNESS_ROW, required: false }),
+    ("harnesses", table(Kind::List, HARNESS_ROW, false)),
 ];
 
 pub fn join_path(parent: &str, key: &str) -> String {
@@ -110,8 +173,18 @@ fn walk(value: &Value, node: &SchemaNode, path: &str, out: &mut ValidationReport
     }
     match (node.kind, value) {
         (Kind::Map, Value::Mapping(map)) if !node.fields.is_empty() => walk_map(map, node.fields, path, out),
+        (Kind::Map, Value::Mapping(map)) if node.each.is_some() => {
+            let row = node.each.expect("checked by the guard");
+            for (position, (key, entry)) in map.iter().enumerate() {
+                let name = match key {
+                    Value::String(name) => name.clone(),
+                    _ => format!("#{position}"),
+                };
+                walk(entry, row, &join_path(path, &name), out);
+            }
+        }
         (Kind::List, Value::Sequence(items)) if !node.fields.is_empty() => {
-            let item = SchemaNode { kind: Kind::Map, fields: node.fields, required: false };
+            let item = table(Kind::Map, node.fields, false);
             for (index, entry) in items.iter().enumerate() {
                 walk(entry, &item, &join_path(path, &index.to_string()), out);
             }

@@ -218,4 +218,7 @@ pub struct ValidationReport {
 pub struct LoadedRegistry {
     pub raw: RawRegistry,
     pub warnings: Vec<RegistryWarning>,
+    /// Typed nodes and machines; story 121 builds the `Registry` from them.
+    pub nodes: Vec<crate::config::node::NodeSpec>,
+    pub machines: Vec<crate::config::node::MachineSpec>,
 }

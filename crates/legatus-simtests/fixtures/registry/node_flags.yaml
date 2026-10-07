@@ -1,0 +1,26 @@
+# FIX-337 (an alias with one Responses node on and one off) and FIX-015 (an mlx_lm node that
+# declares responses: true, which the engine answers with 404) in one registry.
+version: 1
+nodes:
+  codex-capable:
+    engine: { name: llama-server, version: b11146 }
+    model: qwen3.8-27b-q4
+    endpoints: [ { protocol: openai-responses, base_url: "http://127.0.0.1:18081" } ]
+    responses: true
+    slots: 4
+    warm_capacity: 4
+    engine_flags: { prefix_caching: true }
+  chat-only:
+    engine: { name: ollama, version: 0.35.1 }
+    model: qwen3:4b
+    endpoints: [ { protocol: openai-chat, base_url: "http://127.0.0.1:18082" } ]
+    responses: false
+    slots: 1
+  mlx-claims-responses:
+    engine: { name: mlx_lm }
+    model: mlx-community/Qwen3-4B
+    endpoints: [ { protocol: openai-responses, base_url: "http://127.0.0.1:18083" } ]
+    responses: true
+    engine_flags: { speculative_decoding: false }
+aliases:
+  coder: { nodes: [codex-capable, chat-only, mlx-claims-responses] }

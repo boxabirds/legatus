@@ -1,8 +1,12 @@
 //! Read the registry file from the start path. Never writes it.
+use crate::config::node::{read_machines, read_nodes, TEXT_DUPLICATE_NAME};
 use crate::config::registry::*;
 use crate::config::validate::validate_registry;
 use std::io::Write;
 use std::path::Path;
+
+/// Part of the parser message for a repeated key (yaml_serde 0.10.7).
+const PARSER_DUPLICATE_MARK: &str = "duplicate entry";
 
 fn read_failure(path: &Path, kind: std::io::ErrorKind) -> RegistryError {
     let text = match kind {
@@ -17,6 +21,15 @@ fn read_failure(path: &Path, kind: std::io::ErrorKind) -> RegistryError {
 pub fn parse_registry_text(text: &str, path_label: &str) -> Result<RawRegistry, RegistryError> {
     yaml_serde::from_str::<yaml_serde::Value>(text).map(RawRegistry).map_err(|error| {
         let place = error.location().map(|l| format!(" At line {}, column {}.", l.line(), l.column())).unwrap_or_default();
+        // The parser refuses a repeated key in one map. Its message names the key, so only the
+        // start of the message is used to choose the code and the key is never copied.
+        let message = error.to_string();
+        if let Some(at) = message.find(PARSER_DUPLICATE_MARK) {
+            // For a nested map the parser starts its message with the path of that map.
+            let parent = message[..at].trim_end_matches(": ");
+            let path = if parent.is_empty() { path_label.to_string() } else { parent.to_string() };
+            return RegistryError { code: ErrorCode::DuplicateName, path, text: format!("{TEXT_DUPLICATE_NAME}{place}") };
+        }
         RegistryError { code: ErrorCode::FileUnparsable, path: path_label.to_string(), text: format!("{TEXT_FILE_NOT_YAML}{place}") }
     })
 }
@@ -31,7 +44,10 @@ pub fn read_registry(path: &Path) -> Result<LoadedRegistry, Vec<RegistryError>> 
     let raw = parse_registry_text(&text, &label).map_err(|e| vec![e])?;
     let report = validate_registry(&raw);
     if report.errors.is_empty() {
-        Ok(LoadedRegistry { raw, warnings: report.warnings })
+        let mut scratch = ValidationReport::default();
+        let nodes = read_nodes(&raw.0, &mut scratch);
+        let machines = read_machines(&raw.0, &mut scratch);
+        Ok(LoadedRegistry { raw, warnings: report.warnings, nodes, machines })
     } else {
         Err(report.errors)
     }

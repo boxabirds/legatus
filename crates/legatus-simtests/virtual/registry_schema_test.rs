@@ -233,9 +233,9 @@ fn every_error_and_warning_code_has_its_contract_name() {
 }
 
 #[test]
-fn a_duplicate_key_is_file_unparsable_and_the_text_does_not_repeat_the_key() {
+fn a_duplicate_key_is_duplicate_name_with_a_place_and_the_text_does_not_repeat_the_key() {
     let error = parse_registry_text("version: 1\nversion: 2\n", PATH_LABEL).expect_err("duplicate key");
-    assert_eq!(error.code, ErrorCode::FileUnparsable);
-    assert!(error.text.starts_with("File is not valid structured text."));
+    assert_eq!(error.code, ErrorCode::DuplicateName);
+    assert!(error.text.starts_with("A name is used twice. At line "), "{}", error.text);
     assert!(!error.text.contains("\"version\""), "{}", error.text);
 }

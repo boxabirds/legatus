@@ -11,7 +11,11 @@ pub trait RegistryCheck {
 /// The registered checks, run after the version and shape checks of this story.
 pub fn checks() -> Vec<Box<dyn RegistryCheck>> {
     #[allow(unused_mut)]
-    let mut list: Vec<Box<dyn RegistryCheck>> = Vec::new();
+    let mut list: Vec<Box<dyn RegistryCheck>> = vec![
+        Box::new(crate::config::checks_node::NodeCheckShape),
+        Box::new(crate::config::checks_node::NodeCheckFlags),
+        Box::new(crate::config::checks_node::NodeCheckWarnings),
+    ];
     #[cfg(feature = "test-hooks")]
     list.push(Box::new(test_hook::EnvWarningCheck));
     list
