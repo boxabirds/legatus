@@ -1,5 +1,11 @@
 //! Virtual tier: no sockets, paused time (stories 144 and 162). Every test starts paused.
 #[cfg(test)]
+mod alias_fields_test;
+#[cfg(test)]
+mod alias_helpers;
+#[cfg(test)]
+mod alias_lookup_test;
+#[cfg(test)]
 mod clocks_test;
 #[cfg(test)]
 mod node_flags_test;

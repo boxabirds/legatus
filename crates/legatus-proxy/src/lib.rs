@@ -3,6 +3,7 @@
 pub mod config;
 pub mod lifecycle;
 pub mod net;
+pub mod protocol;
 pub mod obs;
 pub mod sim;
 pub mod sorted;

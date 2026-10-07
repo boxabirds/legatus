@@ -1,0 +1,1 @@
+{"model":"local-coder","messages":[{"role":"system","content":"You are a coding agent."},{"role":"user","content":"List the files."}],"stream":true,"stream_options":{"include_usage":true},"tools":[{"type":"function","function":{"name":"ls","parameters":{"type":"object","properties":{}}}}]}

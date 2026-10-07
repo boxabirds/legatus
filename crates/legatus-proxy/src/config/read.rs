@@ -1,4 +1,5 @@
 //! Read the registry file from the start path. Never writes it.
+use crate::config::alias::read_aliases;
 use crate::config::node::{read_machines, read_nodes, TEXT_DUPLICATE_NAME};
 use crate::config::registry::*;
 use crate::config::validate::validate_registry;
@@ -47,7 +48,8 @@ pub fn read_registry(path: &Path) -> Result<LoadedRegistry, Vec<RegistryError>> 
         let mut scratch = ValidationReport::default();
         let nodes = read_nodes(&raw.0, &mut scratch);
         let machines = read_machines(&raw.0, &mut scratch);
-        Ok(LoadedRegistry { raw, warnings: report.warnings, nodes, machines })
+        let aliases = read_aliases(&raw.0, &nodes, &mut scratch).unwrap_or_default();
+        Ok(LoadedRegistry { raw, warnings: report.warnings, nodes, machines, aliases })
     } else {
         Err(report.errors)
     }

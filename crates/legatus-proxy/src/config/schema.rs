@@ -104,6 +104,17 @@ const NODE: &[(&str, SchemaNode)] = &[
 
 const MACHINE: &[(&str, SchemaNode)] = &[("host", leaf(Kind::Str, false)), ("mem_gb", leaf(Kind::Any, false)), ("agent", leaf(Kind::Str, false))];
 
+const AFFINITY: &[(&str, SchemaNode)] = &[("key_headers", leaf(Kind::List, false)), ("hash_fallback", leaf(Kind::Bool, false))];
+
+/// Fields of one alias (contract C12). The protocol set is computed, so a `protocols` field is unknown.
+const ALIAS: &[(&str, SchemaNode)] = &[
+    ("nodes", leaf(Kind::List, true)),
+    ("affinity", table(Kind::Map, AFFINITY, false)),
+    ("description", leaf(Kind::Str, false)),
+    ("hold_limit_s", leaf(Kind::Int, false)),
+];
+
+static ALIAS_ROW: SchemaNode = table(Kind::Map, ALIAS, false);
 static NODE_ROW: SchemaNode = table(Kind::Map, NODE, false);
 static MACHINE_ROW: SchemaNode = table(Kind::Map, MACHINE, false);
 
@@ -123,7 +134,7 @@ pub const TOP_LEVEL: &[(&str, SchemaNode)] = &[
     ("settings", leaf(Kind::Map, false)),
     ("machines", named(&MACHINE_ROW, false)),
     ("nodes", named(&NODE_ROW, true)),
-    ("aliases", leaf(Kind::Map, true)),
+    ("aliases", named(&ALIAS_ROW, true)),
     ("routes", leaf(Kind::Any, false)),
     ("harnesses", table(Kind::List, HARNESS_ROW, false)),
 ];

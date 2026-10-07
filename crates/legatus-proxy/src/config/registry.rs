@@ -221,4 +221,6 @@ pub struct LoadedRegistry {
     /// Typed nodes and machines; story 121 builds the `Registry` from them.
     pub nodes: Vec<crate::config::node::NodeSpec>,
     pub machines: Vec<crate::config::node::MachineSpec>,
+    /// Name to alias; empty when the file lists no alias.
+    pub aliases: crate::config::alias::AliasTable,
 }
