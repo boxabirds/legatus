@@ -4,3 +4,9 @@ description = "Types shared by every Legatus program"
 edition.workspace = true
 version.workspace = true
 publish.workspace = true
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+
+[dev-dependencies]
+serde_json = "1"

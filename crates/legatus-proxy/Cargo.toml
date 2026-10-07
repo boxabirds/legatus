@@ -15,3 +15,12 @@ path = "src/main.rs"
 
 [dependencies]
 legatus-common.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread", "macros", "time", "net", "sync"] }
+hyper = { workspace = true, features = ["http1", "client", "server"] }
+hyper-util = { workspace = true, features = ["tokio", "client-legacy", "http1", "server", "service"] }
+axum = { workspace = true, features = ["http1", "tokio"] }
+async-trait = "0.1"
+bytes = "1"
+futures-util = "0.3"
+http = "1"
+http-body-util = "0.1"

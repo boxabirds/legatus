@@ -7,3 +7,14 @@ publish.workspace = true
 
 [dependencies]
 legatus-common.workspace = true
+legatus-proxy.workspace = true
+tokio = { workspace = true, features = ["rt", "macros", "time", "sync", "io-util", "test-util"] }
+hyper = { workspace = true, features = ["http1", "client", "server"] }
+hyper-util = { workspace = true, features = ["tokio", "http1", "server", "service"] }
+axum = { workspace = true, features = ["http1", "tokio"] }
+tower = { workspace = true }
+async-trait = "0.1"
+bytes = "1"
+futures-util = "0.3"
+http = "1"
+http-body-util = "0.1"

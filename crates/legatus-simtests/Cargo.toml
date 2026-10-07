@@ -11,5 +11,16 @@ tier-scaled = []
 tier-real = []
 
 [dependencies]
+legatus-common.workspace = true
 legatus-testkit.workspace = true
 legatus-proxy.workspace = true
+tokio = { workspace = true, features = ["rt", "rt-multi-thread", "macros", "time", "sync", "test-util", "net"] }
+axum = { workspace = true, features = ["http1", "tokio"] }
+hyper = { workspace = true, features = ["http1", "client", "server"] }
+hyper-util = { workspace = true, features = ["tokio", "client-legacy", "http1"] }
+http = "1"
+http-body-util = "0.1"
+bytes = "1"
+futures-util = "0.3"
+serde_json = "1"
+serde = "1"
