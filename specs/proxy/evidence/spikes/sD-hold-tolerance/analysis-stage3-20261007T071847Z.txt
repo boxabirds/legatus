@@ -1,0 +1,52 @@
+anthropic-node-stream.hold250err429 | completed | wall=251 | n=2 | req@[0,250.4] | close1=null | error_429#1@250 respond_normal#2@0 | 
+anthropic-node-stream.hold250err503 | completed | wall=253 | n=2 | req@[0,250.4] | close1=null | error_503#1@250 respond_normal#2@0 | 
+anthropic-node-stream.hold250err529 | completed | wall=253 | n=2 | req@[0,250.4] | close1=null | error_529#1@250 respond_normal#2@0 | 
+anthropic-py-stream.hold250err429 | completed | wall=257 | n=2 | req@[0,250.4] | close1=null | error_429#1@250 respond_normal#2@0 | 
+anthropic-py-stream.hold250err503 | completed | wall=258 | n=2 | req@[0,250.5] | close1=null | error_503#1@250 respond_normal#2@0 | 
+anthropic-py-stream.hold250err529 | completed | wall=258 | n=2 | req@[0,250.5] | close1=null | error_529#1@250 respond_normal#2@0 | 
+cc.hold250err408 | completed | wall=252 | n=2 | req@[0,251.2] | close1=null | error_408#1@250.01 respond_normal#2@0.01 | okay-42 | cc api_retry events=1 [408:545ms]
+cc.hold250err429 | completed | wall=254 | n=2 | req@[0,250.7] | close1=null | error_429#1@250 respond_normal#2@0 | okay-42 | cc api_retry events=1 [429:529ms]
+cc.hold250err503 | completed | wall=254 | n=2 | req@[0,250.9] | close1=null | error_503#1@250 respond_normal#2@0.01 | okay-42 | cc api_retry events=1 [503:523ms]
+cc.hold250err504 | completed | wall=251 | n=2 | req@[0,250.7] | close1=null | error_504#1@250 respond_normal#2@0 | okay-42 | cc api_retry events=1 [504:590ms]
+cc.hold250err529 | completed | wall=252 | n=2 | req@[0,250.7] | close1=null | error_529#1@250 respond_normal#2@0 | okay-42 | cc api_retry events=1 [529:520ms]
+codex.hold250err408 | completed | wall=252 | n=2 | req@[0,250.3] | close1=null | error_408#1@250 respond_normal#2@0.01 | Reconnecting... 1/5 (unexpected status 408 Request Timeout: legatus hold limit reached: no capacity, url: http://127.0.0.1:18964/sc/mode=err,t=250,status=408,fail=1,id=codex.hold250err408/v1/responses)
+codex.hold250err429 | failed | wall=251 | n=1 | req@[0] | close1=null | error_429#1@250 | exceeded retry limit, last status: 429 Too Many Requests
+codex.hold250err503 | completed | wall=254 | n=2 | req@[0,250.2] | close1=null | error_503#1@250 respond_normal#2@0 | 
+codex.hold250err504 | completed | wall=252 | n=2 | req@[0,250.2] | close1=null | error_504#1@250 respond_normal#2@0 | 
+codex.hold250err529 | completed | wall=252 | n=2 | req@[0,250.2] | close1=null | error_529#1@250 respond_normal#2@0 | 
+dsh-anth.hold250err408 | completed | wall=254 | n=3 | req@[0,0,251.3] | close1=null | respond_normal#2@0 error_408#1@250 respond_normal#3@0.01 | 
+dsh-anth.hold250err429 | completed | wall=252 | n=3 | req@[0,0,250.5] | close1=null | respond_normal#2@0 error_429#1@250 respond_normal#3@0 | 
+dsh-anth.hold250err503 | completed | wall=257 | n=3 | req@[0,0,250.7] | close1=null | respond_normal#2@0 error_503#1@250 respond_normal#3@0 | 
+dsh-anth.hold250err504 | completed | wall=251 | n=3 | req@[0,0,250.5] | close1=null | respond_normal#2@0 error_504#1@250 respond_normal#3@0 | 
+dsh-anth.hold250err529 | completed | wall=261 | n=3 | req@[0,0,250.5] | close1=null | respond_normal#2@0 error_529#1@250 respond_normal#3@0 | 
+dsh-oai.hold250err408 | failed | wall=254 | n=2 | req@[0,0] | close1=null | respond_normal#2@0 error_408#1@250 | {"message":"408: {\"message\":\"legatus hold limit reached: no capacity\",\"type\":\"server_error\",\"param\":null,\"code\":\"no_capacity\"}","code":"PI_AI_ERROR"}
+dsh-oai.hold250err429 | completed | wall=254 | n=3 | req@[0,0,250.5] | close1=null | respond_normal#2@0 error_429#1@250 respond_normal#3@0 | 
+dsh-oai.hold250err503 | completed | wall=257 | n=3 | req@[0,0,250.7] | close1=null | respond_normal#2@0 error_503#1@250 respond_normal#3@0 | 
+dsh-oai.hold250err504 | completed | wall=252 | n=3 | req@[0,0,250.7] | close1=null | respond_normal#2@0 error_504#1@250 respond_normal#3@0 | 
+dsh-oai.hold250err529 | completed | wall=260 | n=3 | req@[0,0,250.6] | close1=null | respond_normal#2@0 error_529#1@250 respond_normal#3@0 | 
+oc-anth.hold250err408 | completed | wall=3 | n=2 | req@[0,1.1] | close1=1.18(aborted) | respond_normal#2@0 | 
+oc-anth.hold250err429 | completed | wall=3 | n=2 | req@[0,1.1] | close1=1.23(aborted) | respond_normal#2@0 | 
+oc-anth.hold250err503 | completed | wall=10 | n=2 | req@[0,2] | close1=2.14(aborted) | respond_normal#2@0 | 
+oc-anth.hold250err504 | completed | wall=3 | n=2 | req@[0,1.2] | close1=1.34(aborted) | respond_normal#2@0 | 
+oc-anth.hold250err529 | completed | wall=21 | n=2 | req@[0,3.6] | close1=3.83(aborted) | respond_normal#2@0 | 
+oc-oai.hold250err408 | completed | wall=4 | n=2 | req@[0,1.3] | close1=1.4(aborted) | respond_normal#2@0 | 
+oc-oai.hold250err429 | completed | wall=4 | n=2 | req@[0,1.6] | close1=1.76(aborted) | respond_normal#2@0 | 
+oc-oai.hold250err503 | completed | wall=10 | n=2 | req@[0,1.7] | close1=1.91(aborted) | respond_normal#2@0 | 
+oc-oai.hold250err504 | completed | wall=3 | n=2 | req@[0,1.3] | close1=1.46(aborted) | respond_normal#2@0 | 
+oc-oai.hold250err529 | completed | wall=22 | n=2 | req@[0,3] | close1=3.43(aborted) | respond_normal#2@0 | 
+openai-node-stream.hold250err429 | completed | wall=251 | n=2 | req@[0,250.5] | close1=null | error_429#1@250 respond_normal#2@0 | 
+openai-node-stream.hold250err503 | completed | wall=253 | n=2 | req@[0,250.5] | close1=null | error_503#1@250 respond_normal#2@0 | 
+openai-node-stream.hold250err529 | completed | wall=252 | n=2 | req@[0,250.5] | close1=null | error_529#1@250 respond_normal#2@0 | 
+openai-py-stream.hold250err429 | completed | wall=256 | n=2 | req@[0,250.4] | close1=null | error_429#1@250.02 respond_normal#2@0 | 
+openai-py-stream.hold250err503 | completed | wall=257 | n=2 | req@[0,250.5] | close1=null | error_503#1@250 respond_normal#2@0 | 
+openai-py-stream.hold250err529 | completed | wall=256 | n=2 | req@[0,250.5] | close1=null | error_529#1@250 respond_normal#2@0 | 
+pi-anth.hold250err408 | completed | wall=254 | n=2 | req@[0,253] | close1=null | error_408#1@250.02 respond_normal#2@0.02 |  | pi retry events=2
+pi-anth.hold250err429 | completed | wall=254 | n=2 | req@[0,252] | close1=null | error_429#1@250 respond_normal#2@0 |  | pi retry events=2
+pi-anth.hold250err503 | completed | wall=256 | n=2 | req@[0,252.1] | close1=null | error_503#1@250 respond_normal#2@0 |  | pi retry events=2
+pi-anth.hold250err504 | completed | wall=253 | n=2 | req@[0,252] | close1=null | error_504#1@250 respond_normal#2@0 |  | pi retry events=2
+pi-anth.hold250err529 | completed | wall=255 | n=2 | req@[0,252] | close1=null | error_529#1@250 respond_normal#2@0 |  | pi retry events=2
+pi-oai.hold250err408 | completed | wall=255 | n=2 | req@[0,253.3] | close1=null | error_408#1@250.01 respond_normal#2@0 |  | pi retry events=2
+pi-oai.hold250err429 | completed | wall=255 | n=2 | req@[0,252] | close1=null | error_429#1@250 respond_normal#2@0 |  | pi retry events=2
+pi-oai.hold250err503 | completed | wall=256 | n=2 | req@[0,252.1] | close1=null | error_503#1@250 respond_normal#2@0 |  | pi retry events=2
+pi-oai.hold250err504 | completed | wall=253 | n=2 | req@[0,252] | close1=null | error_504#1@250 respond_normal#2@0 |  | pi retry events=2
+pi-oai.hold250err529 | completed | wall=254 | n=2 | req@[0,252.1] | close1=null | error_529#1@250 respond_normal#2@0 |  | pi retry events=2

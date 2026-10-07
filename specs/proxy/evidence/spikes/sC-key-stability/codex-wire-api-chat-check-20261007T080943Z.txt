@@ -1,0 +1,17 @@
+Check run 2026-10-07T08:09:43Z by the coordinator. Command: codex exec with config.toml wire_api = "chat", Codex CLI 0.160.1, installed at spikes2/sC-key-stability/work/opencode/node_modules/.bin/codex.
+--- stdout
+rc=1
+--- stderr
+Error loading config.toml: `wire_api = "chat"` is no longer supported.
+How to fix: set `wire_api = "responses"` in your provider config.
+More info: https://github.com/openai/codex/discussions/7782
+in `model_providers.fake.wire_api`
+
+--- config.toml
+model = "fake-model"
+model_provider = "fake"
+[model_providers.fake]
+name = "fake"
+base_url = "http://127.0.0.1:18999/v1"
+env_key = "FAKE_KEY"
+wire_api = "chat"

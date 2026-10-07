@@ -1,0 +1,3 @@
+# s6 checkpoint-source: see timestamped notes-*.md files (per engine, with file:line refs at recorded commits) and the final report in the parent's message.
+Common model: recompute(D) = N - max{c in C : c <= D} (0 if none), C = retained recurrent-state positions on the stored sequence (prompt L + generated G); engines differ only in C.
+llama.cpp: C={L-516, L-4, user-msg starts >=8192 apart (<=32 kept)}, +live L+G.  vLLM: C={floor((P-1)/B)*B per resident prompt, junctions}, B=528..2096.  SGLang: C={prefill chunk ends on grid, decode multiples of 256, branching points, final donated}.  gufo: C={<=4 grid pts on 2048, stable boundary, full prompt, learned branches, live frontier}.  mlx-lm: C={system end, user-segment end (~L-11), finished L+G}.  mlx-vlm: off by default.

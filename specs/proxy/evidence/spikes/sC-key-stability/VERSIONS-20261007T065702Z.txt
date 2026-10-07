@@ -1,0 +1,11 @@
+versions recorded 20261007T065702Z (installed / latest at that time)
+node v24.15.0; python Python 3.12.8; uv uv 0.5.11 (c4d0caaee 2024-12-19)
+pi (spike-pi-v1 install) 1.0.3 / latest 1.0.4 (target is 1.0.3 per owner memory)
+pi-subagents "version":"0.76.0" / latest 0.76.1
+claude-code 2.1.291 (Claude Code) / latest 2.1.292 (npm)
+opencode-ai 1.18.35 / latest 1.18.35 (brew opencode 1.0.134 NOT used: stale)
+codex codex-cli 0.160.1 / latest 0.160.1
+@deepseek-ai/dsh "version":"0.2.0-rc.2" / latest 0.2.0-rc.2
+openai node "version":"7.30.0" / latest 7.30.0; @anthropic-ai/sdk "version":"0.131.0" / latest 0.131.0
+openai python 3.26.0 / anthropic python 1.11.0 (uv run --with, latest at run time)
+machine: Darwin Julians-MacBook-Air.local 25.6.0 Darwin Kernel Version 25.6.0: Fri Jul 31 19:18:43 PDT 2026; root:xnu-12377.161.14~5/RELEASE_ARM64_T8112 arm64

@@ -1,0 +1,446 @@
+# analysis 20261007T065922Z: for r in runs/run-* (non-INVALID): tools/analyze.py, tools/summary.py, tools/retries.py ; K5 = keyv1
+=== runs/run-20261007T062241Z-pi-s1-plain (6 requests)
+K1: 1 distinct over 5 requests: 497c8d96x5(seq 2-6,role/coder)
+K3: 1 distinct over 5 requests: 86851b1cx5(seq 2-6,role/coder)
+K4: 1 distinct over 5 requests: 26a27f52x5(seq 2-6,role/coder)
+K5: 1 distinct over 5 requests: 6b7e0a87x5(seq 2-6,role/coder)
+session-ish headers distinct: {'x-session-affinity': 1, 'x-client-request-id': 1, 'x-stainless-retry-count': 1}
+run-20261007T062241Z-pi-s1-plain: 5 tool-bearing, 0 side
+    {'conv': '01a11507-4a5', 'n': 5, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T062242Z-pi-s2-long (15 requests)
+K1: 1 distinct over 14 requests: 18242908x14(seq 2-15,role/thinker)
+K3: 1 distinct over 14 requests: 955b8337x14(seq 2-15,role/thinker)
+K4: 1 distinct over 14 requests: 26a27f52x14(seq 2-15,role/thinker)
+K5: 1 distinct over 14 requests: 0ba927c7x14(seq 2-15,role/thinker)
+session-ish headers distinct: {'x-session-affinity': 1, 'x-client-request-id': 1, 'x-stainless-retry-count': 1}
+run-20261007T062242Z-pi-s2-long: 14 tool-bearing, 0 side
+    {'conv': '01a11507-4e4', 'n': 14, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T062243Z-pi-s2b-long-noaff (14 requests)
+K1: 1 distinct over 13 requests: 81f6eb2ex13(seq 2-14,role/coder)
+K3: 1 distinct over 13 requests: d773e362x13(seq 2-14,role/coder)
+K4: 1 distinct over 13 requests: 26a27f52x13(seq 2-14,role/coder)
+K5: 1 distinct over 13 requests: 954cf7b2x13(seq 2-14,role/coder)
+session-ish headers distinct: {'x-stainless-retry-count': 1}
+run-20261007T062243Z-pi-s2b-long-noaff: 13 tool-bearing, 0 side
+    {'conv': 'inv:inv1', 'n': 13, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T062244Z-pi-s3-sessions (13 requests)
+K1: 2 distinct over 12 requests: 0e1afdb4x8(seq 2-13,role/coder); cbe8a339x4(seq 6-9,role/coder)
+K3: 2 distinct over 12 requests: af284152x8(seq 2-13,role/coder); bc00499ax4(seq 6-9,role/coder)
+K4: 1 distinct over 12 requests: 26a27f52x12(seq 2-13,role/coder)
+K5: 2 distinct over 12 requests: a50c4725x8(seq 2-13,role/coder); 30db974dx4(seq 6-9,role/coder)
+session-ish headers distinct: {'x-session-affinity': 3, 'x-client-request-id': 3, 'x-stainless-retry-count': 1}
+run-20261007T062244Z-pi-s3-sessions: 12 tool-bearing, 0 side
+    {'conv': '01a11507-565', 'n': 4, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+    {'conv': '01a11507-592', 'n': 4, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+    {'conv': '01a11507-5c6', 'n': 4, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T062245Z-pi-s3n-sessions-noaff (13 requests)
+K1: 2 distinct over 12 requests: 0e1afdb4x8(seq 2-13,role/coder); cbe8a339x4(seq 6-9,role/coder)
+K3: 2 distinct over 12 requests: af284152x8(seq 2-13,role/coder); bc00499ax4(seq 6-9,role/coder)
+K4: 1 distinct over 12 requests: 26a27f52x12(seq 2-13,role/coder)
+K5: 2 distinct over 12 requests: a50c4725x8(seq 2-13,role/coder); 30db974dx4(seq 6-9,role/coder)
+session-ish headers distinct: {'x-stainless-retry-count': 1}
+run-20261007T062245Z-pi-s3n-sessions-noaff: 12 tool-bearing, 0 side
+    {'conv': 'inv:A2', 'n': 12, 'K1': 'BREAK@6', 'K3': 'BREAK@6', 'K4': 'stable', 'K5': 'BREAK@6'}
+=== runs/run-20261007T062247Z-pi-s6-resume (10 requests)
+K1: 2 distinct over 9 requests: c1977f50x6(seq 2-7,role/coder); bf66d783x3(seq 8-10,role/coder)
+K3: 2 distinct over 9 requests: 3cccd626x6(seq 2-7,role/coder); 3475d35dx3(seq 8-10,role/coder)
+K4: 1 distinct over 9 requests: 26a27f52x9(seq 2-10,role/coder)
+K5: 2 distinct over 9 requests: 1c14962fx6(seq 2-7,role/coder); 35e168bex3(seq 8-10,role/coder)
+session-ish headers distinct: {'x-session-affinity': 2, 'x-client-request-id': 2, 'x-stainless-retry-count': 1}
+run-20261007T062247Z-pi-s6-resume: 9 tool-bearing, 0 side
+    {'conv': '01a11507-62a', 'n': 6, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+    {'conv': '01a11507-69f', 'n': 3, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T062248Z-pi-s7-retry (7 requests)
+K1: 1 distinct over 6 requests: de4d8134x6(seq 2-7,role/coder)
+K3: 1 distinct over 6 requests: 365678a0x6(seq 2-7,role/coder)
+K4: 1 distinct over 6 requests: 26a27f52x6(seq 2-7,role/coder)
+K5: 1 distinct over 6 requests: 908371a5x6(seq 2-7,role/coder)
+session-ish headers distinct: {'x-session-affinity': 1, 'x-client-request-id': 1, 'x-stainless-retry-count': 1}
+run-20261007T062248Z-pi-s7-retry: 4 tool-bearing, 0 side
+    {'conv': '01a11507-674', 'n': 4, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+seq 4 FAILED(503) t=2026-10-07T06:22:49.325Z; next seq 5 t=2026-10-07T06:22:51.340Z body_identical=True len=6676/6676; hdr_same=True; retry-count 0->0
+seq 5 FAILED(503) t=2026-10-07T06:22:51.340Z; next seq 6 t=2026-10-07T06:22:55.348Z body_identical=True len=6676/6676; hdr_same=True; retry-count 0->0
+=== runs/run-20261007T062249Z-pi-s8a-anthropic (5 requests)
+K1: 1 distinct over 4 requests: de4d8134x4(seq 2-5,role/frontier)
+K3: 1 distinct over 4 requests: 365678a0x4(seq 2-5,role/frontier)
+K4: 3 distinct over 4 requests: 5bc00467x1(seq 2-2,role/frontier); e957ccaax1(seq 3-3,role/frontier); 08adb05cx2(seq 4-5,role/frontier)
+K5: 1 distinct over 4 requests: 908371a5x4(seq 2-5,role/frontier)
+session-ish headers distinct: {'x-session-affinity': 1, 'x-stainless-retry-count': 1}
+run-20261007T062249Z-pi-s8a-anthropic: 4 tool-bearing, 0 side
+    {'conv': '01a11507-6b1', 'n': 4, 'K1': 'stable', 'K3': 'stable', 'K4': 'BREAK@3', 'K5': 'stable'}
+(eval):1: no matches found: runs/run-20261007T062653Z-pi-s4-compaction/*requests*.jsonl
+=== runs/run-20261007T063008Z-pi-s4-compaction (23 requests)
+K1: 6 distinct over 22 requests: a9bb907dx7(seq 2-8,role/coder); 29939d9cx1(seq 9-9,role/coder); 197ee327x4(seq 10-13,role/coder); e8440483x1(seq 14-14,role/coder); 90717062x8(seq 15-23,role/coder); deae97ffx1(seq 20-20,role/coder)
+K3: 6 distinct over 22 requests: 91e64c48x7(seq 2-8,role/coder); 39a03fefx1(seq 9-9,role/coder); 7e4486ffx4(seq 10-13,role/coder); ec81b4b3x1(seq 14-14,role/coder); 0558debdx8(seq 15-23,role/coder); 62afeec1x1(seq 20-20,role/coder)
+K4: 4 distinct over 22 requests: 26a27f52x19(seq 2-23,role/coder); ff35acc3x1(seq 9-9,role/coder); 763c99f2x1(seq 14-14,role/coder); cecd2829x1(seq 20-20,role/coder)
+K5: 6 distinct over 22 requests: f44ba820x7(seq 2-8,role/coder); c22ced07x1(seq 9-9,role/coder); 5b01532bx4(seq 10-13,role/coder); 77c58904x1(seq 14-14,role/coder); eef91d42x8(seq 15-23,role/coder); 5bdcb08ax1(seq 20-20,role/coder)
+session-ish headers distinct: {'x-session-affinity': 1, 'x-client-request-id': 1, 'x-stainless-retry-count': 1}
+run-20261007T063008Z-pi-s4-compaction: 19 tool-bearing, 3 side
+    {'conv': '01a1150e-213', 'n': 19, 'K1': 'BREAK@10', 'K3': 'BREAK@10', 'K4': 'stable', 'K5': 'BREAK@10'}
+=== runs/run-20261007T063059Z-cc-probe (4 requests)
+K1: 1 distinct over 3 requests: 637dccc9x3(seq 2-4,claude-opus-5-5)
+K3: 1 distinct over 3 requests: ef5996fcx3(seq 2-4,claude-opus-5-5)
+K4: 1 distinct over 3 requests: 28500fcfx3(seq 2-4,claude-opus-5-5)
+K5: 1 distinct over 3 requests: 00e3a45ax3(seq 2-4,claude-opus-5-5)
+session-ish headers distinct: {'x-claude-code-session-id': 1, 'x-stainless-retry-count': 1}
+run-20261007T063059Z-cc-probe: 3 tool-bearing, 0 side
+    {'conv': '67ef4f7e-603', 'n': 3, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T063144Z-cc-s1-plain (6 requests)
+K1: 1 distinct over 5 requests: faffe4d1x5(seq 2-6,claude-opus-5-5)
+K3: 1 distinct over 5 requests: cc6029c3x5(seq 2-6,claude-opus-5-5)
+K4: 1 distinct over 5 requests: 28500fcfx5(seq 2-6,claude-opus-5-5)
+K5: 1 distinct over 5 requests: da4a1647x5(seq 2-6,claude-opus-5-5)
+session-ish headers distinct: {'x-claude-code-session-id': 1, 'x-stainless-retry-count': 1}
+run-20261007T063144Z-cc-s1-plain: 5 tool-bearing, 0 side
+    {'conv': 'da7ef4c3-270', 'n': 5, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T063144Z-cc-s2-long (15 requests)
+K1: 1 distinct over 14 requests: 59602e71x14(seq 2-15,claude-opus-5-5)
+K3: 1 distinct over 14 requests: ae72a9d5x14(seq 2-15,claude-opus-5-5)
+K4: 1 distinct over 14 requests: 28500fcfx14(seq 2-15,claude-opus-5-5)
+K5: 1 distinct over 14 requests: ddcadf9dx14(seq 2-15,claude-opus-5-5)
+session-ish headers distinct: {'x-claude-code-session-id': 1, 'x-stainless-retry-count': 1}
+run-20261007T063144Z-cc-s2-long: 14 tool-bearing, 0 side
+    {'conv': '1ef359df-108', 'n': 14, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T063145Z-cc-s3-sessions (10 requests)
+K1: 2 distinct over 9 requests: bc2f9c92x6(seq 2-10,claude-opus-5-5); d3d3036cx3(seq 5-7,claude-opus-5-5)
+K3: 2 distinct over 9 requests: 60a057c2x6(seq 2-10,claude-opus-5-5); efaf5e22x3(seq 5-7,claude-opus-5-5)
+K4: 1 distinct over 9 requests: 28500fcfx9(seq 2-10,claude-opus-5-5)
+K5: 2 distinct over 9 requests: 9f11722ax6(seq 2-10,claude-opus-5-5); aafda618x3(seq 5-7,claude-opus-5-5)
+session-ish headers distinct: {'x-claude-code-session-id': 3, 'x-stainless-retry-count': 1}
+run-20261007T063145Z-cc-s3-sessions: 9 tool-bearing, 0 side
+    {'conv': '105460fe-dde', 'n': 3, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+    {'conv': '2109f1a9-44b', 'n': 3, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+    {'conv': '4d1dab90-329', 'n': 3, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T063146Z-cc-s5-subagent (10 requests)
+K1: 2 distinct over 9 requests: 22639f52x2(seq 2-10,claude-opus-5-5); 46cef9ccx7(seq 3-9,claude-opus-5-5)
+K3: 2 distinct over 9 requests: 424bedaax2(seq 2-10,claude-opus-5-5); 4b4e77aax7(seq 3-9,claude-opus-5-5)
+K4: 1 distinct over 9 requests: 28500fcfx9(seq 2-10,claude-opus-5-5)
+K5: 2 distinct over 9 requests: 0c200b00x2(seq 2-10,claude-opus-5-5); 411a99cex7(seq 3-9,claude-opus-5-5)
+session-ish headers distinct: {'x-claude-code-session-id': 1, 'x-stainless-retry-count': 1, 'x-claude-code-agent-id': 3}
+run-20261007T063146Z-cc-s5-subagent: 9 tool-bearing, 0 side
+    {'conv': '5f38ba7c-570', 'n': 2, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+    {'conv': '5f38ba7c-570/a8adf9', 'n': 2, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+    {'conv': '5f38ba7c-570/a6582a', 'n': 2, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+    {'conv': '5f38ba7c-570/a0a920', 'n': 3, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T063148Z-cc-s6-resume (10 requests)
+K1: 2 distinct over 9 requests: 90d61770x6(seq 2-7,claude-opus-5-5); 1a84a441x3(seq 8-10,claude-opus-5-5)
+K3: 2 distinct over 9 requests: bc8ef0b0x6(seq 2-7,claude-opus-5-5); f112ef9fx3(seq 8-10,claude-opus-5-5)
+K4: 1 distinct over 9 requests: 28500fcfx9(seq 2-10,claude-opus-5-5)
+K5: 2 distinct over 9 requests: af317598x6(seq 2-7,claude-opus-5-5); 59f50c0fx3(seq 8-10,claude-opus-5-5)
+session-ish headers distinct: {'x-claude-code-session-id': 2, 'x-stainless-retry-count': 1}
+run-20261007T063148Z-cc-s6-resume: 9 tool-bearing, 0 side
+    {'conv': '750bc14e-fd5', 'n': 6, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+    {'conv': 'c150d865-bf9', 'n': 3, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T063149Z-cc-s7-retry (7 requests)
+K1: 1 distinct over 6 requests: 3300e59dx6(seq 2-7,claude-opus-5-5)
+K3: 1 distinct over 6 requests: e44a550ex6(seq 2-7,claude-opus-5-5)
+K4: 1 distinct over 6 requests: 28500fcfx6(seq 2-7,claude-opus-5-5)
+K5: 1 distinct over 6 requests: 7df80a23x6(seq 2-7,claude-opus-5-5)
+session-ish headers distinct: {'x-claude-code-session-id': 1, 'x-stainless-retry-count': 1}
+run-20261007T063149Z-cc-s7-retry: 4 tool-bearing, 0 side
+    {'conv': '8a29ff0c-ef1', 'n': 4, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+seq 3 FAILED(503) t=2026-10-07T06:31:53.224Z; next seq 4 t=2026-10-07T06:31:53.844Z body_identical=True len=63080/63080; hdr_same=True; retry-count 0->0
+seq 4 FAILED(503) t=2026-10-07T06:31:53.844Z; next seq 5 t=2026-10-07T06:31:54.963Z body_identical=True len=63080/63080; hdr_same=True; retry-count 0->0
+=== runs/run-20261007T063150Z-cc-s4-compact (8 requests)
+K1: 2 distinct over 7 requests: f016185dx4(seq 2-5,claude-opus-5-5); cb47658fx3(seq 6-8,claude-opus-5-5)
+K3: 2 distinct over 7 requests: 5d1b09c9x4(seq 2-5,claude-opus-5-5); 8bf3abbbx3(seq 6-8,claude-opus-5-5)
+K4: 2 distinct over 7 requests: 28500fcfx4(seq 2-5,claude-opus-5-5); 6390be8ex3(seq 6-8,claude-opus-5-5)
+K5: 2 distinct over 7 requests: 217f4325x4(seq 2-5,claude-opus-5-5); 9becc88bx3(seq 6-8,claude-opus-5-5)
+session-ish headers distinct: {'x-claude-code-session-id': 1, 'x-stainless-retry-count': 1}
+run-20261007T063150Z-cc-s4-compact: 7 tool-bearing, 0 side
+    {'conv': 'fb3839a7-40e', 'n': 7, 'K1': 'BREAK@6', 'K3': 'BREAK@6', 'K4': 'BREAK@6', 'K5': 'BREAK@6'}
+=== runs/run-20261007T063643Z-cc-s9-volatile (6 requests)
+K1: 1 distinct over 5 requests: 7799e982x5(seq 2-6,claude-opus-5-5)
+K3: 1 distinct over 5 requests: 00da7fd2x5(seq 2-6,claude-opus-5-5)
+K4: 1 distinct over 5 requests: 1ac63031x5(seq 2-6,claude-opus-5-5)
+K5: 1 distinct over 5 requests: 31ec7825x5(seq 2-6,claude-opus-5-5)
+session-ish headers distinct: {'x-claude-code-session-id': 1, 'x-stainless-retry-count': 1}
+run-20261007T063643Z-cc-s9-volatile: 5 tool-bearing, 0 side
+    {'conv': '601ed531-536', 'n': 5, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T063708Z-cc-s10-resume-gitchange (7 requests)
+K1: 1 distinct over 6 requests: b2c93274x6(seq 2-7,claude-opus-5-5)
+K3: 1 distinct over 6 requests: 9313d28ex6(seq 2-7,claude-opus-5-5)
+K4: 1 distinct over 6 requests: 943487dbx6(seq 2-7,claude-opus-5-5)
+K5: 1 distinct over 6 requests: 56efeb6cx6(seq 2-7,claude-opus-5-5)
+session-ish headers distinct: {'x-claude-code-session-id': 1, 'x-stainless-retry-count': 1}
+run-20261007T063708Z-cc-s10-resume-gitchange: 6 tool-bearing, 0 side
+    {'conv': 'fecad647-382', 'n': 6, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T063731Z-cc-s8-tui (11 requests)
+K1: 3 distinct over 8 requests: c3cc9d83x1(seq 4-4,claude-opus-5-5); 0fc743b4x6(seq 5-11,claude-opus-5-5); df3edbd6x1(seq 8-8,claude-opus-5-5)
+K3: 3 distinct over 8 requests: b7b24addx1(seq 4-4,claude-opus-5-5); 5d1b09c9x6(seq 5-11,claude-opus-5-5); 6bbf223bx1(seq 8-8,claude-opus-5-5)
+K4: 3 distinct over 8 requests: a0b10fc7x1(seq 4-4,claude-opus-5-5); 28500fcfx6(seq 5-11,claude-opus-5-5); dd7ff322x1(seq 8-8,claude-opus-5-5)
+K5: 3 distinct over 8 requests: cdafe45ax1(seq 4-4,claude-opus-5-5); d9a6e9c9x6(seq 5-11,claude-opus-5-5); 351eddddx1(seq 8-8,claude-opus-5-5)
+session-ish headers distinct: {'x-claude-code-session-id': 1, 'x-stainless-retry-count': 1}
+run-20261007T063731Z-cc-s8-tui: 6 tool-bearing, 2 side
+    {'conv': '4668ff8b-fe0', 'n': 6, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T064202Z-cc-s8-tui (0 requests)
+run-20261007T064202Z-cc-s8-tui: 0 tool-bearing, 0 side
+=== runs/run-20261007T064539Z-cc-s4b-tui-compact (10 requests)
+K1: 4 distinct over 9 requests: c3cc9d83x1(seq 2-2,claude-opus-5-5); 4a3c83d6x4(seq 3-6,claude-opus-5-5); f459ecbex1(seq 7-7,claude-opus-5-5); c51b063fx3(seq 8-10,claude-opus-5-5)
+K3: 4 distinct over 9 requests: b7b24addx1(seq 2-2,claude-opus-5-5); 5d1b09c9x4(seq 3-6,claude-opus-5-5); 67d1eb80x1(seq 7-7,claude-opus-5-5); a4ad97f1x3(seq 8-10,claude-opus-5-5)
+K4: 4 distinct over 9 requests: a0b10fc7x1(seq 2-2,claude-opus-5-5); 28500fcfx4(seq 3-6,claude-opus-5-5); 6e706c93x1(seq 7-7,claude-opus-5-5); 5d621154x3(seq 8-10,claude-opus-5-5)
+K5: 4 distinct over 9 requests: cdafe45ax1(seq 2-2,claude-opus-5-5); 3479a375x4(seq 3-6,claude-opus-5-5); bd910290x1(seq 7-7,claude-opus-5-5); facfe062x3(seq 8-10,claude-opus-5-5)
+session-ish headers distinct: {'x-claude-code-session-id': 1, 'x-stainless-retry-count': 1}
+run-20261007T064539Z-cc-s4b-tui-compact: 7 tool-bearing, 2 side
+    {'conv': '708f9131-f3b', 'n': 7, 'K1': 'BREAK@8', 'K3': 'BREAK@8', 'K4': 'BREAK@8', 'K5': 'BREAK@8'}
+=== runs/run-20261007T064615Z-oc-probe (6 requests)
+K1: 2 distinct over 5 requests: c6ee53ccx1(seq 2-2,coder); f76186b1x4(seq 3-6,coder)
+K3: 2 distinct over 5 requests: 343ad246x1(seq 2-2,coder); 749eb162x4(seq 3-6,coder)
+K4: 2 distinct over 5 requests: 389a802cx1(seq 2-2,coder); 07164748x4(seq 3-6,coder)
+K5: 2 distinct over 5 requests: 20861ad7x1(seq 2-2,coder); b53d5b0dx4(seq 3-6,coder)
+session-ish headers distinct: {'x-session-affinity': 1, 'x-session-id': 1}
+run-20261007T064615Z-oc-probe: 4 tool-bearing, 1 side
+    {'conv': 'ses_eeae3190', 'n': 4, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T064642Z-oc-s1-plain (7 requests)
+K1: 2 distinct over 6 requests: c6ee53ccx1(seq 2-2,coder); 79070192x5(seq 3-7,coder)
+K3: 2 distinct over 6 requests: 343ad246x1(seq 2-2,coder); f6c60c88x5(seq 3-7,coder)
+K4: 2 distinct over 6 requests: 389a802cx1(seq 2-2,coder); 07164748x5(seq 3-7,coder)
+K5: 2 distinct over 6 requests: 20861ad7x1(seq 2-2,coder); 37056bdex5(seq 3-7,coder)
+session-ish headers distinct: {'x-session-affinity': 1, 'x-session-id': 1}
+run-20261007T064642Z-oc-s1-plain: 5 tool-bearing, 1 side
+    {'conv': 'ses_eeae2b3c', 'n': 5, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T064642Z-oc-s2-long (16 requests)
+K1: 2 distinct over 15 requests: c6ee53ccx1(seq 2-2,coder); f6f247b2x14(seq 3-16,coder)
+K3: 2 distinct over 15 requests: 343ad246x1(seq 2-2,coder); ed14f96ex14(seq 3-16,coder)
+K4: 2 distinct over 15 requests: 389a802cx1(seq 2-2,coder); 07164748x14(seq 3-16,coder)
+K5: 2 distinct over 15 requests: 20861ad7x1(seq 2-2,coder); 364610f0x14(seq 3-16,coder)
+session-ish headers distinct: {'x-session-affinity': 1, 'x-session-id': 1}
+run-20261007T064642Z-oc-s2-long: 14 tool-bearing, 1 side
+    {'conv': 'ses_eeae2adc', 'n': 14, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T064643Z-oc-s3-sessions (13 requests)
+K1: 3 distinct over 12 requests: c6ee53ccx3(seq 2-10,coder); 840bc6bax6(seq 3-13,coder); 84d2aaffx3(seq 7-9,coder)
+K3: 3 distinct over 12 requests: 343ad246x3(seq 2-10,coder); a25e5fd2x6(seq 3-13,coder); 1756be1bx3(seq 7-9,coder)
+K4: 2 distinct over 12 requests: 389a802cx3(seq 2-10,coder); 07164748x9(seq 3-13,coder)
+K5: 3 distinct over 12 requests: 20861ad7x3(seq 2-10,coder); 0e2ba006x6(seq 3-13,coder); a3a81a58x3(seq 7-9,coder)
+session-ish headers distinct: {'x-session-affinity': 3, 'x-session-id': 3}
+run-20261007T064643Z-oc-s3-sessions: 9 tool-bearing, 3 side
+    {'conv': 'ses_eeae2a19', 'n': 3, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+    {'conv': 'ses_eeae264a', 'n': 3, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+    {'conv': 'ses_eeae23f6', 'n': 3, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T064644Z-oc-s4-compaction (1005 requests)
+K1: 8 distinct over 1004 requests: c6ee53ccx1(seq 2-2,coder); 5975d99cx1(seq 3-3,coder); 7ea93981x1(seq 4-4,coder); 4853dc29x501(seq 5-1005,coder); 37e9058fx11(seq 6-30,coder); 6e927d1bx2(seq 8-24,coder); 25145639x1(seq 32-32,coder); ceab9585x486(seq 34-1004,coder)
+K3: 8 distinct over 1004 requests: 343ad246x1(seq 2-2,coder); be2f3c7ax1(seq 3-3,coder); 3ef99f9dx1(seq 4-4,coder); 66f7888bx501(seq 5-1005,coder); 54cb4906x11(seq 6-30,coder); 4ff97d04x2(seq 8-24,coder); 7b7d03d8x1(seq 32-32,coder); ddf170b1x486(seq 34-1004,coder)
+K4: 3 distinct over 1004 requests: 389a802cx1(seq 2-2,coder); 07164748x502(seq 3-1005,coder); 1b9c7095x501(seq 4-1004,coder)
+K5: 8 distinct over 1004 requests: 20861ad7x1(seq 2-2,coder); e7d50b5ax1(seq 3-3,coder); 1dcc936fx1(seq 4-4,coder); 0d813c45x501(seq 5-1005,coder); c16702b2x11(seq 6-30,coder); a8e9be8fx2(seq 8-24,coder); 964742a8x1(seq 32-32,coder); 824a7540x486(seq 34-1004,coder)
+session-ish headers distinct: {'x-session-affinity': 1, 'x-session-id': 1}
+run-20261007T064644Z-oc-s4-compaction: 502 tool-bearing, 502 side
+    {'conv': 'ses_eeae2944', 'n': 502, 'K1': 'BREAK@5', 'K3': 'BREAK@5', 'K4': 'stable', 'K5': 'BREAK@5'}
+=== runs/run-20261007T064645Z-oc-s5-subagent (8 requests)
+K1: 3 distinct over 7 requests: c6ee53ccx1(seq 2-2,coder); 59bf2840x3(seq 3-8,coder); 8004051fx3(seq 4-6,coder)
+K3: 3 distinct over 7 requests: 343ad246x1(seq 2-2,coder); 0577bd5ex3(seq 3-8,coder); 1db97fdbx3(seq 4-6,coder)
+K4: 2 distinct over 7 requests: 389a802cx1(seq 2-2,coder); 07164748x6(seq 3-8,coder)
+K5: 3 distinct over 7 requests: 20861ad7x1(seq 2-2,coder); 476f2910x3(seq 3-8,coder); d8b4f8bbx3(seq 4-6,coder)
+session-ish headers distinct: {'x-session-affinity': 2, 'x-session-id': 2}
+run-20261007T064645Z-oc-s5-subagent: 6 tool-bearing, 1 side
+    {'conv': 'ses_eeae286a', 'n': 3, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+    {'conv': 'ses_eeae2702', 'n': 3, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T064646Z-oc-s6-resume (12 requests)
+K1: 3 distinct over 11 requests: c6ee53ccx2(seq 2-9,coder); e6719673x6(seq 3-8,coder); d2152f13x3(seq 10-12,coder)
+K3: 3 distinct over 11 requests: 343ad246x2(seq 2-9,coder); f06441c4x6(seq 3-8,coder); 5b1d74f9x3(seq 10-12,coder)
+K4: 2 distinct over 11 requests: 389a802cx2(seq 2-9,coder); 07164748x9(seq 3-12,coder)
+K5: 3 distinct over 11 requests: 20861ad7x2(seq 2-9,coder); bd3cd57fx6(seq 3-8,coder); ff67d0fax3(seq 10-12,coder)
+session-ish headers distinct: {'x-session-affinity': 2, 'x-session-id': 2}
+run-20261007T064646Z-oc-s6-resume: 9 tool-bearing, 2 side
+    {'conv': 'ses_eeae281c', 'n': 6, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+    {'conv': 'ses_eeae2321', 'n': 3, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T064648Z-oc-s7-retry (8 requests)
+K1: 2 distinct over 7 requests: c6ee53ccx1(seq 2-2,coder); edb1e878x6(seq 3-8,coder)
+K3: 2 distinct over 7 requests: 343ad246x1(seq 2-2,coder); bd24ae90x6(seq 3-8,coder)
+K4: 2 distinct over 7 requests: 389a802cx1(seq 2-2,coder); 07164748x6(seq 3-8,coder)
+K5: 2 distinct over 7 requests: 20861ad7x1(seq 2-2,coder); e066a0fax6(seq 3-8,coder)
+session-ish headers distinct: {'x-session-affinity': 1, 'x-session-id': 1}
+run-20261007T064648Z-oc-s7-retry: 4 tool-bearing, 1 side
+    {'conv': 'ses_eeae2804', 'n': 4, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+seq 4 FAILED(503) t=2026-10-07T06:47:03.718Z; next seq 5 t=2026-10-07T06:47:06.004Z body_identical=True len=31033/31033; hdr_same=True; retry-count None->None
+seq 5 FAILED(503) t=2026-10-07T06:47:06.004Z; next seq 6 t=2026-10-07T06:47:10.377Z body_identical=True len=31033/31033; hdr_same=True; retry-count None->None
+=== runs/run-20261007T064649Z-oc-s8a-anthropic (6 requests)
+K1: 2 distinct over 5 requests: 1d1aa2a2x1(seq 2-2,frontier); ff2f779ex4(seq 3-6,frontier)
+K3: 2 distinct over 5 requests: ac64fc13x1(seq 2-2,frontier); bd24ae90x4(seq 3-6,frontier)
+K4: 4 distinct over 5 requests: 7b7d992ex1(seq 2-2,frontier); 27ef6d76x1(seq 3-3,frontier); e8389be4x1(seq 4-4,frontier); 9a1a3b85x2(seq 5-6,frontier)
+K5: 2 distinct over 5 requests: 96694427x1(seq 2-2,frontier); e066a0fax4(seq 3-6,frontier)
+session-ish headers distinct: {'x-session-affinity': 1, 'x-session-id': 1}
+run-20261007T064649Z-oc-s8a-anthropic: 4 tool-bearing, 1 side
+    {'conv': 'ses_eeae27ca', 'n': 4, 'K1': 'stable', 'K3': 'stable', 'K4': 'BREAK@4', 'K5': 'stable'}
+=== runs/run-20261007T064904Z-dsh-probe (6 requests)
+K1: 2 distinct over 5 requests: 23e0227ex4(seq 2-6,fake-model); 4160edeex1(seq 3-3,fake-model)
+K3: 2 distinct over 5 requests: f6394211x4(seq 2-6,fake-model); 61f62d8ax1(seq 3-3,fake-model)
+K4: 2 distinct over 5 requests: ef162f84x4(seq 2-6,fake-model); 245a6cebx1(seq 3-3,fake-model)
+K5: 2 distinct over 5 requests: 909593c9x4(seq 2-6,fake-model); 3562cbd7x1(seq 3-3,fake-model)
+session-ish headers distinct: {'x-stainless-retry-count': 1}
+run-20261007T064904Z-dsh-probe: 4 tool-bearing, 1 side
+    {'conv': 'inv:inv1', 'n': 4, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T064941Z-dsh-s1-plain (7 requests)
+K1: 2 distinct over 6 requests: 497732c6x5(seq 2-7,fake-model); e050e8ffx1(seq 3-3,fake-model)
+K3: 2 distinct over 6 requests: 86851b1cx5(seq 2-7,fake-model); 0f345364x1(seq 3-3,fake-model)
+K4: 2 distinct over 6 requests: ef162f84x5(seq 2-7,fake-model); 245a6cebx1(seq 3-3,fake-model)
+K5: 2 distinct over 6 requests: 3f16ab97x5(seq 2-7,fake-model); 51edc7dbx1(seq 3-3,fake-model)
+session-ish headers distinct: {'x-stainless-retry-count': 1}
+run-20261007T064941Z-dsh-s1-plain: 5 tool-bearing, 1 side
+    {'conv': 'inv:inv1', 'n': 5, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T064941Z-dsh-s2-long (16 requests)
+K1: 2 distinct over 15 requests: 1bc58e1ax14(seq 2-16,fake-model); d705fb1cx1(seq 3-3,fake-model)
+K3: 2 distinct over 15 requests: 955b8337x14(seq 2-16,fake-model); 5519bb4fx1(seq 3-3,fake-model)
+K4: 2 distinct over 15 requests: ef162f84x14(seq 2-16,fake-model); 245a6cebx1(seq 3-3,fake-model)
+K5: 2 distinct over 15 requests: c34538f6x14(seq 2-16,fake-model); 7cbbf8afx1(seq 3-3,fake-model)
+session-ish headers distinct: {'x-stainless-retry-count': 1}
+run-20261007T064941Z-dsh-s2-long: 14 tool-bearing, 1 side
+    {'conv': 'inv:inv1', 'n': 14, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T064942Z-dsh-s3-sessions (13 requests)
+K1: 4 distinct over 12 requests: 325daf63x6(seq 2-13,fake-model); 9851c67bx2(seq 3-11,fake-model); cc116f41x3(seq 6-9,fake-model); 9f197323x1(seq 7-7,fake-model)
+K3: 4 distinct over 12 requests: af284152x6(seq 2-13,fake-model); 3fa98626x2(seq 3-11,fake-model); bc00499ax3(seq 6-9,fake-model); 0eb3ab8ax1(seq 7-7,fake-model)
+K4: 2 distinct over 12 requests: ef162f84x9(seq 2-13,fake-model); 245a6cebx3(seq 3-11,fake-model)
+K5: 4 distinct over 12 requests: 06c2dfa1x6(seq 2-13,fake-model); 081ba431x2(seq 3-11,fake-model); c03f03abx3(seq 6-9,fake-model); 7fe2d802x1(seq 7-7,fake-model)
+session-ish headers distinct: {'x-stainless-retry-count': 1}
+run-20261007T064942Z-dsh-s3-sessions: 9 tool-bearing, 3 side
+    {'conv': 'inv:A1', 'n': 3, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+    {'conv': 'inv:B1', 'n': 3, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+    {'conv': 'inv:A2', 'n': 3, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T064944Z-dsh-s5-subagent (8 requests)
+K1: 3 distinct over 7 requests: c22fcd14x3(seq 2-8,fake-model); e7ef1117x1(seq 3-3,fake-model); ba7b0c5ex3(seq 4-6,fake-model)
+K3: 3 distinct over 7 requests: f43e5723x3(seq 2-8,fake-model); 12194427x1(seq 3-3,fake-model); 1db97fdbx3(seq 4-6,fake-model)
+K4: 2 distinct over 7 requests: ef162f84x6(seq 2-8,fake-model); 245a6cebx1(seq 3-3,fake-model)
+K5: 3 distinct over 7 requests: 9d0b3aefx3(seq 2-8,fake-model); 6d7189a0x1(seq 3-3,fake-model); 08636946x3(seq 4-6,fake-model)
+session-ish headers distinct: {'x-stainless-retry-count': 1}
+run-20261007T064944Z-dsh-s5-subagent: 6 tool-bearing, 1 side
+    {'conv': 'inv:inv1', 'n': 6, 'K1': 'BREAK@4', 'K3': 'BREAK@4', 'K4': 'stable', 'K5': 'BREAK@4'}
+=== runs/run-20261007T064945Z-dsh-s5b-subagent-bg (6 requests)
+K1: 3 distinct over 5 requests: 0513bdc7x3(seq 2-6,fake-model); e7ef1117x1(seq 3-3,fake-model); fbb91833x1(seq 5-5,fake-model)
+K3: 3 distinct over 5 requests: f43e5723x3(seq 2-6,fake-model); 12194427x1(seq 3-3,fake-model); 678b6913x1(seq 5-5,fake-model)
+K4: 2 distinct over 5 requests: ef162f84x4(seq 2-6,fake-model); 245a6cebx1(seq 3-3,fake-model)
+K5: 3 distinct over 5 requests: 22e7bc7ax3(seq 2-6,fake-model); 6d7189a0x1(seq 3-3,fake-model); aa26255dx1(seq 5-5,fake-model)
+session-ish headers distinct: {'x-stainless-retry-count': 1}
+run-20261007T064945Z-dsh-s5b-subagent-bg: 4 tool-bearing, 1 side
+    {'conv': 'inv:inv1', 'n': 4, 'K1': 'BREAK@5', 'K3': 'BREAK@5', 'K4': 'stable', 'K5': 'BREAK@5'}
+=== runs/run-20261007T064946Z-dsh-s6-resume (12 requests)
+K1: 4 distinct over 11 requests: 9c5ff197x6(seq 2-8,fake-model); 8ac01434x1(seq 3-3,fake-model); 05d18d17x3(seq 9-12,fake-model); 8dde989ex1(seq 10-10,fake-model)
+K3: 4 distinct over 11 requests: 3cccd626x6(seq 2-8,fake-model); f16f9d08x1(seq 3-3,fake-model); 3475d35dx3(seq 9-12,fake-model); bf0714edx1(seq 10-10,fake-model)
+K4: 2 distinct over 11 requests: ef162f84x9(seq 2-12,fake-model); 245a6cebx2(seq 3-10,fake-model)
+K5: 4 distinct over 11 requests: 9505c51ax6(seq 2-8,fake-model); c23555d1x1(seq 3-3,fake-model); 50cdf9afx3(seq 9-12,fake-model); 3eced504x1(seq 10-10,fake-model)
+session-ish headers distinct: {'x-stainless-retry-count': 1}
+run-20261007T064946Z-dsh-s6-resume: 9 tool-bearing, 2 side
+    {'conv': 'inv:inv1', 'n': 3, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+    {'conv': 'inv:inv2', 'n': 3, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+    {'conv': 'inv:inv3', 'n': 3, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T064948Z-dsh-s7-retry (8 requests)
+K1: 2 distinct over 7 requests: 5bb8f969x6(seq 2-8,fake-model); 0b63fbb4x1(seq 3-3,fake-model)
+K3: 2 distinct over 7 requests: 365678a0x6(seq 2-8,fake-model); 0e15b5e3x1(seq 3-3,fake-model)
+K4: 2 distinct over 7 requests: ef162f84x6(seq 2-8,fake-model); 245a6cebx1(seq 3-3,fake-model)
+K5: 2 distinct over 7 requests: 4b2d475bx6(seq 2-8,fake-model); dc5ff85fx1(seq 3-3,fake-model)
+session-ish headers distinct: {'x-stainless-retry-count': 1}
+run-20261007T064948Z-dsh-s7-retry: 4 tool-bearing, 1 side
+    {'conv': 'inv:inv1', 'n': 4, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+seq 4 FAILED(503) t=2026-10-07T06:49:51.868Z; next seq 5 t=2026-10-07T06:49:52.456Z body_identical=True len=22884/22884; hdr_same=True; retry-count 0->0
+seq 5 FAILED(503) t=2026-10-07T06:49:52.456Z; next seq 6 t=2026-10-07T06:49:53.565Z body_identical=True len=22884/22884; hdr_same=True; retry-count 0->0
+=== runs/run-20261007T065004Z-dsh-s4-compaction (19 requests)
+K1: 2 distinct over 18 requests: e2852a5ax17(seq 2-19,fake-model); 1121b0c5x1(seq 3-3,fake-model)
+K3: 2 distinct over 18 requests: 91e64c48x17(seq 2-19,fake-model); a506a53bx1(seq 3-3,fake-model)
+K4: 2 distinct over 18 requests: ef162f84x17(seq 2-19,fake-model); 245a6cebx1(seq 3-3,fake-model)
+K5: 2 distinct over 18 requests: e3f390f4x17(seq 2-19,fake-model); a8ced4e3x1(seq 3-3,fake-model)
+session-ish headers distinct: {'x-stainless-retry-count': 1}
+run-20261007T065004Z-dsh-s4-compaction: 17 tool-bearing, 1 side
+    {'conv': 'inv:inv1', 'n': 17, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T065021Z-dsh-s4-compaction (43 requests)
+K1: 3 distinct over 42 requests: e2852a5ax6(seq 2-8,fake-model); 1121b0c5x1(seq 3-3,fake-model); 5bbd61e5x35(seq 9-43,fake-model)
+K3: 3 distinct over 42 requests: 91e64c48x6(seq 2-8,fake-model); a506a53bx1(seq 3-3,fake-model); 4644d16fx35(seq 9-43,fake-model)
+K4: 2 distinct over 42 requests: ef162f84x41(seq 2-43,fake-model); 245a6cebx1(seq 3-3,fake-model)
+K5: 3 distinct over 42 requests: e3f390f4x6(seq 2-8,fake-model); a8ced4e3x1(seq 3-3,fake-model); 783673b4x35(seq 9-43,fake-model)
+session-ish headers distinct: {'x-stainless-retry-count': 1}
+run-20261007T065021Z-dsh-s4-compaction: 41 tool-bearing, 1 side
+    {'conv': 'inv:inv1', 'n': 41, 'K1': 'BREAK@9', 'K3': 'BREAK@9', 'K4': 'stable', 'K5': 'BREAK@9'}
+=== runs/run-20261007T065107Z-pisub-fg (6 requests)
+K1: 2 distinct over 5 requests: 35df1106x2(seq 2-6,role/orch); 412a1c2dx3(seq 3-5,role/coder)
+K3: 2 distinct over 5 requests: 586c2080x2(seq 2-6,role/orch); 565609d9x3(seq 3-5,role/coder)
+K4: 2 distinct over 5 requests: be187453x2(seq 2-6,role/orch); 1b175855x3(seq 3-5,role/coder)
+K5: 2 distinct over 5 requests: e4c39e71x2(seq 2-6,role/orch); 7fcc8aa6x3(seq 3-5,role/coder)
+session-ish headers distinct: {'x-session-affinity': 2, 'x-client-request-id': 2, 'x-stainless-retry-count': 1}
+run-20261007T065107Z-pisub-fg: 5 tool-bearing, 0 side
+    {'conv': '01a11521-67c', 'n': 2, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+    {'conv': '01a11521-9e2', 'n': 3, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T065108Z-pisub-async (7 requests)
+K1: 2 distinct over 6 requests: 3795b583x3(seq 2-7,role/orch); 412a1c2dx3(seq 4-6,role/coder)
+K3: 2 distinct over 6 requests: 2abe92f0x3(seq 2-7,role/orch); 565609d9x3(seq 4-6,role/coder)
+K4: 2 distinct over 6 requests: be187453x3(seq 2-7,role/orch); 1b175855x3(seq 4-6,role/coder)
+K5: 2 distinct over 6 requests: 1bcc7ae6x3(seq 2-7,role/orch); 7fcc8aa6x3(seq 4-6,role/coder)
+session-ish headers distinct: {'x-session-affinity': 2, 'x-client-request-id': 2, 'x-stainless-retry-count': 1}
+run-20261007T065108Z-pisub-async: 6 tool-bearing, 0 side
+    {'conv': '01a11521-6c2', 'n': 3, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+    {'conv': '01a11521-9f3', 'n': 3, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T065109Z-pisub-par (7 requests)
+K1: 3 distinct over 6 requests: 87f6aabax2(seq 2-7,role/orch); 0b8d0e5ax3(seq 3-6,role/coder); 1522c89bx1(seq 4-4,role/coder)
+K3: 3 distinct over 6 requests: fad5d88ex2(seq 2-7,role/orch); d700e5d4x3(seq 3-6,role/coder); 84fe203cx1(seq 4-4,role/coder)
+K4: 2 distinct over 6 requests: be187453x2(seq 2-7,role/orch); 1b175855x4(seq 3-6,role/coder)
+K5: 3 distinct over 6 requests: 06cf5249x2(seq 2-7,role/orch); 2918a78fx3(seq 3-6,role/coder); 3dea49d5x1(seq 4-4,role/coder)
+session-ish headers distinct: {'x-session-affinity': 3, 'x-client-request-id': 3, 'x-stainless-retry-count': 1}
+run-20261007T065109Z-pisub-par: 6 tool-bearing, 0 side
+    {'conv': '01a11521-714', 'n': 2, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+    {'conv': '01a11521-a60', 'n': 3, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+    {'conv': '01a11521-a68', 'n': 1, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T065145Z-codex-s1-plain (2 requests)
+K1: 1 distinct over 1 requests: 5954b2dex1(seq 2-2,fake-model)
+K3: 1 distinct over 1 requests: 9d7eb970x1(seq 2-2,fake-model)
+K4: 1 distinct over 1 requests: 59267616x1(seq 2-2,fake-model)
+K5: 1 distinct over 1 requests: c4df2944x1(seq 2-2,fake-model)
+session-ish headers distinct: {'session-id': 1, 'x-client-request-id': 1, 'x-codex-window-id': 1}
+run-20261007T065145Z-codex-s1-plain: 1 tool-bearing, 0 side
+    {'conv': '01a11521-ec5', 'n': 1, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T065155Z-codex-s1-plain (5 requests)
+K1: 1 distinct over 4 requests: 2159e703x4(seq 2-5,fake-model)
+K3: 1 distinct over 4 requests: 9d7eb970x4(seq 2-5,fake-model)
+K4: 1 distinct over 4 requests: 1dbedb34x4(seq 2-5,fake-model)
+K5: 1 distinct over 4 requests: c4df2944x4(seq 2-5,fake-model)
+session-ish headers distinct: {'session-id': 1, 'x-client-request-id': 1, 'x-codex-window-id': 1}
+run-20261007T065155Z-codex-s1-plain: 4 tool-bearing, 0 side
+    {'conv': '01a11522-159', 'n': 4, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T065156Z-codex-s3-sessions (10 requests)
+K1: 1 distinct over 9 requests: 63f05c8fx9(seq 2-10,fake-model)
+K3: 1 distinct over 9 requests: 9d7eb970x9(seq 2-10,fake-model)
+K4: 3 distinct over 9 requests: 54125a13x3(seq 2-4,fake-model); 38007b58x3(seq 5-7,fake-model); 54404644x3(seq 8-10,fake-model)
+K5: 2 distinct over 9 requests: ff0ab9c0x6(seq 2-10,fake-model); c60ecde5x3(seq 5-7,fake-model)
+session-ish headers distinct: {'session-id': 3, 'x-client-request-id': 3, 'x-codex-window-id': 3}
+run-20261007T065156Z-codex-s3-sessions: 9 tool-bearing, 0 side
+    {'conv': '01a11522-1a6', 'n': 3, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+    {'conv': '01a11522-27d', 'n': 3, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+    {'conv': '01a11522-325', 'n': 3, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T065157Z-codex-s6-resume (7 requests)
+K1: 1 distinct over 6 requests: f4004f42x6(seq 2-7,fake-model)
+K3: 1 distinct over 6 requests: 9d7eb970x6(seq 2-7,fake-model)
+K4: 1 distinct over 6 requests: e48f3361x6(seq 2-7,fake-model)
+K5: 1 distinct over 6 requests: dbbf56d4x6(seq 2-7,fake-model)
+session-ish headers distinct: {'session-id': 1, 'x-client-request-id': 1, 'x-codex-window-id': 1}
+run-20261007T065157Z-codex-s6-resume: 6 tool-bearing, 0 side
+    {'conv': '01a11522-1f4', 'n': 6, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T065304Z-sdk-node (9 requests)
+K1: 1 distinct over 8 requests: 29c86afcx8(seq 2-9,m)
+K3: 1 distinct over 8 requests: 71d5b298x8(seq 2-9,m)
+K4: 6 distinct over 8 requests: a25a3a15x1(seq 2-2,m); 5fd28990x3(seq 3-5,m); 0efd1957x1(seq 6-6,m); fa177d19x1(seq 7-7,m); 72bc44b7x1(seq 8-8,m); b471e3bdx1(seq 9-9,m)
+K5: 1 distinct over 8 requests: 34502ad6x8(seq 2-9,m)
+session-ish headers distinct: {'x-stainless-retry-count': 3}
+run-20261007T065304Z-sdk-node: 0 tool-bearing, 6 side
+seq 3 FAILED(503) t=2026-10-07T06:53:05.637Z; next seq 4 t=2026-10-07T06:53:06.129Z body_identical=True len=184/184; hdr_same=False; retry-count 0->1
+seq 4 FAILED(503) t=2026-10-07T06:53:06.129Z; next seq 5 t=2026-10-07T06:53:07.092Z body_identical=True len=184/184; hdr_same=False; retry-count 1->2
+=== runs/run-20261007T065315Z-sdk-py (8 requests)
+K1: 1 distinct over 7 requests: 29c86afcx7(seq 2-8,m)
+K3: 1 distinct over 7 requests: 71d5b298x7(seq 2-8,m)
+K4: 6 distinct over 7 requests: a25a3a15x1(seq 2-2,m); 5fd28990x2(seq 3-4,m); 0efd1957x1(seq 5-5,m); fa177d19x1(seq 6-6,m); 7c159c2cx1(seq 7-7,m); 9806aa72x1(seq 8-8,m)
+K5: 1 distinct over 7 requests: 34502ad6x7(seq 2-8,m)
+session-ish headers distinct: {'x-stainless-retry-count': 2}
+run-20261007T065315Z-sdk-py: 0 tool-bearing, 6 side
+seq 3 FAILED(503) t=2026-10-07T06:53:19.313Z; next seq 4 t=2026-10-07T06:53:19.753Z body_identical=True len=184/184; hdr_same=False; retry-count 0->1
+=== runs/run-20261007T065526Z-cc-s5-subagent (7 requests)
+K1: 2 distinct over 6 requests: 38b00513x3(seq 2-7,claude-opus-5-5); 46cef9ccx3(seq 3-5,claude-opus-5-5)
+K3: 2 distinct over 6 requests: 424bedaax3(seq 2-7,claude-opus-5-5); 4b4e77aax3(seq 3-5,claude-opus-5-5)
+K4: 1 distinct over 6 requests: 28500fcfx6(seq 2-7,claude-opus-5-5)
+K5: 2 distinct over 6 requests: 14f53b2dx3(seq 2-7,claude-opus-5-5); 411a99cex3(seq 3-5,claude-opus-5-5)
+session-ish headers distinct: {'x-claude-code-session-id': 1, 'x-stainless-retry-count': 1, 'x-claude-code-agent-id': 1}
+run-20261007T065526Z-cc-s5-subagent: 6 tool-bearing, 0 side
+    {'conv': '9c1faaba-b6e', 'n': 3, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+    {'conv': '9c1faaba-b6e/a76365', 'n': 3, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T065528Z-cc-s5b-subagent-bg (10 requests)
+K1: 2 distinct over 9 requests: f1db39b7x6(seq 2-10,claude-opus-5-5); 72ea13dax3(seq 3-7,claude-opus-5-5)
+K3: 2 distinct over 9 requests: 424bedaax6(seq 2-10,claude-opus-5-5); 4b4e77aax3(seq 3-7,claude-opus-5-5)
+K4: 1 distinct over 9 requests: 28500fcfx9(seq 2-10,claude-opus-5-5)
+K5: 2 distinct over 9 requests: ddc57145x6(seq 2-10,claude-opus-5-5); 0fa8ca67x3(seq 3-7,claude-opus-5-5)
+session-ish headers distinct: {'x-claude-code-session-id': 1, 'x-stainless-retry-count': 1, 'x-claude-code-agent-id': 1}
+run-20261007T065528Z-cc-s5b-subagent-bg: 9 tool-bearing, 0 side
+    {'conv': '19fdded8-5c1', 'n': 6, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+    {'conv': '19fdded8-5c1/a51dec', 'n': 3, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}

@@ -1,0 +1,245 @@
+anthropic-node-nonstream.eh-space.t120 | completed | wall=120 | n=1 | req@[0] | close1=null | respond_after_eh#1@120.01 | 
+anthropic-node-nonstream.eh-space.t250 | completed | wall=251 | n=1 | req@[0] | close1=null | respond_after_eh#1@250 | 
+anthropic-node-nonstream.eh-space.t300 | completed | wall=301 | n=1 | req@[0] | close1=null | respond_after_eh#1@300 | 
+anthropic-node-nonstream.eh-space.t400 | completed | wall=400 | n=1 | req@[0] | close1=null | respond_after_eh#1@400 | 
+anthropic-node-nonstream.eh-space.t600 | completed | wall=600 | n=1 | req@[0] | close1=null | respond_after_eh#1@600 | 
+anthropic-node-nonstream.hold.t120 | completed | wall=121 | n=1 | req@[0] | close1=null | respond_after_hold#1@120 | 
+anthropic-node-nonstream.hold.t15 | completed | wall=15 | n=1 | req@[0] | close1=null | respond_after_hold#1@15 | 
+anthropic-node-nonstream.hold.t180 | completed | wall=181 | n=1 | req@[0] | close1=null | respond_after_hold#1@180 | 
+anthropic-node-nonstream.hold.t250 | completed | wall=250 | n=1 | req@[0] | close1=null | respond_after_hold#1@250 | 
+anthropic-node-nonstream.hold.t300 | completed | wall=300 | n=1 | req@[0] | close1=null | respond_after_hold#1@300 | 
+anthropic-node-nonstream.hold.t400 | no-output | wall=490 | n=2 | req@[0,302] | close1=301.58(aborted) |  | 
+anthropic-node-nonstream.hold.t60 | completed | wall=60 | n=1 | req@[0] | close1=null | respond_after_hold#1@60 | 
+anthropic-node-stream.eh-comment.t400 | completed | wall=403 | n=1 | req@[0] | close1=null | respond_after_eh#1@400.01 | 
+anthropic-node-stream.eh-none.t250 | completed | wall=254 | n=1 | req@[0] | close1=null | respond_after_eh#1@250 | 
+anthropic-node-stream.eh-ping.t120 | completed | wall=120 | n=1 | req@[0] | close1=null | respond_after_eh#1@120 | 
+anthropic-node-stream.eh-ping.t250 | completed | wall=250 | n=1 | req@[0] | close1=null | respond_after_eh#1@250 | 
+anthropic-node-stream.eh-ping.t300 | completed | wall=300 | n=1 | req@[0] | close1=null | respond_after_eh#1@300 | 
+anthropic-node-stream.eh-ping.t400 | completed | wall=401 | n=1 | req@[0] | close1=null | respond_after_eh#1@400 | 
+anthropic-node-stream.eh-ping.t600 | completed | wall=601 | n=1 | req@[0] | close1=null | respond_after_eh#1@600 | 
+anthropic-node-stream.hold.t120 | completed | wall=121 | n=1 | req@[0] | close1=null | respond_after_hold#1@120 | 
+anthropic-node-stream.hold.t15 | completed | wall=15 | n=1 | req@[0] | close1=null | respond_after_hold#1@15 | 
+anthropic-node-stream.hold.t180 | completed | wall=180 | n=1 | req@[0] | close1=null | respond_after_hold#1@180 | 
+anthropic-node-stream.hold.t250 | completed | wall=250 | n=1 | req@[0] | close1=null | respond_after_hold#1@250 | 
+anthropic-node-stream.hold.t300 | completed | wall=300 | n=1 | req@[0] | close1=null | respond_after_hold#1@300 | 
+anthropic-node-stream.hold.t400 | no-output | wall=490 | n=2 | req@[0,302.1] | close1=301.68(aborted) |  | 
+anthropic-node-stream.hold.t60 | completed | wall=60 | n=1 | req@[0] | close1=null | respond_after_hold#1@60 | 
+anthropic-py-nonstream.eh-space.t400 | completed | wall=402 | n=1 | req@[0] | close1=null | respond_after_eh#1@400 | 
+anthropic-py-nonstream.eh-space.t600 | completed | wall=601 | n=1 | req@[0] | close1=null | respond_after_eh#1@600 | 
+anthropic-py-nonstream.hold.t250 | completed | wall=252 | n=1 | req@[0] | close1=null | respond_after_hold#1@250 | 
+anthropic-py-nonstream.hold.t400 | completed | wall=402 | n=1 | req@[0] | close1=null | respond_after_hold#1@400 | 
+anthropic-py-nonstream.hold.t60 | completed | wall=63 | n=1 | req@[0] | close1=null | respond_after_hold#1@60 | 
+anthropic-py-nonstream.hold.t600 | no-output | wall=690 | n=2 | req@[0,600.7] | close1=null | respond_after_hold#1@600 | 
+anthropic-py-stream.eh-comment.t400 | completed | wall=419 | n=1 | req@[0] | close1=null | respond_after_eh#1@400 | 
+anthropic-py-stream.eh-none.t250 | completed | wall=267 | n=1 | req@[0] | close1=null | respond_after_eh#1@250.01 | 
+anthropic-py-stream.eh-ping.t400 | completed | wall=402 | n=1 | req@[0] | close1=null | respond_after_eh#1@400 | 
+anthropic-py-stream.eh-ping.t600 | completed | wall=602 | n=1 | req@[0] | close1=null | respond_after_eh#1@600 | 
+anthropic-py-stream.hold.t250 | completed | wall=251 | n=1 | req@[0] | close1=null | respond_after_hold#1@250 | 
+anthropic-py-stream.hold.t400 | completed | wall=406 | n=1 | req@[0] | close1=null | respond_after_hold#1@400 | 
+anthropic-py-stream.hold.t60 | completed | wall=62 | n=1 | req@[0] | close1=null | respond_after_hold#1@60 | 
+anthropic-py-stream.hold.t600 | no-output | wall=691 | n=2 | req@[0,600.5] | close1=null | respond_after_hold#1@600 | 
+cc-env0.hold.t450 | no-result | wall=540 | n=2 | req@[0,360.9] | close1=360.19(aborted) |  |  | cc api_retry events=1 [null:605ms]
+cc-env1.hold.t450 | no-result | wall=540 | n=2 | req@[0,360.9] | close1=360.2(aborted) |  |  | cc api_retry events=1 [null:625ms]
+cc-env2.hold.t700 | no-result | wall=790 | n=3 | req@[0,360.8,722.2] | close1=360.18(aborted) |  |  | cc api_retry events=2 [null:550ms,null:1126ms]
+cc-env3.eh.t700 | no-result | wall=790 | n=2 | req@[0,600.5] | close1=600.49(aborted) |  |  | cc api_retry events=0
+cc-env4.hold.t200 | no-result | wall=290 | n=3 | req@[0,100.7,201.8] | close1=99.99(aborted) |  |  | cc api_retry events=2 [null:542ms,null:1020ms]
+cc-env5.hold.t200 | completed | wall=203 | n=1 | req@[0] | close1=null | respond_after_hold#1@200 | okay-42 | cc api_retry events=0
+cc.eh-ping.t120 | completed | wall=124 | n=1 | req@[0] | close1=null | respond_after_eh#1@120.01 | okay-42 | cc api_retry events=0
+cc.eh-ping.t250 | completed | wall=253 | n=1 | req@[0] | close1=null | respond_after_eh#1@250.04 | okay-42 | cc api_retry events=0
+cc.eh-ping.t400 | completed | wall=402 | n=1 | req@[0] | close1=null | respond_after_eh#1@400 | okay-42 | cc api_retry events=0
+cc.eh-ping.t550 | completed | wall=551 | n=1 | req@[0] | close1=null | respond_after_eh#1@550 | okay-42 | cc api_retry events=0
+cc.hold.t120 | completed | wall=121 | n=1 | req@[0] | close1=null | respond_after_hold#1@120 | okay-42 | cc api_retry events=0
+cc.hold.t250 | completed | wall=250 | n=1 | req@[0] | close1=null | respond_after_hold#1@250 | okay-42 | cc api_retry events=0
+cc.hold.t30 | completed | wall=31 | n=1 | req@[0] | close1=null | respond_after_hold#1@30 | okay-42 | cc api_retry events=0
+cc.hold.t300 | completed | wall=301 | n=1 | req@[0] | close1=null | respond_after_hold#1@300 | okay-42 | cc api_retry events=0
+cc.hold.t340 | completed | wall=341 | n=1 | req@[0] | close1=null | respond_after_hold#1@340 | okay-42 | cc api_retry events=0
+cc.hold.t380 | no-result | wall=470 | n=2 | req@[0,360.9] | close1=360.16(aborted) |  |  | cc api_retry events=1 [null:511ms]
+cc.hold.t450 | no-result | wall=540 | n=2 | req@[0,361.3] | close1=360.17(aborted) |  |  | cc api_retry events=1 [null:616ms]
+codex.eh-comment.t300 | failed | wall=390 | n=2 | req@[0,300.3] | close1=null | respond_after_eh#1@300.02 | Reconnecting... 1/5 (stream disconnected before completion: idle timeout waiting for SSE)
+codex.eh-ping.t120 | completed | wall=122 | n=1 | req@[0] | close1=null | respond_after_eh#1@120 | 
+codex.eh-ping.t250 | completed | wall=257 | n=1 | req@[0] | close1=null | respond_after_eh#1@250 | 
+codex.eh-ping.t400 | completed | wall=405 | n=1 | req@[0] | close1=null | respond_after_eh#1@400.01 | 
+codex.hold.t250 | completed | wall=255 | n=1 | req@[0] | close1=null | respond_after_hold#1@250 | 
+codex.hold.t300 | completed | wall=304 | n=1 | req@[0] | close1=null | respond_after_hold#1@300 | 
+codex.hold.t400 | completed | wall=401 | n=1 | req@[0] | close1=null | respond_after_hold#1@400 | 
+codex.hold.t60 | completed | wall=65 | n=1 | req@[0] | close1=null | respond_after_hold#1@60 | 
+codex.hold.t600 | completed | wall=601 | n=1 | req@[0] | close1=null | respond_after_hold#1@600 | 
+curl-anth-nonstream.eh-space.t120 | completed | wall=120 | n=1 | req@[0] | close1=null | respond_after_eh#1@120.01 | http 200
+curl-anth-nonstream.eh-space.t400 | completed | wall=400 | n=1 | req@[0] | close1=null | respond_after_eh#1@400 | http 200
+curl-anth-nonstream.hold.t120 | completed | wall=120 | n=1 | req@[0] | close1=null | respond_after_hold#1@120 | http 200
+curl-anth-nonstream.hold.t15 | completed | wall=15 | n=1 | req@[0] | close1=null | respond_after_hold#1@15 | http 200
+curl-anth-nonstream.hold.t180 | completed | wall=180 | n=1 | req@[0] | close1=null | respond_after_hold#1@180 | http 200
+curl-anth-nonstream.hold.t250 | completed | wall=251 | n=1 | req@[0] | close1=null | respond_after_hold#1@250 | http 200
+curl-anth-nonstream.hold.t30 | completed | wall=30 | n=1 | req@[0] | close1=null | respond_after_hold#1@30 | http 200
+curl-anth-nonstream.hold.t300 | completed | wall=300 | n=1 | req@[0] | close1=null | respond_after_hold#1@300 | http 200
+curl-anth-nonstream.hold.t400 | completed | wall=400 | n=1 | req@[0] | close1=null | respond_after_hold#1@400 | http 200
+curl-anth-nonstream.hold.t60 | completed | wall=60 | n=1 | req@[0] | close1=null | respond_after_hold#1@60.01 | http 200
+curl-anth-nonstream.hold.t600 | completed | wall=600 | n=1 | req@[0] | close1=null | respond_after_hold#1@600 | http 200
+curl-anth-stream.eh-ping.t120 | completed | wall=120 | n=1 | req@[0] | close1=null | respond_after_eh#1@120 | http 200
+curl-anth-stream.eh-ping.t400 | completed | wall=400 | n=1 | req@[0] | close1=null | respond_after_eh#1@400 | http 200
+curl-anth-stream.hold.t120 | completed | wall=120 | n=1 | req@[0] | close1=null | respond_after_hold#1@120 | http 200
+curl-anth-stream.hold.t15 | completed | wall=15 | n=1 | req@[0] | close1=null | respond_after_hold#1@15 | http 200
+curl-anth-stream.hold.t180 | completed | wall=180 | n=1 | req@[0] | close1=null | respond_after_hold#1@180 | http 200
+curl-anth-stream.hold.t250 | completed | wall=250 | n=1 | req@[0] | close1=null | respond_after_hold#1@250 | http 200
+curl-anth-stream.hold.t30 | completed | wall=30 | n=1 | req@[0] | close1=null | respond_after_hold#1@30 | http 200
+curl-anth-stream.hold.t300 | completed | wall=300 | n=1 | req@[0] | close1=null | respond_after_hold#1@300 | http 200
+curl-anth-stream.hold.t400 | completed | wall=400 | n=1 | req@[0] | close1=null | respond_after_hold#1@400 | http 200
+curl-anth-stream.hold.t60 | completed | wall=60 | n=1 | req@[0] | close1=null | respond_after_hold#1@60 | http 200
+curl-anth-stream.hold.t600 | completed | wall=600 | n=1 | req@[0] | close1=null | respond_after_hold#1@600 | http 200
+curl-oai-nonstream.eh-space.t120 | completed | wall=120 | n=1 | req@[0] | close1=null | respond_after_eh#1@120 | http 200
+curl-oai-nonstream.eh-space.t400 | completed | wall=401 | n=1 | req@[0] | close1=null | respond_after_eh#1@400.02 | http 200
+curl-oai-nonstream.hold.t120 | completed | wall=120 | n=1 | req@[0] | close1=null | respond_after_hold#1@120 | http 200
+curl-oai-nonstream.hold.t15 | completed | wall=15 | n=1 | req@[0] | close1=null | respond_after_hold#1@15 | http 200
+curl-oai-nonstream.hold.t180 | completed | wall=180 | n=1 | req@[0] | close1=null | respond_after_hold#1@180 | http 200
+curl-oai-nonstream.hold.t250 | completed | wall=250 | n=1 | req@[0] | close1=null | respond_after_hold#1@250 | http 200
+curl-oai-nonstream.hold.t30 | completed | wall=30 | n=1 | req@[0] | close1=null | respond_after_hold#1@30 | http 200
+curl-oai-nonstream.hold.t300 | completed | wall=300 | n=1 | req@[0] | close1=null | respond_after_hold#1@300 | http 200
+curl-oai-nonstream.hold.t400 | completed | wall=400 | n=1 | req@[0] | close1=null | respond_after_hold#1@400 | http 200
+curl-oai-nonstream.hold.t60 | completed | wall=60 | n=1 | req@[0] | close1=null | respond_after_hold#1@60 | http 200
+curl-oai-nonstream.hold.t600 | completed | wall=600 | n=1 | req@[0] | close1=null | respond_after_hold#1@600 | http 200
+curl-oai-stream.eh-ping.t120 | completed | wall=120 | n=1 | req@[0] | close1=null | respond_after_eh#1@120 | http 200
+curl-oai-stream.eh-ping.t400 | completed | wall=400 | n=1 | req@[0] | close1=null | respond_after_eh#1@400 | http 200
+curl-oai-stream.hold.t120 | completed | wall=120 | n=1 | req@[0] | close1=null | respond_after_hold#1@120 | http 200
+curl-oai-stream.hold.t15 | completed | wall=15 | n=1 | req@[0] | close1=null | respond_after_hold#1@15 | http 200
+curl-oai-stream.hold.t180 | completed | wall=180 | n=1 | req@[0] | close1=null | respond_after_hold#1@180 | http 200
+curl-oai-stream.hold.t250 | completed | wall=250 | n=1 | req@[0] | close1=null | respond_after_hold#1@250.01 | http 200
+curl-oai-stream.hold.t30 | completed | wall=30 | n=1 | req@[0] | close1=null | respond_after_hold#1@30 | http 200
+curl-oai-stream.hold.t300 | completed | wall=300 | n=1 | req@[0] | close1=null | respond_after_hold#1@300 | http 200
+curl-oai-stream.hold.t400 | completed | wall=400 | n=1 | req@[0] | close1=null | respond_after_hold#1@400 | http 200
+curl-oai-stream.hold.t60 | completed | wall=60 | n=1 | req@[0] | close1=null | respond_after_hold#1@60 | http 200
+curl-oai-stream.hold.t600 | completed | wall=600 | n=1 | req@[0] | close1=null | respond_after_hold#1@600 | http 200
+dsh-anth.eh-ping.t250 | completed | wall=253 | n=2 | req@[0,0] | close1=null | respond_after_eh#1@250 | 
+dsh-anth.eh-ping.t300 | failed | wall=390 | n=3 | req@[0,0,300.5] | close1=299.88(aborted) |  | 
+dsh-anth.hold.t120 | completed | wall=121 | n=2 | req@[0,0] | close1=null | respond_after_hold#1@120 | 
+dsh-anth.hold.t250 | completed | wall=251 | n=2 | req@[0,0] | close1=null | respond_after_hold#1@250 | 
+dsh-anth.hold.t300 | failed | wall=390 | n=3 | req@[0,0,300.3] | close1=299.79(aborted) |  | 
+dsh-anth.hold.t60 | completed | wall=61 | n=2 | req@[0,0] | close1=null | respond_after_hold#1@60 | 
+dsh-oai.eh-none.t400 | failed | wall=520 | n=3 | req@[0,0,300.6] | close1=299.91(aborted) |  | 
+dsh-oai.eh-ping.t120 | completed | wall=123 | n=2 | req@[0,0] | close1=null | respond_after_eh#1@120 | 
+dsh-oai.eh-ping.t250 | completed | wall=251 | n=2 | req@[0,0] | close1=null | respond_after_eh#1@250 | 
+dsh-oai.eh-ping.t300 | failed | wall=390 | n=3 | req@[0,0,300.5] | close1=299.94(aborted) |  | 
+dsh-oai.hold.t120 | completed | wall=123 | n=2 | req@[0,0] | close1=null | respond_after_hold#1@120 | 
+dsh-oai.hold.t15 | completed | wall=19 | n=2 | req@[0,0] | close1=null | respond_after_hold#1@15 respond_after_hold#2@15 | 
+dsh-oai.hold.t180 | completed | wall=183 | n=2 | req@[0,0] | close1=null | respond_after_hold#1@180 | 
+dsh-oai.hold.t250 | completed | wall=255 | n=2 | req@[0,0] | close1=null | respond_after_hold#1@250 | 
+dsh-oai.hold.t300 | failed | wall=390 | n=3 | req@[0,0,300.4] | close1=299.85(aborted) |  | 
+dsh-oai.hold.t60 | completed | wall=63 | n=2 | req@[0,0] | close1=null | respond_after_hold#1@60 | 
+fetch-anth-nonstream.eh-space.t120 | completed | wall=120 | n=1 | req@[0] | close1=null | respond_after_eh#1@120 | http 200
+fetch-anth-nonstream.eh-space.t250 | completed | wall=250 | n=1 | req@[0] | close1=null | respond_after_eh#1@250 | http 200
+fetch-anth-nonstream.eh-space.t300 | completed | wall=300 | n=1 | req@[0] | close1=null | respond_after_eh#1@300 | http 200
+fetch-anth-nonstream.eh-space.t400 | completed | wall=401 | n=1 | req@[0] | close1=null | respond_after_eh#1@400 | http 200
+fetch-anth-nonstream.eh-space.t600 | completed | wall=600 | n=1 | req@[0] | close1=null | respond_after_eh#1@600 | http 200
+fetch-anth-nonstream.hold.t120 | completed | wall=120 | n=1 | req@[0] | close1=null | respond_after_hold#1@120 | http 200
+fetch-anth-nonstream.hold.t15 | completed | wall=15 | n=1 | req@[0] | close1=null | respond_after_hold#1@15.01 | http 200
+fetch-anth-nonstream.hold.t180 | completed | wall=180 | n=1 | req@[0] | close1=null | respond_after_hold#1@180 | http 200
+fetch-anth-nonstream.hold.t250 | completed | wall=251 | n=1 | req@[0] | close1=null | respond_after_hold#1@250 | http 200
+fetch-anth-nonstream.hold.t300 | completed | wall=301 | n=1 | req@[0] | close1=null | respond_after_hold#1@300 | http 200
+fetch-anth-nonstream.hold.t400 | failed | wall=302 | n=1 | req@[0] | close1=301.57(aborted) |  |   TypeError: fetch failed / cause UND_ERR_HEADERS_TIMEOUT
+fetch-anth-nonstream.hold.t60 | completed | wall=60 | n=1 | req@[0] | close1=null | respond_after_hold#1@60 | http 200
+fetch-anth-stream.eh-comment.t400 | completed | wall=402 | n=1 | req@[0] | close1=null | respond_after_eh#1@400 | http 200
+fetch-anth-stream.eh-ping.t120 | completed | wall=120 | n=1 | req@[0] | close1=null | respond_after_eh#1@120 | http 200
+fetch-anth-stream.eh-ping.t250 | completed | wall=250 | n=1 | req@[0] | close1=null | respond_after_eh#1@250 | http 200
+fetch-anth-stream.eh-ping.t300 | completed | wall=300 | n=1 | req@[0] | close1=null | respond_after_eh#1@300 | http 200
+fetch-anth-stream.eh-ping.t400 | completed | wall=401 | n=1 | req@[0] | close1=null | respond_after_eh#1@400 | http 200
+fetch-anth-stream.eh-ping.t600 | completed | wall=600 | n=1 | req@[0] | close1=null | respond_after_eh#1@600 | http 200
+fetch-anth-stream.hold.t120 | completed | wall=120 | n=1 | req@[0] | close1=null | respond_after_hold#1@120 | http 200
+fetch-anth-stream.hold.t15 | completed | wall=15 | n=1 | req@[0] | close1=null | respond_after_hold#1@15 | http 200
+fetch-anth-stream.hold.t180 | completed | wall=180 | n=1 | req@[0] | close1=null | respond_after_hold#1@180 | http 200
+fetch-anth-stream.hold.t250 | completed | wall=250 | n=1 | req@[0] | close1=null | respond_after_hold#1@250 | http 200
+fetch-anth-stream.hold.t300 | completed | wall=300 | n=1 | req@[0] | close1=null | respond_after_hold#1@300 | http 200
+fetch-anth-stream.hold.t400 | failed | wall=302 | n=1 | req@[0] | close1=301.58(aborted) |  |   TypeError: fetch failed / cause UND_ERR_HEADERS_TIMEOUT
+fetch-anth-stream.hold.t60 | completed | wall=61 | n=1 | req@[0] | close1=null | respond_after_hold#1@60 | http 200
+fetch-oai-nonstream.eh-space.t120 | completed | wall=120 | n=1 | req@[0] | close1=null | respond_after_eh#1@120 | http 200
+fetch-oai-nonstream.eh-space.t250 | completed | wall=250 | n=1 | req@[0] | close1=null | respond_after_eh#1@250 | http 200
+fetch-oai-nonstream.eh-space.t300 | completed | wall=301 | n=1 | req@[0] | close1=null | respond_after_eh#1@300 | http 200
+fetch-oai-nonstream.eh-space.t400 | completed | wall=400 | n=1 | req@[0] | close1=null | respond_after_eh#1@400 | http 200
+fetch-oai-nonstream.eh-space.t600 | completed | wall=601 | n=1 | req@[0] | close1=null | respond_after_eh#1@600 | http 200
+fetch-oai-nonstream.hold.t120 | completed | wall=120 | n=1 | req@[0] | close1=null | respond_after_hold#1@120 | http 200
+fetch-oai-nonstream.hold.t15 | completed | wall=15 | n=1 | req@[0] | close1=null | respond_after_hold#1@15 | http 200
+fetch-oai-nonstream.hold.t180 | completed | wall=180 | n=1 | req@[0] | close1=null | respond_after_hold#1@180 | http 200
+fetch-oai-nonstream.hold.t250 | completed | wall=250 | n=1 | req@[0] | close1=null | respond_after_hold#1@250 | http 200
+fetch-oai-nonstream.hold.t300 | completed | wall=300 | n=1 | req@[0] | close1=null | respond_after_hold#1@300 | http 200
+fetch-oai-nonstream.hold.t400 | failed | wall=302 | n=1 | req@[0] | close1=301.68(aborted) |  |   TypeError: fetch failed / cause UND_ERR_HEADERS_TIMEOUT
+fetch-oai-nonstream.hold.t60 | completed | wall=60 | n=1 | req@[0] | close1=null | respond_after_hold#1@60 | http 200
+fetch-oai-stream.eh-none.t250 | completed | wall=250 | n=1 | req@[0] | close1=null | respond_after_eh#1@250 | http 200
+fetch-oai-stream.eh-ping.t120 | completed | wall=120 | n=1 | req@[0] | close1=null | respond_after_eh#1@120 | http 200
+fetch-oai-stream.eh-ping.t250 | completed | wall=250 | n=1 | req@[0] | close1=null | respond_after_eh#1@250 | http 200
+fetch-oai-stream.eh-ping.t300 | completed | wall=300 | n=1 | req@[0] | close1=null | respond_after_eh#1@300 | http 200
+fetch-oai-stream.eh-ping.t400 | completed | wall=401 | n=1 | req@[0] | close1=null | respond_after_eh#1@400 | http 200
+fetch-oai-stream.eh-ping.t600 | completed | wall=600 | n=1 | req@[0] | close1=null | respond_after_eh#1@600 | http 200
+fetch-oai-stream.hold.t120 | completed | wall=120 | n=1 | req@[0] | close1=null | respond_after_hold#1@120 | http 200
+fetch-oai-stream.hold.t15 | completed | wall=15 | n=1 | req@[0] | close1=null | respond_after_hold#1@15 | http 200
+fetch-oai-stream.hold.t180 | completed | wall=181 | n=1 | req@[0] | close1=null | respond_after_hold#1@180 | http 200
+fetch-oai-stream.hold.t250 | completed | wall=251 | n=1 | req@[0] | close1=null | respond_after_hold#1@250 | http 200
+fetch-oai-stream.hold.t300 | completed | wall=300 | n=1 | req@[0] | close1=null | respond_after_hold#1@300 | http 200
+fetch-oai-stream.hold.t400 | failed | wall=302 | n=1 | req@[0] | close1=301.6(aborted) |  |   TypeError: fetch failed / cause UND_ERR_HEADERS_TIMEOUT
+fetch-oai-stream.hold.t60 | completed | wall=60 | n=1 | req@[0] | close1=null | respond_after_hold#1@60 | http 200
+oc-anth.eh-ping.t250 | completed | wall=258 | n=2 | req@[0,0.9] | close1=null | respond_after_eh#1@250 respond_after_eh#2@250.04 | 
+oc-anth.eh-ping.t400 | completed | wall=404 | n=2 | req@[0,1.3] | close1=null | respond_after_eh#1@400 respond_after_eh#2@400 | 
+oc-anth.hold.t120 | completed | wall=126 | n=2 | req@[0,1.8] | close1=null | respond_after_hold#1@120 respond_after_hold#2@120 | 
+oc-anth.hold.t250 | completed | wall=261 | n=2 | req@[0,3.5] | close1=null | respond_after_hold#1@250 respond_after_hold#2@250 | 
+oc-anth.hold.t300 | failed | wall=390 | n=3 | req@[0,2.8,305.1] | close1=null | respond_after_hold#1@300 respond_after_hold#2@300 | 
+oc-anth.hold.t60 | completed | wall=65 | n=2 | req@[0,1.6] | close1=null | respond_after_hold#1@60 respond_after_hold#2@60 | 
+oc-oai.eh-ping.t120 | completed | wall=125 | n=2 | req@[0,2.5] | close1=null | respond_after_eh#1@120 respond_after_eh#2@120 | 
+oc-oai.eh-ping.t250 | completed | wall=260 | n=2 | req@[0,2.7] | close1=null | respond_after_eh#1@250.01 respond_after_eh#2@250 | 
+oc-oai.eh-ping.t400 | completed | wall=404 | n=2 | req@[0,1.1] | close1=null | respond_after_eh#1@400 respond_after_eh#2@400 | 
+oc-oai.hold.t120 | completed | wall=127 | n=2 | req@[0,2.1] | close1=null | respond_after_hold#1@120 respond_after_hold#2@120 | 
+oc-oai.hold.t15 | completed | wall=20 | n=2 | req@[0,2] | close1=null | respond_after_hold#1@15 respond_after_hold#2@15 | 
+oc-oai.hold.t180 | completed | wall=183 | n=2 | req@[0,1] | close1=null | respond_after_hold#1@180 respond_after_hold#2@180 | 
+oc-oai.hold.t250 | completed | wall=253 | n=2 | req@[0,1.3] | close1=null | respond_after_hold#1@250 respond_after_hold#2@250 | 
+oc-oai.hold.t300 | failed | wall=390 | n=3 | req@[0,1.5,303.6] | close1=300(aborted) |  | 
+oc-oai.hold.t60 | completed | wall=66 | n=2 | req@[0,1.9] | close1=null | respond_after_hold#1@60 respond_after_hold#2@60 | 
+openai-node-nonstream.eh-space.t120 | completed | wall=120 | n=1 | req@[0] | close1=null | respond_after_eh#1@120 | 
+openai-node-nonstream.eh-space.t250 | completed | wall=251 | n=1 | req@[0] | close1=null | respond_after_eh#1@250 | 
+openai-node-nonstream.eh-space.t300 | completed | wall=301 | n=1 | req@[0] | close1=null | respond_after_eh#1@300 | 
+openai-node-nonstream.eh-space.t400 | completed | wall=401 | n=1 | req@[0] | close1=null | respond_after_eh#1@400 | 
+openai-node-nonstream.eh-space.t600 | no-output | wall=690 | n=2 | req@[0,600.5] | close1=null | respond_after_eh#1@600 | 
+openai-node-nonstream.hold.t120 | completed | wall=121 | n=1 | req@[0] | close1=null | respond_after_hold#1@120 | 
+openai-node-nonstream.hold.t15 | completed | wall=16 | n=1 | req@[0] | close1=null | respond_after_hold#1@15 | 
+openai-node-nonstream.hold.t180 | completed | wall=181 | n=1 | req@[0] | close1=null | respond_after_hold#1@180 | 
+openai-node-nonstream.hold.t250 | completed | wall=251 | n=1 | req@[0] | close1=null | respond_after_hold#1@250 | 
+openai-node-nonstream.hold.t300 | completed | wall=301 | n=1 | req@[0] | close1=null | respond_after_hold#1@300 | 
+openai-node-nonstream.hold.t400 | no-output | wall=490 | n=2 | req@[0,302] | close1=301.5(aborted) |  | 
+openai-node-nonstream.hold.t60 | completed | wall=61 | n=1 | req@[0] | close1=null | respond_after_hold#1@60 | 
+openai-node-stream.eh-none.t250 | completed | wall=250 | n=1 | req@[0] | close1=null | respond_after_eh#1@250 | 
+openai-node-stream.eh-ping.t120 | completed | wall=121 | n=1 | req@[0] | close1=null | respond_after_eh#1@120 | 
+openai-node-stream.eh-ping.t250 | completed | wall=251 | n=1 | req@[0] | close1=null | respond_after_eh#1@250 | 
+openai-node-stream.eh-ping.t300 | completed | wall=300 | n=1 | req@[0] | close1=null | respond_after_eh#1@300 | 
+openai-node-stream.eh-ping.t400 | completed | wall=401 | n=1 | req@[0] | close1=null | respond_after_eh#1@400 | 
+openai-node-stream.eh-ping.t600 | completed | wall=600 | n=1 | req@[0] | close1=null | respond_after_eh#1@600 | 
+openai-node-stream.hold.t120 | completed | wall=120 | n=1 | req@[0] | close1=null | respond_after_hold#1@120 | 
+openai-node-stream.hold.t15 | completed | wall=16 | n=1 | req@[0] | close1=null | respond_after_hold#1@15 | 
+openai-node-stream.hold.t180 | completed | wall=180 | n=1 | req@[0] | close1=null | respond_after_hold#1@180 | 
+openai-node-stream.hold.t250 | completed | wall=250 | n=1 | req@[0] | close1=null | respond_after_hold#1@250 | 
+openai-node-stream.hold.t300 | completed | wall=301 | n=1 | req@[0] | close1=null | respond_after_hold#1@300 | 
+openai-node-stream.hold.t400 | no-output | wall=490 | n=2 | req@[0,302.2] | close1=301.7(aborted) |  | 
+openai-node-stream.hold.t60 | completed | wall=60 | n=1 | req@[0] | close1=null | respond_after_hold#1@60 | 
+openai-py-nonstream.eh-space.t400 | completed | wall=401 | n=1 | req@[0] | close1=null | respond_after_eh#1@400 | 
+openai-py-nonstream.eh-space.t600 | completed | wall=601 | n=1 | req@[0] | close1=null | respond_after_eh#1@600 | 
+openai-py-nonstream.hold.t250 | completed | wall=254 | n=1 | req@[0] | close1=null | respond_after_hold#1@250 | 
+openai-py-nonstream.hold.t400 | completed | wall=402 | n=1 | req@[0] | close1=null | respond_after_hold#1@400 | 
+openai-py-nonstream.hold.t60 | completed | wall=64 | n=1 | req@[0] | close1=null | respond_after_hold#1@60 | 
+openai-py-nonstream.hold.t600 | no-output | wall=690 | n=2 | req@[0,600.8] | close1=null | respond_after_hold#1@600 | 
+openai-py-stream.eh-none.t250 | completed | wall=256 | n=1 | req@[0] | close1=null | respond_after_eh#1@250 | 
+openai-py-stream.eh-ping.t400 | completed | wall=401 | n=1 | req@[0] | close1=null | respond_after_eh#1@400 | 
+openai-py-stream.eh-ping.t600 | completed | wall=601 | n=1 | req@[0] | close1=null | respond_after_eh#1@600 | 
+openai-py-stream.hold.t250 | completed | wall=251 | n=1 | req@[0] | close1=null | respond_after_hold#1@250 | 
+openai-py-stream.hold.t400 | completed | wall=402 | n=1 | req@[0] | close1=null | respond_after_hold#1@400 | 
+openai-py-stream.hold.t60 | completed | wall=62 | n=1 | req@[0] | close1=null | respond_after_hold#1@60 | 
+openai-py-stream.hold.t600 | no-output | wall=691 | n=2 | req@[0,601.2] | close1=null | respond_after_hold#1@600 | 
+pi-anth.eh-ping.t250 | completed | wall=250 | n=1 | req@[0] | close1=null | respond_after_eh#1@250 |  | pi retry events=0
+pi-anth.eh-ping.t400 | completed | wall=402 | n=1 | req@[0] | close1=null | respond_after_eh#1@400 |  | pi retry events=0
+pi-anth.hold.t120 | completed | wall=122 | n=1 | req@[0] | close1=null | respond_after_hold#1@120 |  | pi retry events=0
+pi-anth.hold.t250 | completed | wall=252 | n=1 | req@[0] | close1=null | respond_after_hold#1@250 |  | pi retry events=0
+pi-anth.hold.t300 | failed | wall=390 | n=2 | req@[0,302] | close1=299.99(aborted) |  | Request timed out. | pi retry events=1
+pi-anth.hold.t60 | completed | wall=62 | n=1 | req@[0] | close1=null | respond_after_hold#1@60 |  | pi retry events=0
+pi-oai.eh-ping.t120 | completed | wall=121 | n=1 | req@[0] | close1=null | respond_after_eh#1@120 |  | pi retry events=0
+pi-oai.eh-ping.t250 | completed | wall=250 | n=1 | req@[0] | close1=null | respond_after_eh#1@250 |  | pi retry events=0
+pi-oai.eh-ping.t400 | completed | wall=400 | n=1 | req@[0] | close1=null | respond_after_eh#1@400 |  | pi retry events=0
+pi-oai.eh-ping.t600 | completed | wall=601 | n=1 | req@[0] | close1=null | respond_after_eh#1@600 |  | pi retry events=0
+pi-oai.hold.t120 | completed | wall=122 | n=1 | req@[0] | close1=null | respond_after_hold#1@120 |  | pi retry events=0
+pi-oai.hold.t15 | completed | wall=17 | n=1 | req@[0] | close1=null | respond_after_hold#1@15 |  | pi retry events=0
+pi-oai.hold.t180 | completed | wall=182 | n=1 | req@[0] | close1=null | respond_after_hold#1@180 |  | pi retry events=0
+pi-oai.hold.t250 | completed | wall=252 | n=1 | req@[0] | close1=null | respond_after_hold#1@250 |  | pi retry events=0
+pi-oai.hold.t300 | failed | wall=390 | n=2 | req@[0,302] | close1=299.94(aborted) |  | Request timed out. | pi retry events=1
+pi-oai.hold.t60 | completed | wall=62 | n=1 | req@[0] | close1=null | respond_after_hold#1@60 |  | pi retry events=0

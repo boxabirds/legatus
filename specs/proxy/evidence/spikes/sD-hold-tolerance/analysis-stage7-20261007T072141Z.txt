@@ -1,0 +1,8 @@
+cc.err429.ra30 | completed | wall=34 | n=2 | req@[0,31.1] | close1=null | error_429#1@1.01 respond_normal#2@0 | okay-42 | cc api_retry events=1 [429:30000ms]
+cc.err503.ra15 | completed | wall=18 | n=2 | req@[0,16.1] | close1=null | error_503#1@1.01 respond_normal#2@0 | okay-42 | cc api_retry events=1 [503:15000ms]
+cc.err503.ra30 | completed | wall=34 | n=2 | req@[0,31.1] | close1=null | error_503#1@1 respond_normal#2@0.01 | okay-42 | cc api_retry events=1 [503:30000ms]
+cc.err503.ra60 | completed | wall=64 | n=2 | req@[0,61.1] | close1=null | error_503#1@1 respond_normal#2@0 | okay-42 | cc api_retry events=1 [503:60000ms]
+cc.err503.ra90 | failed | wall=4 | n=1 | req@[0] | close1=null | error_503#1@1 | API Error: 503 legatus hold limit reached: no capacity. This is a server-side issue, usually temporary — try again in a moment. If it persists, check your infer | cc api_retry events=0
+cc.err529.ra30 | completed | wall=34 | n=2 | req@[0,31.1] | close1=null | error_529#1@1.01 respond_normal#2@0 | okay-42 | cc api_retry events=1 [529:30000ms]
+codex.err503.ra30 | completed | wall=36 | n=2 | req@[0,31] | close1=null | error_503#1@1 respond_normal#2@0 | 
+codex.err529.ra30 | completed | wall=36 | n=2 | req@[0,31] | close1=null | error_529#1@1 respond_normal#2@0 | 

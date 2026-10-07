@@ -1,0 +1,1 @@
+Errata to notes-llamacpp-20261007T054753Z.md (original not edited, never-overwrite rule): exact lines at b11460: common prefix 3444; forcing full reprocessing 3610; erase invalidated checkpoints 3619-3628; n_past-- 3635; cache_n source slot.stats.n_prompt_cached 3639; seq_rm(p0,-1) 3674. "Step 5 seq_rm at 3665" should read 3674.

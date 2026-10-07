@@ -1,0 +1,64 @@
+anthropic-node-nonstream|eh/space  120:ok  250:ok  300:ok  400:ok  600:ok
+anthropic-node-nonstream|hold      15:ok  60:ok  120:ok  180:ok  250:ok  300:ok  400:F@301()
+anthropic-node-stream|eh/comment   400:ok
+anthropic-node-stream|eh/none      250:ok
+anthropic-node-stream|eh/ping      120:ok  250:ok  300:ok  400:ok  600:ok
+anthropic-node-stream|hold         15:ok  60:ok  120:ok  180:ok  250:ok  300:ok  400:F@301()
+anthropic-py-nonstream|eh/space    400:ok  600:ok
+anthropic-py-nonstream|hold        60:ok  250:ok  400:ok  600:F()
+anthropic-py-stream|eh/comment     400:ok
+anthropic-py-stream|eh/none        250:ok
+anthropic-py-stream|eh/ping        400:ok  600:ok
+anthropic-py-stream|hold           60:ok  250:ok  400:ok  600:F()
+cc@API_TIMEOUT_MS=100000|hold      200:F@99( | cc api_retry events=2 [nu)
+cc@API_TIMEOUT_MS=1800000+CLAUDE_STREAM_FIRST_BYTE_TIMEOUT_MS=1800000|hold 700:F@360( | cc api_retry events=2 [nu)
+cc@API_TIMEOUT_MS=1800000|eh/ping  700:F@600( | cc api_retry events=0)
+cc@API_TIMEOUT_MS=1800000|hold     450:F@360( | cc api_retry events=1 [nu)
+cc@CLAUDE_STREAM_FIRST_BYTE_TIMEOUT_MS=1800000|hold 450:F@360( | cc api_retry events=1 [nu)
+cc@CLAUDE_STREAM_FIRST_BYTE_TIMEOUT_MS=60000|hold 200:ok
+cc|eh/ping                         120:ok  250:ok  400:ok  550:ok
+cc|hold                            30:ok  120:ok  250:ok  300:ok  340:ok  380:F@360( | cc api_retry events=1 [nu)  450:F@360( | cc api_retry events=1 [nu)
+codex|eh/comment                   300:F(Reconnecting... 1/5 (stream )
+codex|eh/ping                      120:ok  250:ok  400:ok
+codex|hold                         60:ok  250:ok  300:ok  400:ok  600:ok
+curl-anth-nonstream|eh/space       120:ok  400:ok
+curl-anth-nonstream|hold           15:ok  30:ok  60:ok  120:ok  180:ok  250:ok  300:ok  400:ok  600:ok
+curl-anth-stream|eh/ping           120:ok  400:ok
+curl-anth-stream|hold              15:ok  30:ok  60:ok  120:ok  180:ok  250:ok  300:ok  400:ok  600:ok
+curl-oai-nonstream|eh/space        120:ok  400:ok
+curl-oai-nonstream|hold            15:ok  30:ok  60:ok  120:ok  180:ok  250:ok  300:ok  400:ok  600:ok
+curl-oai-stream|eh/ping            120:ok  400:ok
+curl-oai-stream|hold               15:ok  30:ok  60:ok  120:ok  180:ok  250:ok  300:ok  400:ok  600:ok
+dsh-anth|eh/ping                   250:ok  300:F@299()
+dsh-anth|hold                      60:ok  120:ok  250:ok  300:F@299()
+dsh-oai|eh/none                    400:F@299()
+dsh-oai|eh/ping                    120:ok  250:ok  300:F@299()
+dsh-oai|hold                       15:ok  60:ok  120:ok  180:ok  250:ok  300:F@299()
+fetch-anth-nonstream|eh/space      120:ok  250:ok  300:ok  400:ok  600:ok
+fetch-anth-nonstream|hold          15:ok  60:ok  120:ok  180:ok  250:ok  300:ok  400:F@301( TypeError: fetch failed / c)
+fetch-anth-stream|eh/comment       400:ok
+fetch-anth-stream|eh/ping          120:ok  250:ok  300:ok  400:ok  600:ok
+fetch-anth-stream|hold             15:ok  60:ok  120:ok  180:ok  250:ok  300:ok  400:F@301( TypeError: fetch failed / c)
+fetch-oai-nonstream|eh/space       120:ok  250:ok  300:ok  400:ok  600:ok
+fetch-oai-nonstream|hold           15:ok  60:ok  120:ok  180:ok  250:ok  300:ok  400:F@301( TypeError: fetch failed / c)
+fetch-oai-stream|eh/none           250:ok
+fetch-oai-stream|eh/ping           120:ok  250:ok  300:ok  400:ok  600:ok
+fetch-oai-stream|hold              15:ok  60:ok  120:ok  180:ok  250:ok  300:ok  400:F@301( TypeError: fetch failed / c)
+oc-anth|eh/ping                    250:ok  400:ok
+oc-anth|hold                       60:ok  120:ok  250:ok  300:F()
+oc-oai|eh/ping                     120:ok  250:ok  400:ok
+oc-oai|hold                        15:ok  60:ok  120:ok  180:ok  250:ok  300:F@300()
+openai-node-nonstream|eh/space     120:ok  250:ok  300:ok  400:ok  600:F()
+openai-node-nonstream|hold         15:ok  60:ok  120:ok  180:ok  250:ok  300:ok  400:F@301()
+openai-node-stream|eh/none         250:ok
+openai-node-stream|eh/ping         120:ok  250:ok  300:ok  400:ok  600:ok
+openai-node-stream|hold            15:ok  60:ok  120:ok  180:ok  250:ok  300:ok  400:F@301()
+openai-py-nonstream|eh/space       400:ok  600:ok
+openai-py-nonstream|hold           60:ok  250:ok  400:ok  600:F()
+openai-py-stream|eh/none           250:ok
+openai-py-stream|eh/ping           400:ok  600:ok
+openai-py-stream|hold              60:ok  250:ok  400:ok  600:F()
+pi-anth|eh/ping                    250:ok  400:ok
+pi-anth|hold                       60:ok  120:ok  250:ok  300:F@299(Request timed out. | pi retr)
+pi-oai|eh/ping                     120:ok  250:ok  400:ok  600:ok
+pi-oai|hold                        15:ok  60:ok  120:ok  180:ok  250:ok  300:F@299(Request timed out. | pi retr)

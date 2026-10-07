@@ -1,0 +1,71 @@
+# analysis 20261007T065841Z: tools/analyze.py (K1,K3,K4,K5=keyv1) and tools/summary.py over all non-INVALID runs; command: for r in runs/run-*; do python3 tools/analyze.py $r; python3 tools/summary.py $r; done
+=== runs/run-20261007T062241Z-pi-s1-plain (6 requests)
+K1: 1 distinct over 5 requests: 497c8d96x5(seq 2-6,role/coder)
+K3: 1 distinct over 5 requests: 86851b1cx5(seq 2-6,role/coder)
+K4: 1 distinct over 5 requests: 26a27f52x5(seq 2-6,role/coder)
+K5: 1 distinct over 5 requests: 6b7e0a87x5(seq 2-6,role/coder)
+session-ish headers distinct: {'x-session-affinity': 1, 'x-client-request-id': 1, 'x-stainless-retry-count': 1}
+run-20261007T062241Z-pi-s1-plain: 5 tool-bearing, 0 side
+    {'conv': '01a11507-4a5', 'n': 5, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T062242Z-pi-s2-long (15 requests)
+K1: 1 distinct over 14 requests: 18242908x14(seq 2-15,role/thinker)
+K3: 1 distinct over 14 requests: 955b8337x14(seq 2-15,role/thinker)
+K4: 1 distinct over 14 requests: 26a27f52x14(seq 2-15,role/thinker)
+K5: 1 distinct over 14 requests: 0ba927c7x14(seq 2-15,role/thinker)
+session-ish headers distinct: {'x-session-affinity': 1, 'x-client-request-id': 1, 'x-stainless-retry-count': 1}
+run-20261007T062242Z-pi-s2-long: 14 tool-bearing, 0 side
+    {'conv': '01a11507-4e4', 'n': 14, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T062243Z-pi-s2b-long-noaff (14 requests)
+K1: 1 distinct over 13 requests: 81f6eb2ex13(seq 2-14,role/coder)
+K3: 1 distinct over 13 requests: d773e362x13(seq 2-14,role/coder)
+K4: 1 distinct over 13 requests: 26a27f52x13(seq 2-14,role/coder)
+K5: 1 distinct over 13 requests: 954cf7b2x13(seq 2-14,role/coder)
+session-ish headers distinct: {'x-stainless-retry-count': 1}
+run-20261007T062243Z-pi-s2b-long-noaff: 13 tool-bearing, 0 side
+    {'conv': 'inv:inv1', 'n': 13, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T062244Z-pi-s3-sessions (13 requests)
+K1: 2 distinct over 12 requests: 0e1afdb4x8(seq 2-13,role/coder); cbe8a339x4(seq 6-9,role/coder)
+K3: 2 distinct over 12 requests: af284152x8(seq 2-13,role/coder); bc00499ax4(seq 6-9,role/coder)
+K4: 1 distinct over 12 requests: 26a27f52x12(seq 2-13,role/coder)
+K5: 2 distinct over 12 requests: a50c4725x8(seq 2-13,role/coder); 30db974dx4(seq 6-9,role/coder)
+session-ish headers distinct: {'x-session-affinity': 3, 'x-client-request-id': 3, 'x-stainless-retry-count': 1}
+run-20261007T062244Z-pi-s3-sessions: 12 tool-bearing, 0 side
+    {'conv': '01a11507-565', 'n': 4, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+    {'conv': '01a11507-592', 'n': 4, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+    {'conv': '01a11507-5c6', 'n': 4, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T062245Z-pi-s3n-sessions-noaff (13 requests)
+K1: 2 distinct over 12 requests: 0e1afdb4x8(seq 2-13,role/coder); cbe8a339x4(seq 6-9,role/coder)
+K3: 2 distinct over 12 requests: af284152x8(seq 2-13,role/coder); bc00499ax4(seq 6-9,role/coder)
+K4: 1 distinct over 12 requests: 26a27f52x12(seq 2-13,role/coder)
+K5: 2 distinct over 12 requests: a50c4725x8(seq 2-13,role/coder); 30db974dx4(seq 6-9,role/coder)
+session-ish headers distinct: {'x-stainless-retry-count': 1}
+run-20261007T062245Z-pi-s3n-sessions-noaff: 12 tool-bearing, 0 side
+    {'conv': 'inv:A2', 'n': 12, 'K1': 'BREAK@6', 'K3': 'BREAK@6', 'K4': 'stable', 'K5': 'BREAK@6'}
+=== runs/run-20261007T062247Z-pi-s6-resume (10 requests)
+K1: 2 distinct over 9 requests: c1977f50x6(seq 2-7,role/coder); bf66d783x3(seq 8-10,role/coder)
+K3: 2 distinct over 9 requests: 3cccd626x6(seq 2-7,role/coder); 3475d35dx3(seq 8-10,role/coder)
+K4: 1 distinct over 9 requests: 26a27f52x9(seq 2-10,role/coder)
+K5: 2 distinct over 9 requests: 1c14962fx6(seq 2-7,role/coder); 35e168bex3(seq 8-10,role/coder)
+session-ish headers distinct: {'x-session-affinity': 2, 'x-client-request-id': 2, 'x-stainless-retry-count': 1}
+run-20261007T062247Z-pi-s6-resume: 9 tool-bearing, 0 side
+    {'conv': '01a11507-62a', 'n': 6, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+    {'conv': '01a11507-69f', 'n': 3, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+=== runs/run-20261007T062248Z-pi-s7-retry (7 requests)
+K1: 1 distinct over 6 requests: de4d8134x6(seq 2-7,role/coder)
+K3: 1 distinct over 6 requests: 365678a0x6(seq 2-7,role/coder)
+K4: 1 distinct over 6 requests: 26a27f52x6(seq 2-7,role/coder)
+K5: 1 distinct over 6 requests: 908371a5x6(seq 2-7,role/coder)
+session-ish headers distinct: {'x-session-affinity': 1, 'x-client-request-id': 1, 'x-stainless-retry-count': 1}
+run-20261007T062248Z-pi-s7-retry: 4 tool-bearing, 0 side
+    {'conv': '01a11507-674', 'n': 4, 'K1': 'stable', 'K3': 'stable', 'K4': 'stable', 'K5': 'stable'}
+seq 4 FAILED(503) t=2026-10-07T06:22:49.325Z; next seq 5 t=2026-10-07T06:22:51.340Z body_identical=True len=6676/6676; hdr_same=True; retry-count 0->0
+seq 5 FAILED(503) t=2026-10-07T06:22:51.340Z; next seq 6 t=2026-10-07T06:22:55.348Z body_identical=True len=6676/6676; hdr_same=True; retry-count 0->0
+=== runs/run-20261007T062249Z-pi-s8a-anthropic (5 requests)
+K1: 1 distinct over 4 requests: de4d8134x4(seq 2-5,role/frontier)
+K3: 1 distinct over 4 requests: 365678a0x4(seq 2-5,role/frontier)
+K4: 3 distinct over 4 requests: 5bc00467x1(seq 2-2,role/frontier); e957ccaax1(seq 3-3,role/frontier); 08adb05cx2(seq 4-5,role/frontier)
+K5: 1 distinct over 4 requests: 908371a5x4(seq 2-5,role/frontier)
+session-ish headers distinct: {'x-session-affinity': 1, 'x-stainless-retry-count': 1}
+run-20261007T062249Z-pi-s8a-anthropic: 4 tool-bearing, 0 side
+    {'conv': '01a11507-6b1', 'n': 4, 'K1': 'stable', 'K3': 'stable', 'K4': 'BREAK@3', 'K5': 'stable'}
+(eval):1: no matches found: runs/run-20261007T062653Z-pi-s4-compaction/*requests*.jsonl

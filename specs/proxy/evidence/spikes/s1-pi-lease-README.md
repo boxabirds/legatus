@@ -1,0 +1,4 @@
+# Spike 1: pi 1.0.3 lease header (can_spawn / request_llm / release_llm)
+Versions: pi-coding-agent 1.0.3 installed (npm latest 1.0.4; target pinned 1.0.3), pi-subagents 0.76.0 (latest 0.76.1), node 24.15.0. All plumbing results are FAKE model/admin (fake.mjs, admin.mjs). Real-model phase NOT RUN (model lock held by another spike ~55 min).
+Files: ext/lease.ts (extension), fake.mjs (OpenAI chat fake, records headers+body), admin.mjs (fake admin :18900), env.sh/env2.sh, show.mjs, sigrun.mjs, trials.sh (real-model harness, unrun), agent*/ (isolated PI_CODING_AGENT_DIR), logs/.
+VERDICT: GO-WITH-CHANGES. Mechanism: `pi.on("before_provider_headers", (e, ctx) => { if (held && ctx.model.provider is a legatus provider) e.headers["x-legatus-lease"] = held.lease_id })`. See report in the final message; table of evidence below mirrors it.
