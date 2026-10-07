@@ -92,6 +92,8 @@ pub const HOLD_STATUS_REFUSED: u16 = 429;
 pub const HOLD_STATUS_503: u16 = 503;
 pub const HOLD_STATUS_504: u16 = 504;
 pub const HOLD_STATUS_529: u16 = 529;
+/// The answers a hold limit may use (chat and Messages; the Responses path always answers 503).
+pub const HOLD_STATUS_ALLOWED: [u16; 3] = [HOLD_STATUS_503, HOLD_STATUS_504, HOLD_STATUS_529];
 
 /// The allowed values of `hold_limit_status`; stories 160 and 187 import it.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
