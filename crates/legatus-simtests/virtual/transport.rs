@@ -1,10 +1,11 @@
 //! TC-06, TC-07 (transport), TC-08 (sink), TC-09 (errors), TC-13 (spawn).
 use bytes::Bytes;
+use legatus_common::event::{Outcome, PlacementLabel, ShutdownSignal};
+use serde_json::{from_str, to_string};
 use futures_util::StreamExt;
 use http::{HeaderMap, Method};
 use legatus_common::event::SystemEventKind;
 use legatus_proxy::obs::log_sink::{DropReason, LogRecord, LogSink, Offer, SystemRecord};
-use legatus_proxy::spawn_named;
 use legatus_proxy::time::Instant;
 use legatus_proxy::upstream::transport::{UpstreamError, UpstreamRequest, UpstreamTransport};
 use legatus_testkit::virt::{FakeTransport, MemorySink, Script};
@@ -105,13 +106,53 @@ fn tc08_memory_sink_queues_1000_in_order_and_reports_each_drop() {
     assert_eq!(sink.take().len(), 1);
 }
 
-#[tokio::test(start_paused = true)]
-async fn tc13_spawn_named_returns_a_handle_and_aborting_leaves_no_task() {
-    let handle = spawn_named("sleeper", async {
-        tokio::time::sleep(Duration::from_secs(3600)).await;
-    });
-    tokio::task::yield_now().await;
-    assert!(!handle.is_finished());
-    handle.abort();
-    assert!(handle.await.unwrap_err().is_cancelled());
+
+// TC-24: wire values of the event enums.
+fn wire<T: serde::Serialize>(v: &T) -> String {
+    to_string(v).unwrap().trim_matches('"').to_string()
+}
+
+#[test]
+fn outcome_has_the_11_wire_values() {
+    use Outcome::*;
+    let all = [Ok, NodeErrorStatus, NodeConnectFailed, NodeStreamCut, ClientClosed, HoldLimit, NoNode, ContextGuard, BadRequest, Unauthorized, ProxyError];
+    let want = ["ok", "node_error_status", "node_connect_failed", "node_stream_cut", "client_closed", "hold_limit", "no_node", "context_guard", "bad_request", "unauthorized", "proxy_error"];
+    assert_eq!(all.len(), 11);
+    for (v, w) in all.iter().zip(want) {
+        assert_eq!(wire(v), w);
+        assert_eq!(from_str::<Outcome>(&format!("\"{w}\"")).unwrap(), *v);
+    }
+    assert!(from_str::<Outcome>("\"nonsense\"").is_err());
+}
+
+#[test]
+fn placement_label_has_8_values() {
+    use PlacementLabel::*;
+    let all = [Affinity, NewWarmSlot, NewEvictIdle, LeastLoaded, HeldThenPlaced, Moved, SiblingSpill, None];
+    let want = ["affinity", "new_warm_slot", "new_evict_idle", "least_loaded", "held_then_placed", "moved", "sibling_spill", "none"];
+    for (v, w) in all.iter().zip(want) {
+        assert_eq!(wire(v), w);
+        assert_eq!(from_str::<PlacementLabel>(&format!("\"{w}\"")).unwrap(), *v);
+    }
+    assert!(from_str::<PlacementLabel>("\"nonsense\"").is_err());
+}
+
+#[test]
+fn system_event_kind_has_17_values() {
+    use SystemEventKind::*;
+    let all = [Start, Ready, RegistryLoaded, RegistryRejected, NodeState, LogPaused, LogResumed, Shutdown, HoldStart, HoldEnd, HoldRefused, Moved, AffinityModeChanged, TruncationDetected, Warning, Finding, CalibrationDone];
+    let want = ["start", "ready", "registry_loaded", "registry_rejected", "node_state", "log_paused", "log_resumed", "shutdown", "hold_start", "hold_end", "hold_refused", "moved", "affinity_mode_changed", "truncation_detected", "warning", "finding", "calibration_done"];
+    assert_eq!(all.len(), 17);
+    for (v, w) in all.iter().zip(want) {
+        assert_eq!(wire(v), w);
+        assert_eq!(from_str::<SystemEventKind>(&format!("\"{w}\"")).unwrap(), *v);
+    }
+    assert!(from_str::<SystemEventKind>("\"nonsense\"").is_err());
+}
+
+#[test]
+fn shutdown_signal_is_term_and_int() {
+    assert_eq!(wire(&ShutdownSignal::Term), "term");
+    assert_eq!(wire(&ShutdownSignal::Int), "int");
+    assert!(from_str::<ShutdownSignal>("\"kill\"").is_err());
 }

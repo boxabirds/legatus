@@ -2,10 +2,10 @@
 #[cfg(test)]
 mod clocks;
 #[cfg(test)]
-mod event_enums;
+mod router_build;
 #[cfg(test)]
-mod router;
+mod router_duplex;
 #[cfg(test)]
-mod simpoints;
+mod sim_point;
 #[cfg(test)]
 mod transport;

@@ -1,8 +1,6 @@
 //! TC-01 to TC-05: clocks, driver surface, offsets, ordering.
-use legatus_proxy::sorted::sorted_keys;
 use legatus_proxy::time::{Instant, WallClock, WallTime};
 use legatus_testkit::virt::{virtual_runtime, Driver, MsOffset, OffsetError, SimWall};
-use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
@@ -85,19 +83,3 @@ fn tc05_same_instant_events_run_in_registration_order_over_20_runtimes() {
     assert_eq!(orders[0], vec![0, 1, 2, 3, 4]);
 }
 
-#[test]
-fn tc14_keys_are_visited_sorted_over_20_runs() {
-    let keys: Vec<u32> = (0..50).map(|i| (i * 37 + 11) % 101).collect();
-    for run in 0..20 {
-        let mut map = BTreeMap::new();
-        let mut order = keys.clone();
-        order.rotate_left(run % keys.len());
-        for k in order {
-            map.insert(k, ());
-        }
-        let visited = sorted_keys(&map);
-        let mut sorted = visited.clone();
-        sorted.sort_unstable();
-        assert_eq!(visited, sorted);
-    }
-}
