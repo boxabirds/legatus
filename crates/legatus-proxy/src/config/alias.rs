@@ -107,6 +107,15 @@ pub const TEXT_UNKNOWN_NODE: &str = "Name does not exist.";
 pub const TEXT_NAME_TWICE: &str = "Two entries use this name.";
 pub const TEXT_NO_COMMON_PROTOCOL: &str = "The nodes of this alias serve no common protocol.";
 
+/// An alias hold limit as stored: a negative value becomes 0 and a value above `u32::MAX`
+/// becomes `u32::MAX`, so that the range check of story 165 refuses both.
+fn alias_hold_limit(v: &Value) -> u32 {
+    match v {
+        Value::Number(n) if n.as_u64().is_some() => u32::try_from(n.as_u64().unwrap_or(0)).unwrap_or(u32::MAX),
+        _ => 0,
+    }
+}
+
 /// The union of the endpoint protocols of the given nodes.
 pub fn alias_protocols(nodes: &[&NodeSpec]) -> ProtocolSet {
     nodes.iter().flat_map(|n| n.endpoints.iter()).fold(ProtocolSet::EMPTY, |set, e| set.union(ProtocolSet::of(e.protocol)))
@@ -164,7 +173,7 @@ fn read_alias(name: &str, map: &Mapping, node_names: &[String], typed: &[NodeSpe
         key_headers,
         hash_fallback: affinity.and_then(|a| a.get("hash_fallback")).and_then(Value::as_bool).unwrap_or(true),
         description: map.get("description").and_then(Value::as_str).map(str::to_string),
-        hold_limit_s: map.get("hold_limit_s").and_then(Value::as_u64).and_then(|v| u32::try_from(v).ok()),
+        hold_limit_s: map.get("hold_limit_s").map(alias_hold_limit),
         node_models: members.iter().map(|n| (n.name.clone(), n.model.clone())).collect(),
     })
 }

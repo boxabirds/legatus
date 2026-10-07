@@ -8,4 +8,8 @@ mod registry_file_test;
 #[cfg(test)]
 mod router_sockets_test;
 #[cfg(test)]
+mod settings_admin_test;
+#[cfg(test)]
+mod settings_guard_test;
+#[cfg(test)]
 mod stubs_process_test;

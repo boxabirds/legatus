@@ -114,6 +114,13 @@ const ALIAS: &[(&str, SchemaNode)] = &[
     ("hold_limit_s", leaf(Kind::Int, false)),
 ];
 
+const ROUTE: &[(&str, SchemaNode)] = &[
+    ("path", leaf(Kind::Str, true)),
+    ("alias", leaf(Kind::Str, false)),
+    ("key_map", leaf(Kind::List, false)),
+    ("scope", leaf(Kind::Str, false)),
+];
+
 static ALIAS_ROW: SchemaNode = table(Kind::Map, ALIAS, false);
 static NODE_ROW: SchemaNode = table(Kind::Map, NODE, false);
 static MACHINE_ROW: SchemaNode = table(Kind::Map, MACHINE, false);
@@ -135,7 +142,7 @@ pub const TOP_LEVEL: &[(&str, SchemaNode)] = &[
     ("machines", named(&MACHINE_ROW, false)),
     ("nodes", named(&NODE_ROW, true)),
     ("aliases", named(&ALIAS_ROW, true)),
-    ("routes", leaf(Kind::Any, false)),
+    ("routes", table(Kind::List, ROUTE, false)),
     ("harnesses", table(Kind::List, HARNESS_ROW, false)),
 ];
 

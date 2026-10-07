@@ -80,12 +80,12 @@ fn tc07_an_alias_naming_a_node_that_has_its_own_error_adds_no_second_error() {
 
 #[test]
 fn tc08_alias_fields_are_read_with_their_defaults_and_order() {
-    let text = registry(&two_chat_nodes(), "  x:\n    nodes: [a]\n    affinity: { key_headers: [x-session-affinity, x-claude-code-session-id] }\n    description: the coder pool\n    hold_limit_s: 120\n  y: { nodes: [b] }\n");
+    let text = registry(&two_chat_nodes(), "  x:\n    nodes: [a]\n    affinity: { key_headers: [x-session-affinity, x-claude-code-session-id] }\n    description: the coder pool\n    hold_limit_s: 240\n  y: { nodes: [b] }\n");
     assert!(errors(&text).is_empty());
     let t = table(&text).unwrap();
     let x = t.resolve("x").unwrap();
     assert_eq!(x.key_headers, vec!["x-session-affinity", "x-claude-code-session-id"]);
-    assert_eq!((x.hash_fallback, x.description.as_deref(), x.hold_limit_s), (true, Some("the coder pool"), Some(120)));
+    assert_eq!((x.hash_fallback, x.description.as_deref(), x.hold_limit_s), (true, Some("the coder pool"), Some(240)));
     let y = t.resolve("y").unwrap();
     assert_eq!((y.hash_fallback, y.key_headers.len(), y.description.clone(), y.hold_limit_s), (true, 0, None, None));
     let off = registry(&two_chat_nodes(), "  x: { nodes: [a], affinity: { hash_fallback: false } }\n");

@@ -199,6 +199,12 @@ pub fn error_with_ref(code: ErrorCode, path: &str, text: &'static str, r: &SafeR
     RegistryError { code, path: path.to_string(), text: format!("{text} Reference: {}.", r.as_str()) }
 }
 
+/// Error whose text ends with the name of another setting. The name is a `&'static str` taken
+/// from the settings catalogue, so a value from the file cannot reach it by type.
+pub fn error_names_setting(code: ErrorCode, path: &str, text: &'static str, other: &'static str) -> RegistryError {
+    RegistryError { code, path: path.to_string(), text: format!("{text} {other}.") }
+}
+
 pub fn warning_fixed(code: WarningCode, path: &str, text: &'static str) -> RegistryWarning {
     RegistryWarning { code, path: path.to_string(), text: text.to_string() }
 }
@@ -223,4 +229,7 @@ pub struct LoadedRegistry {
     pub machines: Vec<crate::config::node::MachineSpec>,
     /// Name to alias; empty when the file lists no alias.
     pub aliases: crate::config::alias::AliasTable,
+    /// The values in use: the file value or the catalogue default for every setting.
+    pub settings: crate::config::settings::EffectiveSettings,
+    pub routes: Vec<crate::config::routes::RouteSpec>,
 }

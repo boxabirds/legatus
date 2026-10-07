@@ -2,6 +2,8 @@
 use crate::config::alias::read_aliases;
 use crate::config::node::{read_machines, read_nodes, TEXT_DUPLICATE_NAME};
 use crate::config::registry::*;
+use crate::config::routes::read_routes;
+use crate::config::settings::read_settings;
 use crate::config::validate::validate_registry;
 use std::io::Write;
 use std::path::Path;
@@ -49,7 +51,11 @@ pub fn read_registry(path: &Path) -> Result<LoadedRegistry, Vec<RegistryError>> 
         let nodes = read_nodes(&raw.0, &mut scratch);
         let machines = read_machines(&raw.0, &mut scratch);
         let aliases = read_aliases(&raw.0, &nodes, &mut scratch).unwrap_or_default();
-        Ok(LoadedRegistry { raw, warnings: report.warnings, nodes, machines, aliases })
+        let root = raw.0.as_mapping();
+        let settings = read_settings(root.and_then(|r| r.get("settings")), &aliases, &mut scratch).expect("a registry without errors has valid settings");
+        let alias_names: Vec<String> = aliases.names().iter().map(|a| a.0.clone()).collect();
+        let routes = read_routes(root.and_then(|r| r.get("routes")), &alias_names, &mut scratch);
+        Ok(LoadedRegistry { raw, warnings: report.warnings, nodes, machines, aliases, settings, routes })
     } else {
         Err(report.errors)
     }

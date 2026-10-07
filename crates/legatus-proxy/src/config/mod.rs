@@ -4,6 +4,8 @@ pub mod checks_alias;
 pub mod checks_node;
 pub mod node;
 pub mod read;
+pub mod routes;
+pub mod settings;
 pub mod registry;
 pub mod schema;
 pub mod validate;

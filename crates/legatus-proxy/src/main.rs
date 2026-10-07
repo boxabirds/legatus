@@ -11,7 +11,7 @@ use legatus_proxy::sim::SimPoints;
 use legatus_proxy::{build_router, Seams};
 use std::sync::{Arc, Mutex};
 
-/// Default listen address until the registry (story 125) supplies one.
+/// Listen address when neither the environment nor the registry sets one.
 const DEFAULT_LISTEN: &str = "127.0.0.1:8080";
 const LISTEN_ENV: &str = "LEGATUS_LISTEN";
 const REGISTRY_FLAG: &str = "--registry";
@@ -43,7 +43,8 @@ async fn main() {
     let node_views = AdminNodeViews::default();
     publish_node_views(&loaded, &node_views);
     eprintln!("registry loaded: {} ({} warnings)", path.display(), loaded.warnings.len());
-    let listen = std::env::var(LISTEN_ENV).unwrap_or_else(|_| DEFAULT_LISTEN.to_string());
+    // The environment overrides the registry, which overrides the default.
+    let listen = std::env::var(LISTEN_ENV).ok().or_else(|| loaded.settings.listen.clone()).unwrap_or_else(|| DEFAULT_LISTEN.to_string());
     let seams = Seams {
         wall: Arc::new(SystemWallClock),
         transport: Arc::new(HyperTransport::new()),

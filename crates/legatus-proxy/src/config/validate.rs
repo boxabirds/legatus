@@ -16,6 +16,8 @@ pub fn checks() -> Vec<Box<dyn RegistryCheck>> {
         Box::new(crate::config::checks_node::NodeCheckFlags),
         Box::new(crate::config::checks_node::NodeCheckWarnings),
         Box::new(crate::config::checks_alias::AliasCheck),
+        Box::new(crate::config::settings::SettingsCheck),
+        Box::new(crate::config::routes::RouteCheck),
     ];
     #[cfg(feature = "test-hooks")]
     list.push(Box::new(test_hook::EnvWarningCheck));

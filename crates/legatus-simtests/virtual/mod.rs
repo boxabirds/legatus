@@ -24,6 +24,14 @@ mod router_build_test;
 #[cfg(test)]
 mod router_duplex_test;
 #[cfg(test)]
+mod settings_catalogue_test;
+#[cfg(test)]
+mod settings_helpers;
+#[cfg(test)]
+mod settings_range_test;
+#[cfg(test)]
+mod settings_routes_test;
+#[cfg(test)]
 mod sim_point_test;
 #[cfg(test)]
 mod stub_helpers;
