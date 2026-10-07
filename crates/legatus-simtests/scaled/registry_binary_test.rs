@@ -17,8 +17,9 @@ fn binary() -> PathBuf {
     static BUILT: OnceLock<PathBuf> = OnceLock::new();
     BUILT
         .get_or_init(|| {
-            // Always run cargo: a stale binary would test old code.
-            let status = Command::new("cargo").args(["build", "-p", "legatus-proxy", "--bin", BIN]).status().expect("run cargo build");
+            // Always run cargo: a stale binary would test old code. The test-hooks feature adds the
+            // warning check that the warning test switches on with an environment variable.
+            let status = Command::new("cargo").args(["build", "-p", "legatus-proxy", "--bin", BIN, "--features", "test-hooks"]).status().expect("run cargo build");
             assert!(status.success());
             let exe = std::env::current_exe().unwrap();
             exe.parent().and_then(|p| p.parent()).unwrap().join(BIN)
@@ -113,4 +114,28 @@ fn w1_fix_the_file_and_the_binary_starts_and_says_so() {
     assert!(open, "the binary serves after the file is fixed");
     let stderr = read_stderr(&mut good);
     assert!(stderr.contains("registry loaded:") && stderr.contains("(0 warnings)"), "{stderr}");
+}
+
+const WARNING_PATH_ENV: &str = "LEGATUS_TEST_WARNING_PATH";
+const WARNING_PATH: &str = "nodes.strix-qwen.engine_flags.np";
+
+#[test]
+fn tc14_a_valid_file_with_a_warning_starts_and_the_warning_is_printed_and_counted() {
+    let port = free_port();
+    let file = write_registry("warn", SPEC_EXAMPLE);
+    let mut command = Command::new(binary());
+    command.arg("--registry").arg(&file).env("LEGATUS_LISTEN", format!("127.0.0.1:{port}")).env(WARNING_PATH_ENV, WARNING_PATH);
+    let mut child = command.stderr(Stdio::piped()).stdout(Stdio::null()).spawn().unwrap();
+    let mut waited = Duration::ZERO;
+    while !port_open(port) && waited < WAIT {
+        std::thread::sleep(POLL);
+        waited += POLL;
+    }
+    let open = port_open(port);
+    let _ = child.kill();
+    let _ = child.wait();
+    assert!(open, "a warning does not stop the start");
+    let stderr = read_stderr(&mut child);
+    assert!(stderr.contains(&format!("warning flag_mismatch at {WARNING_PATH}: Declared value differs from the tested one.")), "{stderr}");
+    assert!(stderr.contains("(1 warnings)"), "{stderr}");
 }

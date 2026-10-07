@@ -10,7 +10,28 @@ pub trait RegistryCheck {
 
 /// The registered checks, run after the version and shape checks of this story.
 pub fn checks() -> Vec<Box<dyn RegistryCheck>> {
-    Vec::new()
+    #[allow(unused_mut)]
+    let mut list: Vec<Box<dyn RegistryCheck>> = Vec::new();
+    #[cfg(feature = "test-hooks")]
+    list.push(Box::new(test_hook::EnvWarningCheck));
+    list
+}
+
+/// Feature `test-hooks` only: lets the integration test of the real binary raise one load warning
+/// before any story registers a check that does (stories 136, 165).
+#[cfg(feature = "test-hooks")]
+mod test_hook {
+    use super::*;
+    /// Environment variable that holds the path of the warning.
+    pub const WARNING_PATH_ENV: &str = "LEGATUS_TEST_WARNING_PATH";
+    pub struct EnvWarningCheck;
+    impl RegistryCheck for EnvWarningCheck {
+        fn check(&self, _doc: &RawRegistry, out: &mut ValidationReport) {
+            if let Ok(path) = std::env::var(WARNING_PATH_ENV) {
+                out.warnings.push(warning_fixed(WarningCode::FlagMismatch, &path, "Declared value differs from the tested one."));
+            }
+        }
+    }
 }
 
 /// Pure, no I/O: run the version check, the shape check and every registered check.

@@ -13,6 +13,11 @@ path = "src/lib.rs"
 name = "legatus"
 path = "src/main.rs"
 
+[features]
+# Test-only hook: a check that raises one warning when LEGATUS_TEST_WARNING_PATH is set.
+# Never enabled in a release build.
+test-hooks = []
+
 [dependencies]
 legatus-common.workspace = true
 tokio = { workspace = true, features = ["rt-multi-thread", "macros", "time", "net", "sync"] }
