@@ -13,6 +13,7 @@ Check run: 2026-10-07 on macOS / Darwin 25.6.0 arm64 and on Linux aarch64 (Ubunt
 | tower | 0.5.3 | spike s2 README; scratch build | PROVEN here (build) | PROVEN here (build) |
 | axum | 0.7.9 | spike s2 README; scratch build | PROVEN here (build) | PROVEN here (build) |
 | reqwest (test kit only) | 0.13.5 | spike s2 README; scratch build | PROVEN here (build) | PROVEN here (build) |
+| yaml_serde (registry file parser, story 125) | 0.10.7 | story 125 task 2 prototype: nested paths kept, every unknown key reported, empty and comments-only file is null, duplicate keys and tabs are parse errors (tests registry_schema_test, registry_file_test); fork of serde_yaml maintained by the YAML organisation | PROVEN here (build and tests) | NOT TESTED |
 
 Not exercised: axum 0.8.9. It stays unpinned until a separate change re-runs the spike s2 tests (owner decision pending).
 

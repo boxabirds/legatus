@@ -1,5 +1,7 @@
 //! The Legatus proxy library. Later stories add the registry, pipeline and affinity.
 #![deny(clippy::disallowed_types, clippy::disallowed_methods)]
+pub mod config;
+pub mod lifecycle;
 pub mod net;
 pub mod obs;
 pub mod sim;

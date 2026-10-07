@@ -1,0 +1,51 @@
+# Example of specs/proxy/07 section 3 (the measured block removed: the proxy writes it) plus a harnesses list.
+version: 1
+settings:
+  listen: 0.0.0.0:8080
+  hold_limit_s: 250
+  protected_window_s: 180
+  client_tokens_ref: file:/etc/legatus/clients.txt
+machines:
+  strix: { host: strix.local, mem_gb: 128, agent: "http://strix.local:9100" }
+  mini:  { host: mini.local,  mem_gb: 16 }
+nodes:
+  strix-qwen:
+    engine: { name: llama-server, version: b11146 }
+    model: qwen3.8-27b-q4
+    machine: strix
+    endpoints: [ { protocol: openai-chat, base_url: "http://strix.local:8081" } ]
+    slots: auto
+    context: { per_slot: 65536, on_overflow: error_400 }
+    cache: { kind: hybrid }
+    responses: false
+    engine_flags: { jinja: true, np: 4, ctx_checkpoints: 32, checkpoint_min_step: 8192, cache_ram_mib: 8192 }
+    patch: { set: { chat_template_kwargs: { enable_thinking: false } } }
+  mini-ollama:
+    engine: { name: ollama, version: 0.35.1 }
+    model: qwen3:4b
+    machine: mini
+    endpoints: [ { protocol: openai-chat, base_url: "http://mini.local:11434" } ]
+    slots: 1
+    context: { per_slot: 8192, on_overflow: silent_truncate }
+    patch: { set: { reasoning_effort: none } }
+    always_on: false
+  claude-hosted:
+    engine: { name: anthropic-hosted }
+    model: claude-example-model
+    endpoints: [ { protocol: anthropic-messages, base_url: "https://api.anthropic.com" } ]
+    auth: { scheme: x-api-key, key_ref: env:ANTHROPIC_API_KEY }
+aliases:
+  local-coder:
+    nodes: [strix-qwen, mini-ollama]
+    affinity: { key_headers: [x-session-affinity, x-claude-code-session-id] }
+  frontier:
+    nodes: [claude-hosted]
+harnesses:
+  - name: claude-code
+    session_header: x-claude-code-session-id
+    agent_header: x-claude-code-agent-id
+    never_key_headers: [x-api-key, authorization]
+    title_alias: frontier
+    user_agent_prefix: claude-cli
+  - name: pi
+    session_header: x-session-affinity

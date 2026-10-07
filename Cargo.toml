@@ -15,6 +15,7 @@ hyper = { version = "=1.12.0" }
 hyper-util = { version = "=0.1.21" }
 tower = { version = "=0.5.3" }
 axum = { version = "=0.7.9" }
+yaml_serde = { version = "=0.10.7" } # registry file parser (story 125)
 reqwest = { version = "=0.13.5", default-features = false } # test kit only
 legatus-common = { path = "crates/legatus-common" }
 legatus-proxy = { path = "crates/legatus-proxy" }

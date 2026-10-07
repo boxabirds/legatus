@@ -2,6 +2,10 @@
 #[cfg(test)]
 mod clocks_test;
 #[cfg(test)]
+mod registry_redact_test;
+#[cfg(test)]
+mod registry_schema_test;
+#[cfg(test)]
 mod router_build_test;
 #[cfg(test)]
 mod router_duplex_test;
