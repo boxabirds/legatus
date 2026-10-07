@@ -1,0 +1,11 @@
+# Same rules as the workspace clippy.toml, plus no process spawn in the proxy.
+disallowed-types = [
+  { path = "std::time::Instant", reason = "use tokio::time::Instant so virtual time works" },
+  { path = "std::time::SystemTime", reason = "use the wall clock seam of story 144" },
+]
+disallowed-methods = [
+  { path = "std::thread::sleep", reason = "use tokio::time::sleep so virtual time works" },
+  { path = "std::process::Command::new", reason = "the proxy never spawns a process" },
+  { path = "rand::thread_rng", reason = "randomness comes from the seam of story 170" },
+  { path = "rand::random", reason = "randomness comes from the seam of story 170" },
+]

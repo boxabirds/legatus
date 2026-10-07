@@ -1,0 +1,11 @@
+# Lint rules of story 128 (workspace.lint.clock). The crates legatus-proxy and
+# legatus-common deny these lints; other members may opt out with a reason.
+disallowed-types = [
+  { path = "std::time::Instant", reason = "use tokio::time::Instant so virtual time works" },
+  { path = "std::time::SystemTime", reason = "use the wall clock seam of story 144" },
+]
+disallowed-methods = [
+  { path = "std::thread::sleep", reason = "use tokio::time::sleep so virtual time works" },
+  { path = "rand::thread_rng", reason = "randomness in the test kit comes from the seeded generator of story 120" },
+  { path = "rand::random", reason = "randomness in the test kit comes from the seeded generator of story 120" },
+]

@@ -1,0 +1,5 @@
+# Modules of legatus-proxy and legatus-common that may carry an allow attribute
+# for the clock, sleep, process or random lints. Format: module path | reason.
+# The attribute itself must also carry `reason = "..."`.
+crates/legatus-proxy/src/net/wall_system.rs | production wall clock (story 144)
+crates/legatus-proxy/src/key/secret.rs | operating-system randomness (story 170)
