@@ -1,3 +1,3 @@
 //! Real tier: real engines, run only when asked.
 #[cfg(test)]
-mod pi_through_proxy;
+mod pi_through_proxy_test;
