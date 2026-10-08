@@ -334,3 +334,50 @@ async fn tc12_the_real_streamed_capture_gives_reuse_from_its_terminal_chunk_thro
     let view = UsageView { json_tail: without.as_bytes(), protocol: Protocol::OpenAiChat, stream: true };
     assert_eq!(adapter.reuse_fields(&view, ReuseProbeState::Unprobed), ReuseReading::Unknown(UnknownReason::FieldAbsent));
 }
+
+fn fleet(nodes: &[(&str, &str, &str)]) -> Registry {
+    let mut text = String::from("version: 1\nnodes:\n");
+    for (name, engine, extra) in nodes {
+        text += &format!("  {name}:\n    engine: {{ name: {engine} }}\n    model: m\n    endpoints: [ {{ protocol: openai-chat, base_url: \"{NODE_URL}\" }} ]\n{extra}");
+    }
+    text += &format!("aliases:\n  a: {{ nodes: [{}] }}\n", nodes.iter().map(|n| n.0).collect::<Vec<_>>().join(", "));
+    Registry::from_text(&text).expect("valid registry")
+}
+
+async fn settle() {
+    for _ in 0..10 {
+        tokio::time::sleep(Duration::from_millis(1)).await;
+    }
+}
+
+#[tokio::test(start_paused = true)]
+async fn the_facts_are_read_at_join_re_read_on_a_changed_entry_dropped_on_removal_and_read_on_return() {
+    use legatus_proxy::config::diff::diff_registries;
+    use legatus_proxy::config::reload::ReloadObserver;
+    use legatus_proxy::engine::llama_server::{FactsRefresher, NodeFactsStore};
+    let recorded = Recording::new(Arc::new(MultiSlotLlamaStub::new(spec(4))));
+    let store = Arc::new(NodeFactsStore::default());
+    let refresher = Arc::new(FactsRefresher::new(recorded.clone(), store.clone()));
+
+    let first = fleet(&[("n1", "llama-server", ""), ("gone", "llama-server", ""), ("o1", "ollama", "")]);
+    refresher.spawn_join(&first);
+    settle().await;
+    let id = |n: &str| legatus_common::ids::NodeId(n.to_string());
+    assert_eq!(store.get(&id("n1")).unwrap().slots, EffectiveSlots { slots: 4, source: SlotsSource::Props });
+    assert!(store.get(&id("gone")).is_some());
+    assert!(store.get(&id("o1")).is_none(), "another engine is not read by this adapter");
+    assert_eq!(recorded.paths().len(), 2, "one properties read per llama-server node: {:?}", recorded.paths());
+
+    let second = fleet(&[("n1", "llama-server", "    slots: 2\n"), ("o1", "ollama", ""), ("fresh", "llama-server", "")]);
+    let diff = diff_registries(&first, &second);
+    refresher.on_reload(&first, &second, &diff);
+    settle().await;
+    assert_eq!(store.get(&id("n1")).unwrap().slots, EffectiveSlots { slots: 2, source: SlotsSource::Registry }, "the changed entry is re-read");
+    assert_eq!(store.get(&id("fresh")).unwrap().slots.slots, 4, "an added node is read");
+    assert!(store.get(&id("gone")).is_none(), "a removed node is dropped");
+
+    // A node returns from down: story 175 calls refresh_node.
+    let before = recorded.paths().len();
+    refresher.refresh_node(second.node(&id("n1")).unwrap()).await;
+    assert_eq!(recorded.paths().len(), before + 1);
+}

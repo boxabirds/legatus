@@ -4,7 +4,10 @@
 //!
 //! This engine has a status page that lists slots. The proxy never asks for it: it cannot tell
 //! whether a node sleeps, and that page wakes a sleeping engine. Nothing in this file names it.
+use crate::config::diff::RegistryDiff;
 use crate::config::node::{NodeSpec, Slots};
+use crate::config::reload::ReloadObserver;
+use crate::config::typed::Registry;
 use crate::engine::reuse::extract_reuse;
 use crate::engine::EngineAdapter;
 use crate::upstream::transport::{UpstreamRequest, UpstreamTransport};
@@ -12,7 +15,9 @@ use bytes::Bytes;
 use futures_util::StreamExt;
 use http::{HeaderMap, Method};
 use legatus_common::engine::*;
-use std::sync::Mutex;
+use legatus_common::ids::NodeId;
+use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 /// Used when the engine does not say and the registry says `auto`. PROPOSED, from spike S3;
@@ -327,4 +332,85 @@ pub fn classify_error(status: u16, json_error_code: Option<&str>) -> ErrorClass 
 pub fn error_type_of(body: &[u8]) -> Option<String> {
     let value: serde_json::Value = serde_json::from_slice(body).ok()?;
     value.get("error")?.get("type")?.as_str().map(str::to_string)
+}
+
+// ---- keeping the facts current -----------------------------------------------------------
+
+/// The facts of every llama-server node, as the admin read serves them.
+#[derive(Default)]
+pub struct NodeFactsStore(Mutex<HashMap<NodeId, NodeFacts>>);
+
+impl NodeFactsStore {
+    pub fn get(&self, node: &NodeId) -> Option<NodeFacts> {
+        self.0.lock().ok().and_then(|held| held.get(node).copied())
+    }
+    pub fn set(&self, node: NodeId, facts: NodeFacts) {
+        if let Ok(mut held) = self.0.lock() {
+            held.insert(node, facts);
+        }
+    }
+    pub fn remove(&self, node: &NodeId) {
+        if let Ok(mut held) = self.0.lock() {
+            held.remove(node);
+        }
+    }
+}
+
+fn is_llama_server(node: &NodeSpec) -> bool {
+    crate::engine::family_of(node.engine.as_str()) == EngineFamily::LlamaServer
+}
+
+/// Re-reads the facts of a node at join, on a registry entry change and on return from down.
+pub struct FactsRefresher {
+    transport: Arc<dyn UpstreamTransport>,
+    store: Arc<NodeFactsStore>,
+}
+
+impl FactsRefresher {
+    pub fn new(transport: Arc<dyn UpstreamTransport>, store: Arc<NodeFactsStore>) -> FactsRefresher {
+        FactsRefresher { transport, store }
+    }
+
+    /// Read one node now. Use this at join and when the node returns from down (story 175).
+    /// A node of another engine is ignored.
+    pub async fn refresh_node(&self, node: &NodeSpec) {
+        if !is_llama_server(node) {
+            return;
+        }
+        let previous = self.store.get(&node.name);
+        if let Ok(facts) = discover(self.transport.as_ref(), node, previous).await {
+            self.store.set(node.name.clone(), facts);
+        }
+    }
+
+    /// Read every llama-server node of a registry, each in its own task (the start of the proxy).
+    pub fn spawn_join(self: &Arc<Self>, registry: &Registry) {
+        for node in registry.nodes.iter().filter(|n| is_llama_server(n)) {
+            self.spawn_refresh(node.clone());
+        }
+    }
+
+    fn spawn_refresh(self: &Arc<Self>, node: NodeSpec) {
+        if tokio::runtime::Handle::try_current().is_err() {
+            return;
+        }
+        let me = self.clone();
+        tokio::spawn(async move { me.refresh_node(&node).await });
+    }
+}
+
+impl ReloadObserver for Arc<FactsRefresher> {
+    fn on_reload(&self, _old: &Registry, new: &Registry, diff: &RegistryDiff) {
+        for removed in &diff.nodes_removed {
+            self.store.remove(removed);
+        }
+        let touched = diff.nodes_added.iter().chain(diff.nodes_changed.iter().map(|c| &c.name));
+        for name in touched {
+            if let Some(node) = new.node(name) {
+                if is_llama_server(node) {
+                    self.spawn_refresh(node.clone());
+                }
+            }
+        }
+    }
 }
