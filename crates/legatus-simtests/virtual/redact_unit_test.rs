@@ -236,3 +236,13 @@ fn a_string_over_the_size_limit_is_refused_with_its_path_and_nothing_else() {
     let error = Redactor::new_run(SEED_ONE).redact(&capture).unwrap_err();
     assert_eq!(error, RedactError::TooLarge("requests.0.body.messages.0.content".into()));
 }
+
+#[test]
+fn tc09_the_file_name_stamp_is_utc_to_the_millisecond_and_sorts_in_time_order() {
+    use legatus_testkit::redact::write::utc_stamp;
+    assert_eq!(utc_stamp(0), "19700101T000000000Z");
+    assert_eq!(utc_stamp(1_791_417_600_123), "20261008T000000123Z");
+    assert_eq!(utc_stamp(951_782_400_000), "20000229T000000000Z", "a leap day");
+    assert!(utc_stamp(1_000) < utc_stamp(1_001));
+    assert!(utc_stamp(86_399_999) < utc_stamp(86_400_000));
+}

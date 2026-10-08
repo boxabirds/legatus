@@ -95,13 +95,14 @@ The proxy writes these events to the same files: `start`, `ready`, `registry_loa
 - **PRX-OBS-015** The proxy must write a `node_state` event for each change of the health state of a node.
 - **PRX-OBS-016** The proxy must write a `registry_rejected` event when it refuses a registry file, and must keep the last good registry (see [09-restart-and-failure.md](09-restart-and-failure.md)).
 - **PRX-OBS-058** The proxy must write the field `move_cost_tokens` in a `request` event with the placement `moved`. The value is the `prompt_tokens` that the previous turn of the conversation stored in the table entry (PRX-OBS-024).
+- **PRX-OBS-059** The proxy must set `cache_class` to `first` when no previous turn of the conversation key is stored (new conversation, restart, compaction or expiry). The proxy must leave first turns out of the cold count. PROPOSED.
 
 ## 3. Session reference
 
 The admin side never shows a raw session value. It shows a harness label and a session reference.
 
 - **PRX-OBS-017** The proxy must compute `session_ref` as the first 8 bytes of an HMAC-SHA-256 of the conversation key with a secret salt. The proxy must write the 8 bytes as 16 hexadecimal characters. This construction is PROPOSED.
-- **PRX-OBS-018** The proxy must create the salt at first start. The salt is 32 random bytes in a file with the mode 0600. The proxy must reuse the file at each later start.
+- **PRX-OBS-018** The proxy must derive the salt from the persistent secret in `state_dir` (32 random bytes in a file with the mode 0600, created at first start and reused at each later start). The proxy must not write a second secret file. PROPOSED.
 - **PRX-OBS-019** The proxy must not write the salt to a log or send it to the admin process.
 - **PRX-OBS-020** The proxy must compute the reference from the final conversation key. The salt then also covers a derived key, which is a hash of the first messages.
 

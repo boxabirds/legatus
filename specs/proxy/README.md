@@ -30,12 +30,12 @@ The vision is "Do one thing exceptionally well". Read [the vision and scope](00-
 | [01-decisions.md](01-decisions.md) | Decision log | DEC-001 to 067 |
 | [02-architecture.md](02-architecture.md) | Components, flow, process model, resource targets | PRX-SCOPE-001 to 033, PRX-PERF-001 to 007 |
 | [03-affinity-and-keys.md](03-affinity-and-keys.md) | Key rules, table, placement, moves | PRX-AFF-001 to 034, PRX-KEY-001 to 058 |
-| [04-admission-control-and-queueing.md](04-admission-control-and-queueing.md) | Caps, protected window, hold queue | PRX-ADM-001 to 053 |
+| [04-admission-control-and-queueing.md](04-admission-control-and-queueing.md) | Caps, protected window, hold queue | PRX-ADM-001 to 057 |
 | [05-engine-behaviour.md](05-engine-behaviour.md) | Per engine facts, hybrid models, probes | PRX-ENG-001 to 075 |
 | [06-protocols-and-harnesses.md](06-protocols-and-harnesses.md) | OpenAI and Messages paths, harness matrix | PRX-PROTO-001 to 065 |
 | [07-registry-and-configuration.md](07-registry-and-configuration.md) | Registry file, patches, profile, secrets | PRX-REG-001 to 049, PRX-SEC-001 to 016 |
-| [08-observability-and-admin.md](08-observability-and-admin.md) | Event log, metrics, admin API | PRX-OBS-001 to 058 |
-| [09-restart-and-failure.md](09-restart-and-failure.md) | Restart, node failure, version 2 seams | PRX-REST-001 to 053 |
+| [08-observability-and-admin.md](08-observability-and-admin.md) | Event log, metrics, admin API | PRX-OBS-001 to 059 |
+| [09-restart-and-failure.md](09-restart-and-failure.md) | Restart, node failure, version 2 seams | PRX-REST-001 to 054 |
 | [10-research-and-prior-art.md](10-research-and-prior-art.md) | Research and spike synthesis, build or adopt | none |
 | [11-lessons-learned.md](11-lessons-learned.md) | Lessons from others and from spikes | LES-001 to 075 |
 | [12-edge-cases.md](12-edge-cases.md) | Edge case catalogue | EDGE-ADM-001 to 040. EDGE-AFF-001 to 025. EDGE-CAC-001 to 027. EDGE-ENG-001 to 018. EDGE-HAR-001 to 030. EDGE-HST-001 to 018. EDGE-KEY-001 to 039. EDGE-OBS-001 to 017. EDGE-PRO-001 to 041. EDGE-RST-001 to 015. EDGE-STR-001 to 023. |
@@ -63,7 +63,7 @@ The final pass computed these counts by script from the IDs that the files defin
 
 | Item | Total | REMOVED | Superseded | Active |
 |---|---|---|---|---|
-| Requirements `PRX-*` | 569 | 5 | 0 | 564 |
+| Requirements `PRX-*` | 575 | 5 | 0 | 570 |
 | Decisions `DEC-*` | 67 | 0 | 1 | 66 |
 | Edge cases `EDGE-*` | 293 | 2 | 0 | 291 |
 | Fixtures `FIX-*` | 223 | 2 | 0 | 221 |
@@ -78,15 +78,15 @@ Requirements by area:
 
 | Area | Total | REMOVED | Active |
 |---|---|---|---|
-| `PRX-ADM` | 53 | 4 | 49 |
+| `PRX-ADM` | 57 | 4 | 53 |
 | `PRX-AFF` | 34 | 0 | 34 |
 | `PRX-ENG` | 75 | 0 | 75 |
 | `PRX-KEY` | 58 | 0 | 58 |
-| `PRX-OBS` | 58 | 0 | 58 |
+| `PRX-OBS` | 59 | 0 | 59 |
 | `PRX-PERF` | 7 | 0 | 7 |
 | `PRX-PROTO` | 65 | 1 | 64 |
 | `PRX-REG` | 49 | 0 | 49 |
-| `PRX-REST` | 53 | 0 | 53 |
+| `PRX-REST` | 54 | 0 | 54 |
 | `PRX-SCOPE` | 33 | 0 | 33 |
 | `PRX-SEC` | 16 | 0 | 16 |
 | `PRX-TEST` | 68 | 0 | 68 |

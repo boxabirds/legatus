@@ -88,7 +88,7 @@ Cost: the cluster size is an ASSUMPTION. The sources report the prefill times. A
 Two measures cut this cost without any stored state.
 
 - **PRX-REST-012** The proxy must place a new conversation on the node that a rendezvous hash of the key ranks first. This applies when several nodes have a free seat. The coordinator accepted this rule on 2026-10-07 (PROPOSED until measured). It makes the placement after a restart equal to the placement before it, when load is equal. File 04 (PRX-ADM-016) uses it as the last tie-break.
-- **PRX-REST-013** The proxy must read the load signals of each node at start. These are llama-server `/metrics` and Ollama `/api/ps`. The proxy must count work that already runs as part of the cap.
+- **PRX-REST-013** The proxy must read the load signals of each node at start. The load signal is llama-server `/metrics`. Ollama `/api/ps` shows no slot, busy or queue field, so an Ollama node starts with a count of zero. The proxy must count work that already runs as part of the cap.
 
 - **PRX-REST-014** The proxy must record the first turn after a restart with `cache_class` `first`. It must record a later cold turn as `cold`. The cost of the restart then shows in the cold-turn rate (file 08).
 - **PRX-REST-015** The proxy must not write the affinity table to disk in v1.
@@ -173,6 +173,7 @@ The status codes below are PROPOSED unless marked. The pi column is PROVEN by sp
 - **PRX-REST-039** When a node cuts a stream on the chat path, the proxy must end the stream with an abrupt close. It must not send a clean terminator or an error event after a partial body.
 - **PRX-REST-052** When a node cuts a stream on the Responses path, the proxy must close the stream abruptly. It must send no error event.
 - **PRX-REST-053** The proxy must not write the table of response ids to disk. After a restart, a request with `previous_response_id` goes to the node that the key chooses, and the proxy passes the error of that node (PRX-PROTO-061). This rule is PROPOSED.
+- **PRX-REST-054** The proxy must answer with the code `starting` (status 503) in two cases only: the hold limit ends while the proxy is not ready (see PRX-REST-003), or start-up failed (the first registry is invalid, the log directory is locked or the state directory is unusable). A request beyond `max_held` gets the hold-limit error at once (PRX-REST-009). PROPOSED.
 - **PRX-REST-051** When a node cuts a stream on the Messages path, the proxy must send one `overloaded_error` event and then close. The owner approved this default on 2026-10-07 (DEC-058). Spike D showed that Claude Code also retries an abrupt close (PROVEN). The default stays.
 - **PRX-REST-040** The proxy must cancel the node request and free the cap place when the harness closes its connection.
 - **PRX-REST-041** The proxy must decide the node of a retried request again from the current health state, because the retry is a new request.

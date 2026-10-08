@@ -316,7 +316,7 @@ Evidence ([S4](evidence/spikes/s4-smoke-README.md)), real models on an Apple M2 
 What the evidence implies for a record of this kind (PROPOSED):
 
 - Use a threshold of 0.90 and at least 20 calls per behaviour.
-- Report a Wilson interval. Mark a result inside the interval of the threshold as `borderline`.
+- Compute the observed pass rate. A smoke result passes when the observed pass rate is at least 0.90 over at least 20 calls and every behaviour is at least 0.70.
 - Add a per-behaviour floor of 0.70.
 - Test schema-valid arguments, with a floor of 1.0.
 - Test a two-step chain, where the second call needs the result of the first. Single-call tests did not expose a 0 of 20 chain result.
@@ -327,7 +327,7 @@ NOT TESTED: MLX, vLLM, SGLang, models above 4 billion parameters, large argument
 
 - PRX-REG-034: The proxy must key a stored smoke record by engine, version, model, thinking setting, template setting, context and sampling.
 - PRX-REG-035: The proxy must use at least 20 calls per behaviour in a smoke record. PROPOSED.
-- PRX-REG-036: The proxy must mark a smoke result as `borderline` when the Wilson interval contains the threshold. PROPOSED.
+- PRX-REG-036: The proxy must record a smoke result as `pass` when the observed pass rate is at least 0.90 over at least 20 calls per behaviour and no behaviour is below 0.70. PROPOSED.
 - PRX-REG-037: The proxy must not remove a node from an alias because of a smoke result.
 
 ## 10. Secrets and key custody

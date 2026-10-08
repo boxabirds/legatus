@@ -465,6 +465,7 @@ The proxy can add the header `x-legatus-queue-ms` to a response that waited in t
 | PRX-ADM-036 | The proxy must not poll `/slots` on a llama-server node that runs with `--sleep`. |
 | PRX-ADM-037 | The proxy must write the events `hold_start`, `hold_end` and `hold_refused` with the wait, the pool and the outcome. |
 | PRX-ADM-038 | The proxy must report in metrics, for each pool, the queue length, the oldest wait and the count of refusals. |
+| PRX-ADM-054 | The proxy must report in metrics, for each pool, whether it is saturated, and for each node, whether it is saturated. PROPOSED. |
 | PRX-ADM-039 | The proxy must check the context of the prompt against the slot context of the node and not against the total context. |
 | PRX-ADM-040 | The proxy must load `window`, `probation_window`, `mature_turns`, `hold_limit`, `max_held` and `hold_limit_status` from the registry. |
 | PRX-ADM-041 | The proxy must allow `hold_limit` per alias. |
@@ -480,6 +481,9 @@ The proxy can add the header `x-legatus-queue-ms` to a response that waited in t
 | PRX-ADM-051 | The proxy must keep the seats of a node with one sequence for each slot and no host cache equal to its slot count. |
 | PRX-ADM-052 | The proxy must report in the admin read the `warm_capacity` of each node, its source (declared or calibrated) and the date of the calibration. |
 | PRX-ADM-053 | The proxy must send the refusal at the hold limit of a `/v1/responses` request with status 503 and never with status 429. |
+| PRX-ADM-055 | The proxy must place a request that has a table entry or a required node only on that node, apply the free-seat and reclaim rules there, and hold the request for that node when no rule applies. PROPOSED. |
+| PRX-ADM-056 | The proxy must give a request of a conversation that already has a request running no new seat, and must count it against the cap only. PROPOSED. |
+| PRX-ADM-057 | The proxy must add the header `x-legatus-queue-ms` to a response that waited in the hold queue, with the wait in milliseconds. PROPOSED. |
 
 ## 12. Tests
 
