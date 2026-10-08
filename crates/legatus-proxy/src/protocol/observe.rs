@@ -15,7 +15,7 @@ fn is_ws(b: u8) -> bool {
 }
 
 /// The bytes after `"key"` and an optional colon with white space around it.
-fn value_after<'a>(buf: &'a [u8], key_end: usize) -> Option<&'a [u8]> {
+fn value_after(buf: &[u8], key_end: usize) -> Option<&[u8]> {
     let mut at = key_end;
     while buf.get(at).copied().is_some_and(is_ws) {
         at += 1;
