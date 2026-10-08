@@ -77,3 +77,30 @@ async fn a_registry_handle_shared_with_the_router_is_the_one_the_reload_swaps() 
     let router_handle = handle.clone();
     assert!(Arc::ptr_eq(&handle, &router_handle));
 }
+
+#[tokio::test(start_paused = true)]
+async fn the_observer_is_called_once_after_the_valid_swap_with_the_removed_node_and_not_by_a_rejected_or_identical_reload() {
+    use legatus_proxy::config::diff::RegistryDiff;
+    use legatus_proxy::config::reload::ReloadObserver;
+    use std::sync::Mutex;
+    struct Recorder(Arc<Mutex<Vec<RegistryDiff>>>);
+    impl ReloadObserver for Recorder {
+        fn on_reload(&self, _old: &Registry, _new: &Registry, diff: &RegistryDiff) {
+            self.0.lock().unwrap().push(diff.clone());
+        }
+    }
+    let h = super::reload_helpers::harness(WITH_A);
+    let calls = Arc::new(Mutex::new(Vec::new()));
+    h.hub.register(Arc::new(Recorder(calls.clone())));
+    h.source.set_text(WITH_A);
+    h.reloader.reload_once().await;
+    h.source.set_text("version: 5\nnodes: {}\naliases: {}\n");
+    h.reloader.reload_once().await;
+    assert!(calls.lock().unwrap().is_empty(), "neither an identical file nor a rejected one calls the observer");
+    h.source.set_text(WITH_C);
+    h.reloader.reload_once().await;
+    let calls = calls.lock().unwrap();
+    assert_eq!(calls.len(), 1);
+    assert_eq!(calls[0].nodes_removed, vec![legatus_common::ids::NodeId("a".into())]);
+    assert_eq!(calls[0].nodes_added, vec![legatus_common::ids::NodeId("c".into())]);
+}

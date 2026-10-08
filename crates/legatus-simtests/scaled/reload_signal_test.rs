@@ -113,3 +113,58 @@ async fn a_file_edit_without_a_signal_changes_nothing() {
     let _ = child.kill();
     let _ = child.wait();
 }
+
+/// A node that streams its answer slowly: four parts, half a second apart.
+async fn slow_node() -> u16 {
+    use axum::body::Body;
+    use futures_util::stream;
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let port = listener.local_addr().unwrap().port();
+    let app = axum::Router::new().route(
+        "/v1/chat/completions",
+        post(|| async {
+            let parts = stream::unfold(0u8, |i| async move {
+                if i >= 4 {
+                    return None;
+                }
+                tokio::time::sleep(Duration::from_millis(500)).await;
+                Some((Ok::<_, std::io::Error>(bytes::Bytes::from(format!("slow-part-{i};"))), i + 1))
+            });
+            Body::from_stream(parts)
+        }),
+    );
+    tokio::spawn(async move { axum::serve(listener, app).await.unwrap() });
+    port
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn tc08_a_stream_from_a_node_the_real_reload_removed_finishes_and_a_new_request_uses_the_new_node() {
+    let slow = slow_node().await;
+    let fast = node("answer-from-node-two").await;
+    let proxy_port = free_port();
+    let file = std::env::temp_dir().join(format!("legatus-span-{}", std::process::id())).join("registry.yaml");
+    std::fs::create_dir_all(file.parent().unwrap()).unwrap();
+    std::fs::write(&file, registry(proxy_port, slow)).unwrap();
+    let mut child = Command::new(crate::legatus_bin::legatus_binary()).arg("--registry").arg(&file).env_remove("LEGATUS_LISTEN").stderr(Stdio::piped()).stdout(Stdio::null()).spawn().unwrap();
+    let stderr = child.stderr.take().unwrap();
+    let (tx, rx) = std::sync::mpsc::channel();
+    std::thread::spawn(move || {
+        for line in BufReader::new(stderr).lines().map_while(Result::ok) {
+            let _ = tx.send(line);
+        }
+    });
+    wait_for_line(&rx, "legatus listening on");
+    let streaming = std::thread::spawn(move || ask(proxy_port));
+    std::thread::sleep(Duration::from_millis(700));
+    std::fs::write(&file, registry(proxy_port, fast)).unwrap();
+    hang_up(child.id());
+    wait_for_line(&rx, "registry reloaded: generation 2");
+    assert!(ask(proxy_port).contains("answer-from-node-two"), "a request that starts after the swap does not use the removed node");
+    let reply = streaming.join().unwrap();
+    for i in 0..4 {
+        assert!(reply.contains(&format!("slow-part-{i};")), "the stream that began before the swap finished (part {i}): {reply}");
+    }
+    assert!(reply.trim_end().ends_with("0"), "the chunked body ended cleanly: {reply}");
+    let _ = child.kill();
+    let _ = child.wait();
+}
