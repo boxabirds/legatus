@@ -4,6 +4,9 @@
 //! cannot: values outside a list of words, ranges and cross-field rules.
 use crate::config::registry::*;
 use crate::config::schema::join_path;
+use crate::engine::family_of;
+use crate::engine::version::version_status;
+use legatus_common::engine::EngineVersionStatus;
 use legatus_common::ids::NodeId;
 use yaml_serde::{Mapping, Value};
 
@@ -512,6 +515,9 @@ pub fn read_machines(tree: &Value, out: &mut ValidationReport) -> Vec<MachineSpe
 pub struct NodeConfigView {
     pub name: NodeId,
     pub engine: &'static str,
+    pub engine_version: Option<String>,
+    /// Tested, untested or unknown. An untested node still serves.
+    pub engine_version_status: EngineVersionStatus,
     pub responses: bool,
     pub stateful_responses: bool,
     pub ignores_previous_response_id: bool,
@@ -529,6 +535,8 @@ pub fn node_config_views(nodes: &[NodeSpec], warnings: &[RegistryWarning]) -> Ve
             NodeConfigView {
                 name: n.name.clone(),
                 engine: n.engine.as_str(),
+                engine_version: n.engine_version.clone(),
+                engine_version_status: version_status(family_of(n.engine.as_str()), n.engine_version.as_deref()),
                 responses: n.responses,
                 stateful_responses: n.stateful_responses,
                 ignores_previous_response_id: n.ignores_previous_response_id,

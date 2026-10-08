@@ -1,5 +1,6 @@
 //! What the proxy needs from outside, as one value (story 121 declares the first two fields).
 use crate::config::typed::RegistryHandle;
+use crate::engine::AdapterRegistry;
 use crate::protocol::chat::{NoHooks, PipelineHooks, StepTrace};
 use crate::protocol::chat::{run_pipeline, ParsedRequest};
 use crate::protocol::body::{read_body_limited, BodyReadError};
@@ -29,12 +30,15 @@ pub struct RouterDeps {
     /// Story 145 adds this field: the guard of the reply path. `NoGuard` is inactive and free;
     /// story 135 supplies the real one.
     pub response_guard: Arc<dyn ResponseGuard>,
+    /// Story 127 adds this field: the adapter of each engine family. The default is an empty
+    /// registry, so every node gets the unknown adapter.
+    pub adapters: Arc<AdapterRegistry>,
 }
 
 impl RouterDeps {
     /// An empty fleet, no hooks and no trace.
     pub fn for_test(seams: Seams) -> RouterDeps {
-        RouterDeps { seams, registry: Arc::new(RegistryHandle::empty()), hooks: Arc::new(NoHooks), trace: None, response_guard: Arc::new(NoGuard) }
+        RouterDeps { seams, registry: Arc::new(RegistryHandle::empty()), hooks: Arc::new(NoHooks), trace: None, response_guard: Arc::new(NoGuard), adapters: Arc::new(AdapterRegistry::new()) }
     }
 
     pub fn with_registry(mut self, registry: Arc<RegistryHandle>) -> RouterDeps {
@@ -49,6 +53,11 @@ impl RouterDeps {
 
     pub fn with_response_guard(mut self, guard: Arc<dyn ResponseGuard>) -> RouterDeps {
         self.response_guard = guard;
+        self
+    }
+
+    pub fn with_adapters(mut self, adapters: Arc<AdapterRegistry>) -> RouterDeps {
+        self.adapters = adapters;
         self
     }
 

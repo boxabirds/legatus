@@ -2,6 +2,7 @@
 #![deny(clippy::disallowed_types, clippy::disallowed_methods)]
 pub mod config;
 pub mod deps;
+pub mod engine;
 pub mod lifecycle;
 pub mod net;
 pub mod protocol;
