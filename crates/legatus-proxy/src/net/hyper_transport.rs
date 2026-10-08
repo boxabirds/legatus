@@ -11,7 +11,7 @@ use std::time::Duration;
 
 /// Idle time after which a pooled connection is not reused when nothing else is set: the
 /// catalogue default of `upstream_idle_reuse_max_s` (story 165).
-const DEFAULT_IDLE_REUSE_MAX: Duration = Duration::from_secs(4);
+pub const DEFAULT_IDLE_REUSE_MAX: Duration = Duration::from_secs(4);
 
 type NodeClient = Client<HttpConnector, Full<Bytes>>;
 

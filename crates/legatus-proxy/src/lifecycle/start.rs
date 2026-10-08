@@ -237,7 +237,7 @@ async fn run(args: Vec<String>) -> u8 {
     let transport = Arc::new(HyperTransport::unconfigured());
     let seams = Seams { wall: Arc::new(SystemWallClock), transport: transport.clone(), log: log.clone(), sim: SimPoints::new() };
     let registry = Arc::new(RegistryHandle::empty());
-    let deps = RouterDeps::for_test(seams).with_registry(registry.clone()).with_hooks(Arc::new(gate_hooks));
+    let deps = RouterDeps::for_test(seams).with_registry(registry.clone()).with_hooks(Arc::new(gate_hooks)).with_adapters(Arc::new(crate::engine::AdapterRegistry::standard()));
     let (stop_tx, mut stop_rx) = watch::channel(false);
     let router = build_router(deps);
     let server = tokio::spawn(listen::serve(listener, router, async move {

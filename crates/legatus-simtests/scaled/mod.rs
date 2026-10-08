@@ -10,6 +10,10 @@ mod chat_wire_forms_test;
 #[cfg(test)]
 mod engine_scan_test;
 #[cfg(test)]
+mod llama_idle_test;
+#[cfg(test)]
+mod llama_scan_test;
+#[cfg(test)]
 mod node_flags_admin_test;
 #[cfg(test)]
 mod registry_binary_test;

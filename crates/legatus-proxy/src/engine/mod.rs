@@ -1,5 +1,6 @@
 //! One adapter per engine family (contract C60). The routing core calls this trait only; engine
 //! names appear in this directory and in `config/` and nowhere else.
+pub mod llama_server;
 pub mod reuse;
 pub mod unknown;
 pub mod version;
@@ -108,6 +109,13 @@ impl Default for AdapterRegistry {
 impl AdapterRegistry {
     pub fn new() -> AdapterRegistry {
         AdapterRegistry { by_family: HashMap::new(), unknown: unknown::UnknownAdapter }
+    }
+
+    /// The adapters that ship: one per engine family that has one (story 151 adds llama-server).
+    pub fn standard() -> AdapterRegistry {
+        let mut registry = AdapterRegistry::new();
+        registry.register(Arc::new(llama_server::LlamaServerAdapter));
+        registry
     }
 
     /// Replaces the slot of the family of the adapter.
