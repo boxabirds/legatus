@@ -145,3 +145,11 @@ fn tc19_no_debug_form_holds_text_from_an_error_body_or_a_prompt() {
     let reading = LlamaServerAdapter.reuse_fields(&view(&format!("{{\"content\":\"{CANARY_PROMPT}\",\"timings\":{{\"cache_n\":1}}}}")), ReuseProbeState::Unprobed);
     assert!(!format!("{reading:?}").contains("CANARY"));
 }
+
+const REAL_METRICS: &str = include_str!("../../../specs/proxy/evidence/captures/llama-metrics-20261008T005600000Z.txt");
+
+#[test]
+fn tc06_the_real_metrics_capture_reads_as_idle_with_the_llamacpp_prefix() {
+    assert!(REAL_METRICS.contains("llamacpp:requests_processing"));
+    assert_eq!(parse_metrics(REAL_METRICS), Ok(MetricsReading { processing: 0, deferred: 0 }));
+}
