@@ -110,7 +110,9 @@ async fn tc06_at_the_cap_with_every_entry_running_nothing_is_removed_and_the_new
         put(&t, &tk("x", n), "a");
         guards.push(t.begin(&tk("x", n)).unwrap());
     }
+    assert_eq!(t.skipped_full_count(), 0);
     assert_eq!(put(&t, &tk("x", 9), "a"), PlaceOutcome::SkippedFull);
+    assert_eq!(t.skipped_full_count(), 1, "counted for the metric of story 138");
     assert_eq!(t.len(), SMALL_CAP);
     assert!(t.peek(&tk("x", 9)).is_none());
     assert!((1..=3u8).all(|n| t.peek(&tk("x", n)).is_some()), "no running entry was evicted");

@@ -11,6 +11,7 @@ use crate::obs::log_sink::{LogRecord, LogSink, SystemRecord};
 use legatus_common::event::SystemEventKind;
 use legatus_common::ids::{AliasName, NodeId};
 use std::collections::{BTreeMap, HashMap};
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex, MutexGuard};
 use std::time::Duration;
 use tokio::sync::Notify;
@@ -147,6 +148,9 @@ pub struct AffinityTable {
     wake: Notify,
     /// Where the `table_inconsistent` warning goes (set once the log sink exists).
     sink: Mutex<Option<Arc<dyn LogSink>>>,
+    /// How many new keys were served without an entry because the table was full of running ones
+    /// (the metric `legatus_affinity_table_skipped_full_total` of story 138 reads it).
+    skipped_full: AtomicU64,
 }
 
 fn expired(entry: &Entry, now: Instant, ttl: Duration) -> bool {
@@ -155,7 +159,11 @@ fn expired(entry: &Entry, now: Instant, ttl: Duration) -> bool {
 
 impl AffinityTable {
     pub fn new(params: TableParams) -> AffinityTable {
-        AffinityTable { params: Mutex::new(params), inner: Mutex::new(Inner::default()), wake: Notify::new(), sink: Mutex::new(None) }
+        AffinityTable { params: Mutex::new(params), inner: Mutex::new(Inner::default()), wake: Notify::new(), sink: Mutex::new(None), skipped_full: AtomicU64::new(0) }
+    }
+
+    pub fn skipped_full_count(&self) -> u64 {
+        self.skipped_full.load(Ordering::Relaxed)
     }
 
     pub fn params(&self) -> TableParams {
@@ -241,7 +249,10 @@ impl AffinityTable {
             return PlaceOutcome::AlreadyPresent { node: existing.node.clone() };
         }
         if inner.map.len() >= self.params().cap {
-            let Some(oldest) = inner.idle.values().next().cloned() else { return PlaceOutcome::SkippedFull };
+            let Some(oldest) = inner.idle.values().next().cloned() else {
+                self.skipped_full.fetch_add(1, Ordering::Relaxed);
+                return PlaceOutcome::SkippedFull;
+            };
             inner.remove(&oldest);
         }
         inner.map.insert(k.clone(), Entry { node, last_seen: now, in_flight: 0, done_count: 0, class, harness, prev: None, idle_at: None });
