@@ -1,0 +1,6 @@
+data: {"id":"1","choices":[{"index":0,"delta":{"role":"assistant","content":null,"tool_calls":[{"index":0,"id":"c1","type":"function","function":{"name":"ls","arguments":"{}"}}]},"finish_reason":null}]}
+
+data: {"id":"1","choices":[{"index":0,"delta":{},"finish_reason":"stop"}]}
+
+data: [DONE]
+

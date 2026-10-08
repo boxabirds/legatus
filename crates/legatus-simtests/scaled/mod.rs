@@ -20,4 +20,6 @@ mod settings_guard_test;
 #[cfg(test)]
 mod start_entry_test;
 #[cfg(test)]
+mod stream_slow_reader_test;
+#[cfg(test)]
 mod stubs_process_test;

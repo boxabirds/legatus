@@ -42,6 +42,10 @@ mod sim_point_test;
 #[cfg(test)]
 mod stub_helpers;
 #[cfg(test)]
+mod stream_copy_test;
+#[cfg(test)]
+mod stream_unit_test;
+#[cfg(test)]
 mod stubs_faults_test;
 #[cfg(test)]
 mod stubs_llama_test;

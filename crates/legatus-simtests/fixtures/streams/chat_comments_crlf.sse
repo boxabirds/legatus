@@ -1,0 +1,13 @@
+: keep-alive
+
+data: {"id":"1","choices":[{"index":0,"delta":{"role":"assistant","content":"Hel"},"finish_reason":null}]}
+
+: ping
+
+data: {"id":"1","choices":[{"index":0,"delta":{"content":"lo"},"finish_reason":null}],
+data:  "note":"multi-line data"}
+
+data: {"id":"1","choices":[{"index":0,"delta":{},"finish_reason":"stop"}]}
+
+data: [DONE]
+

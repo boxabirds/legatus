@@ -42,11 +42,18 @@ pub struct FakeTransport {
     requests: Mutex<Vec<RecordedRequest>>,
     /// Instants (ms since the first pull) at which each chunk was produced, per request.
     produced: Arc<Mutex<Vec<tokio::time::Instant>>>,
+    /// Headers of the scripted reply (none by default).
+    response_headers: HeaderMap,
 }
 
 impl FakeTransport {
     pub fn new(script: Script) -> FakeTransport {
-        FakeTransport { script, requests: Mutex::new(Vec::new()), produced: Arc::new(Mutex::new(Vec::new())) }
+        FakeTransport { script, requests: Mutex::new(Vec::new()), produced: Arc::new(Mutex::new(Vec::new())), response_headers: HeaderMap::new() }
+    }
+    /// The headers of the scripted reply.
+    pub fn with_response_headers(mut self, headers: HeaderMap) -> FakeTransport {
+        self.response_headers = headers;
+        self
     }
     pub fn requests(&self) -> Vec<RecordedRequest> {
         self.requests.lock().map(|r| r.clone()).unwrap_or_default()
@@ -85,7 +92,7 @@ impl UpstreamTransport for FakeTransport {
                         Some((item, queue))
                     }
                 }));
-                Ok(UpstreamResponse { status: *status, headers: HeaderMap::new(), body })
+                Ok(UpstreamResponse { status: *status, headers: self.response_headers.clone(), body })
             }
         }
     }

@@ -8,6 +8,7 @@ pub mod protocol;
 pub mod obs;
 pub mod sim;
 pub mod sorted;
+pub mod stream;
 pub mod time;
 pub mod upstream;
 

@@ -12,13 +12,14 @@ use crate::protocol::rewrite::{peek_request, rewrite_model, RequestPeek, Rewrite
 use crate::upstream::send::send_to_node;
 use crate::upstream::transport::{UpstreamError, UpstreamRequest};
 use async_trait::async_trait;
-use axum::body::Body;
 use axum::http::header::HOST;
 use axum::http::{HeaderValue, Uri};
 use axum::response::Response;
 use bytes::Bytes;
-use futures_util::TryStreamExt;
-use legatus_common::ids::NodeId;
+use crate::protocol::observe::EndObserver;
+use crate::protocol::stream::EndFlags;
+use crate::stream::tap::{copy_response, ResponseHead, StreamEnd};
+use legatus_common::ids::{AliasName, NodeId};
 use legatus_common::protocol::Protocol;
 use tokio::time::Instant;
 
@@ -134,6 +135,19 @@ pub trait PipelineHooks: Send + Sync {
     async fn table_update(&self, _ctx: &RequestCtx, _status: u16) {}
     /// Step 16 (story 122): runs for every request, refused or served.
     async fn write_event(&self, _ctx: Option<&RequestCtx>, _outcome: &PipelineOutcome) {}
+    /// Called once when the reply body has ended, however it ended (stories 122, 171, 184). It is
+    /// not async: the reply stream calls it from its end or its drop.
+    fn reply_end(&self, _summary: &ReplySummary) {}
+}
+
+/// How a relayed reply ended, for the hooks that record it.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct ReplySummary {
+    pub alias: AliasName,
+    pub node: NodeId,
+    pub status: u16,
+    pub end: StreamEnd,
+    pub flags: EndFlags,
 }
 
 /// The hooks of a proxy that has none: every default.
@@ -274,13 +288,19 @@ async fn run_steps(deps: &RouterDeps, req: ParsedRequest, ctx_slot: &mut Option<
         Ok(reply) => reply,
         Err(UpstreamError::Connect | UpstreamError::Reset) => return Err(RefusalKind::NodeConnectFailed),
     };
-    // Step 13: copy the reply (story 145 refines the streaming copy).
+    // Step 13: relay the reply through the pull-through copy (story 145).
     enter(deps, PipelineStep::CopyResponse);
     let status = reply.status.as_u16();
-    let stream = reply.body.map_err(|e| std::io::Error::other(e.to_string()));
-    let mut response = Response::new(Body::from_stream(stream));
-    *response.status_mut() = reply.status;
-    *response.headers_mut() = reply.headers;
+    let head = ResponseHead { status: reply.status, headers: reply.headers, protocol: ctx.protocol };
+    let hooks = deps.hooks.clone();
+    let (alias_name, reply_node) = (ctx.alias.clone(), node_id.clone());
+    let observer = EndObserver::new(ctx.protocol).with_report(move |end, flags| {
+        hooks.reply_end(&ReplySummary { alias: alias_name.clone(), node: reply_node.clone(), status, end, flags });
+    });
+    let (reply_status, reply_headers, reply_body) = copy_response(head, reply.body, deps.response_guard.clone(), vec![Box::new(observer)]);
+    let mut response = Response::new(reply_body);
+    *response.status_mut() = reply_status;
+    *response.headers_mut() = reply_headers;
     enter(deps, PipelineStep::CacheFeedback);
     deps.hooks.cache_feedback(ctx, status).await;
     enter(deps, PipelineStep::TableUpdate);

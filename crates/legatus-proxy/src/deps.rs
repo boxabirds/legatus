@@ -3,6 +3,7 @@ use crate::config::typed::RegistryHandle;
 use crate::protocol::chat::{NoHooks, PipelineHooks, StepTrace};
 use crate::protocol::chat::{run_pipeline, ParsedRequest};
 use crate::protocol::paths::CHAT_COMPLETIONS_PATH;
+use crate::stream::guard::{NoGuard, ResponseGuard};
 use crate::Seams;
 use axum::body::Body;
 use axum::extract::State;
@@ -25,12 +26,15 @@ pub struct RouterDeps {
     pub hooks: Arc<dyn PipelineHooks>,
     /// Test builds record the steps here.
     pub trace: Option<StepTrace>,
+    /// Story 145 adds this field: the guard of the reply path. `NoGuard` is inactive and free;
+    /// story 135 supplies the real one.
+    pub response_guard: Arc<dyn ResponseGuard>,
 }
 
 impl RouterDeps {
     /// An empty fleet, no hooks and no trace.
     pub fn for_test(seams: Seams) -> RouterDeps {
-        RouterDeps { seams, registry: Arc::new(RegistryHandle::empty()), hooks: Arc::new(NoHooks), trace: None }
+        RouterDeps { seams, registry: Arc::new(RegistryHandle::empty()), hooks: Arc::new(NoHooks), trace: None, response_guard: Arc::new(NoGuard) }
     }
 
     pub fn with_registry(mut self, registry: Arc<RegistryHandle>) -> RouterDeps {
@@ -40,6 +44,11 @@ impl RouterDeps {
 
     pub fn with_hooks(mut self, hooks: Arc<dyn PipelineHooks>) -> RouterDeps {
         self.hooks = hooks;
+        self
+    }
+
+    pub fn with_response_guard(mut self, guard: Arc<dyn ResponseGuard>) -> RouterDeps {
+        self.response_guard = guard;
         self
     }
 

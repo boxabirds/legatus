@@ -27,3 +27,24 @@ pub fn forward_headers(inbound: &HeaderMap) -> HeaderMap {
     }
     out
 }
+
+/// The header set for the harness: the node's reply headers with only the hop-by-hop headers (and
+/// those named by `connection`) removed. Every other name and value passes as sent; none is added.
+pub fn strip_reply_headers(node_headers: &HeaderMap) -> HeaderMap {
+    let named_by_connection: Vec<String> = node_headers
+        .get_all(CONNECTION)
+        .iter()
+        .filter_map(|v| v.to_str().ok())
+        .flat_map(|v| v.split(',').map(|t| t.trim().to_ascii_lowercase()).collect::<Vec<_>>())
+        .filter(|t| !t.is_empty())
+        .collect();
+    let mut out = HeaderMap::with_capacity(node_headers.len());
+    for (name, value) in node_headers.iter() {
+        let lower = name.as_str();
+        if HOP_BY_HOP_HEADERS.contains(&lower) || named_by_connection.iter().any(|n| n == lower) {
+            continue;
+        }
+        out.append(name.clone(), value.clone());
+    }
+    out
+}
