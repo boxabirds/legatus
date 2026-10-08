@@ -249,7 +249,7 @@ async fn run_steps(deps: &RouterDeps, req: ParsedRequest, ctx_slot: &mut Option<
     let alias = route_by_model(&registry.aliases, &model).map_err(|Refusal::ModelNotFound| RefusalKind::ModelNotFound)?;
     let chat_nodes: Vec<&NodeId> = alias.nodes.iter().filter(|id| registry.node(id).is_some_and(serves_chat)).collect();
     if chat_nodes.is_empty() {
-        return Err(RefusalKind::ModelNotFound);
+        return Err(RefusalKind::ProtocolNotServed);
     }
     let ctx = ctx_slot.insert(RequestCtx { protocol, route, model, stream: peek.stream().unwrap_or(false), peek, alias: alias.name.clone(), node: None, started });
     hook!(deps.hooks.after_alias(ctx).await);

@@ -18,6 +18,10 @@ mod node_shape_test;
 #[cfg(test)]
 mod node_warnings_test;
 #[cfg(test)]
+mod refusal_unit_test;
+#[cfg(test)]
+mod refusals_test;
+#[cfg(test)]
 mod registry_redact_test;
 #[cfg(test)]
 mod registry_schema_test;

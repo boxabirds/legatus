@@ -219,7 +219,7 @@ async fn tc20_an_alias_with_only_a_messages_node_offers_no_chat_node() {
     let fake = Arc::new(FakeTransport::new(ok_reply()));
     let client = serve_duplex(build_router(deps_from_text(seams(fake.clone()), text))).await;
     let (status, body) = read_all(client.send(post("{\"model\":\"frontier\"}")).await).await;
-    assert_eq!((status, code_of(&body).as_str()), (StatusCode::NOT_FOUND, "model_not_found"));
+    assert_eq!((status, code_of(&body).as_str()), (StatusCode::NOT_FOUND, "protocol_not_served"));
     assert!(fake.requests().is_empty());
 }
 
