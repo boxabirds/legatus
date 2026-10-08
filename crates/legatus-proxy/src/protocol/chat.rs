@@ -4,6 +4,8 @@ use crate::config::node::{EndpointProtocol, NodeSpec};
 use crate::config::typed::Registry;
 use crate::deps::RouterDeps;
 use crate::protocol::ctx::RequestCtx;
+use crate::engine::patch::{apply_patch, patch_applies_to};
+use legatus_common::patch::NodePatch;
 use crate::engine::guard::{context_decision, estimate_sent, GuardDecision, TruncationTap};
 use crate::protocol::errors::{refuse, RefusalDetail, RefusalKind};
 use crate::stream::tap::ResponseTap;
@@ -287,7 +289,15 @@ async fn run_steps(deps: &RouterDeps, req: ParsedRequest, ctx_slot: &mut Option<
     enter(deps, PipelineStep::PatchAndRewrite);
     let node = registry.node(&node_id).ok_or(RefusalKind::ModelNotFound)?;
     let mut body = rewrite_model(&req.body, &ctx.peek, alias.node_model(&node_id));
-    let fresh = peek_request(&body).map_err(rewrite_refusal)?;
+    let mut fresh = peek_request(&body).map_err(rewrite_refusal)?;
+    // The node patch is applied after the model rewrite, on a fresh reading of the rewritten body,
+    // for chat and Messages requests only (story 190).
+    if patch_applies_to(ctx.route) {
+        if let Some(patch) = node.patch.as_deref().and_then(|text| NodePatch::from_json(text).ok()) {
+            body = apply_patch(&body, &fresh, &patch).map_err(|_| RefusalKind::InvalidBody)?;
+            fresh = peek_request(&body).map_err(rewrite_refusal)?;
+        }
+    }
     hook!(deps.hooks.patch_body(ctx, &mut body, &fresh).await);
     enter(deps, PipelineStep::ContextCheck);
     hook!(deps.hooks.context_check(ctx, &body).await);

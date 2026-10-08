@@ -7,6 +7,7 @@ pub mod guard;
 pub mod llama_server;
 pub mod mlx_lm;
 pub mod ollama;
+pub mod patch;
 pub mod responses_gaps;
 pub mod sglang;
 pub mod vllm;

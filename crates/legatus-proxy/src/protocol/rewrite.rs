@@ -387,3 +387,11 @@ fn apply_edit(body: &Bytes, peek: &RequestPeek, edit: &TopLevelEdit) -> Bytes {
     }
     out.freeze()
 }
+
+impl RequestPeek {
+    /// The value spans (start, end exclusive) of every top-level member with this key, in body
+    /// order. More than one means the harness sent a duplicate key.
+    pub fn value_spans(&self, key: &str) -> Vec<(usize, usize)> {
+        self.members.iter().filter(|m| m.key == key).map(|m| (m.value_start, m.value_end)).collect()
+    }
+}

@@ -10,7 +10,9 @@ use crate::engine::advisory::{node_advisories, reuse_state_for_node, AdvisoryFac
 use crate::engine::responses_gaps::responses_gaps;
 use crate::engine::standard_adapters;
 use legatus_common::engine::{Advisory, EngineVersionStatus, ReuseProbeState, ResponsesGap};
+use crate::engine::patch::validate_patch;
 use legatus_common::ids::NodeId;
+use legatus_common::patch::{NodePatch, PatchError};
 use yaml_serde::{Mapping, Value};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -445,6 +447,9 @@ fn read_node(name: &str, map: &Mapping, machines: &[String], out: &mut Validatio
     let model = text(map, "model")?.to_string();
     let engine = engine?;
     let endpoints = endpoints?;
+    if let Some(patch) = map.get("patch").and_then(|p| serde_json::to_string(p).ok()) {
+        check_patch(&patch, &join_path(&path, "patch"), engine, out);
+    }
     if out.errors.len() != errors_before {
         return None;
     }
@@ -473,6 +478,35 @@ fn read_node(name: &str, map: &Mapping, machines: &[String], out: &mut Validatio
         patch: map.get("patch").and_then(|p| serde_json::to_string(p).ok()),
         auth_key_ref: sub(map, "auth").and_then(|a| text(a, "key_ref")).map(|t| RefText(t.to_string())),
     })
+}
+
+pub const TEXT_PATCH_SHAPE: &str = "The patch must be a map with an optional set map and an optional remove list of key names.";
+pub const TEXT_PATCH_FORBIDDEN: &str = "This key carries the prompt or the way the answer is sent, and a patch must not change it.";
+pub const TEXT_PATCH_ADAPTER_FORBIDDEN: &str = "The proxy must not give this key to this engine.";
+pub const TEXT_PATCH_EMPTY_KEY: &str = "A patch key must not be empty.";
+pub const TEXT_PATCH_CLASH: &str = "A key must not be in both set and remove.";
+
+/// Check the patch of a node: its shape, then every forbidden key, with every mistake listed.
+fn check_patch(patch_json: &str, path: &str, engine: EngineName, out: &mut ValidationReport) {
+    let patch = match NodePatch::from_json(patch_json) {
+        Ok(patch) => patch,
+        Err(_) => {
+            out.errors.push(error_fixed(ErrorCode::BadPatch, path, TEXT_PATCH_SHAPE));
+            return;
+        }
+    };
+    let adapter = standard_adapters().for_family(family_of(engine.as_str()));
+    let Err(errors) = validate_patch(&patch, adapter) else { return };
+    for error in errors {
+        let (at, text) = match error {
+            PatchError::ForbiddenKey { op, key } => (join_path(&join_path(path, op.as_str()), &key), TEXT_PATCH_FORBIDDEN),
+            PatchError::AdapterForbiddenKey { op, key } => (join_path(&join_path(path, op.as_str()), &key), TEXT_PATCH_ADAPTER_FORBIDDEN),
+            PatchError::EmptyKey { op } => (join_path(path, op.as_str()), TEXT_PATCH_EMPTY_KEY),
+            PatchError::SetRemoveClash { key } => (join_path(path, &key), TEXT_PATCH_CLASH),
+            PatchError::NotAnObject => (path.to_string(), TEXT_PATCH_SHAPE),
+        };
+        out.errors.push(error_fixed(ErrorCode::BadPatch, &at, text));
+    }
 }
 
 /// Read every node. A node with an error is not returned. Errors are appended to `out`.

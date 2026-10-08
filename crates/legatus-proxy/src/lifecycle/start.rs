@@ -285,6 +285,7 @@ const FIRST_GENERATION: u64 = 1;
 fn install_reloader(path: &Path, handle: Arc<RegistryHandle>, admin: Arc<AdminState>, log: Arc<dyn LogSink>, transport: Arc<dyn crate::upstream::transport::UpstreamTransport>) {
     let hub = Arc::new(ReloadHub::new());
     hub.register(admin.clone());
+    hub.register(Arc::new(crate::engine::patch::PatchChangeObserver::new(log.clone())));
     hub.register(Arc::new(Arc::new(NodeFactsRefresher::new(transport, admin.facts.clone()))));
     let reloader = Arc::new(Reloader::new(ReloadParts {
         source: Arc::new(FileSource(path.to_path_buf())),

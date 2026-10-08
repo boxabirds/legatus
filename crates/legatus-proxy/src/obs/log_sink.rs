@@ -21,11 +21,13 @@ pub struct SystemRecord {
     pub kind: SystemEventKind,
     /// Set for `TruncationDetected` (story 174): counts and the node name, never text.
     pub truncation: Option<TruncationFields>,
+    /// Set for the warning `patch_changed` (story 190): the node whose patch a reload changed.
+    pub patch_changed: Option<legatus_common::ids::NodeId>,
 }
 
 impl SystemRecord {
     pub fn new(kind: SystemEventKind) -> SystemRecord {
-        SystemRecord { kind, truncation: None }
+        SystemRecord { kind, truncation: None, patch_changed: None }
     }
 }
 

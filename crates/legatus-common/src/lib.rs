@@ -3,4 +3,5 @@
 pub mod engine;
 pub mod event;
 pub mod ids;
+pub mod patch;
 pub mod protocol;

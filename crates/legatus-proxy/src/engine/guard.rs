@@ -126,7 +126,7 @@ impl ResponseTap for TruncationTap {
         let view = UsageView { json_tail: &self.tail, protocol: self.protocol, stream: self.stream };
         if let Some(record) = detect_truncation(&self.node, self.sent, reported_prompt_tokens(&view), self.report_ratio) {
             let fields = TruncationFields { node: record.node, prompt_tokens_sent: record.prompt_tokens_sent, prompt_tokens_seen: record.prompt_tokens_seen, ratio: record.ratio };
-            let _ = self.sink.offer(LogRecord::System(SystemRecord { kind: SystemEventKind::TruncationDetected, truncation: Some(fields) }));
+            let _ = self.sink.offer(LogRecord::System(SystemRecord { truncation: Some(fields), ..SystemRecord::new(SystemEventKind::TruncationDetected) }));
         }
     }
 }
