@@ -6,6 +6,7 @@ pub trait LogSink: Send + Sync {
     fn flush(&self);
 }
 
+#[derive(Debug, Clone)]
 pub enum LogRecord {
     Request(Box<RequestRecord>),
     System(SystemRecord),
@@ -23,11 +24,13 @@ pub struct SystemRecord {
     pub truncation: Option<TruncationFields>,
     /// Set for the warning `patch_changed` (story 190): the node whose patch a reload changed.
     pub patch_changed: Option<legatus_common::ids::NodeId>,
+    /// The fixed code of a warning (story 126): `key_header_missing`, `key_header_repeat`. Never a value.
+    pub code: Option<&'static str>,
 }
 
 impl SystemRecord {
     pub fn new(kind: SystemEventKind) -> SystemRecord {
-        SystemRecord { kind, truncation: None, patch_changed: None }
+        SystemRecord { kind, truncation: None, patch_changed: None, code: None }
     }
 }
 

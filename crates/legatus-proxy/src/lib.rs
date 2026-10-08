@@ -3,6 +3,7 @@
 pub mod config;
 pub mod deps;
 pub mod engine;
+pub mod key;
 pub mod lifecycle;
 pub mod net;
 pub mod protocol;

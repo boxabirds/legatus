@@ -14,6 +14,10 @@ mod chat_path_test;
 #[cfg(test)]
 mod clocks_test;
 #[cfg(test)]
+mod key_pipeline_test;
+#[cfg(test)]
+mod key_unit_test;
+#[cfg(test)]
 mod llama_facts_test;
 #[cfg(test)]
 mod llama_unit_test;

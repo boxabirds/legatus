@@ -2,4 +2,5 @@
 pub mod file_system;
 pub mod hyper_transport;
 pub mod listen;
+pub mod secret;
 pub mod wall_system;

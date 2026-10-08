@@ -4,6 +4,9 @@ use crate::config::node::{EndpointProtocol, NodeSpec};
 use crate::config::typed::Registry;
 use crate::deps::RouterDeps;
 use crate::protocol::ctx::RequestCtx;
+use crate::key::choose_map;
+use crate::key::lazy_body::LazyBody;
+use crate::key::sources::{resolve_key, SourceUsed};
 use crate::engine::patch::{apply_patch, patch_applies_to};
 use legatus_common::patch::NodePatch;
 use crate::engine::guard::{context_decision, estimate_sent, GuardDecision, TruncationTap};
@@ -268,8 +271,15 @@ async fn run_steps(deps: &RouterDeps, req: ParsedRequest, ctx_slot: &mut Option<
     if chat_nodes.is_empty() {
         return Err(RefusalKind::ProtocolNotServed.into());
     }
-    let ctx = ctx_slot.insert(RequestCtx { protocol, route, model, stream: peek.stream().unwrap_or(false), peek, alias: alias.name.clone(), node: None, started });
+    let ctx = ctx_slot.insert(RequestCtx { protocol, route, model, stream: peek.stream().unwrap_or(false), peek, alias: alias.name.clone(), node: None, started, key: None, key_source: SourceUsed::None });
     hook!(deps.hooks.after_alias(ctx).await);
+    // The conversation key is read once, from the headers first; the body is parsed only when a
+    // body source is reached (story 126). The request bytes are not changed by it.
+    let map = choose_map(&registry.routes, req.uri.path(), alias, protocol, &deps.harnesses);
+    let lazy = LazyBody::new(&req.body, deps.key_probe.clone());
+    let resolved = resolve_key(&map, &req.headers, &lazy, &deps.key_hasher, &deps.key_warn, &deps.harnesses);
+    ctx.key = resolved.key;
+    ctx.key_source = resolved.source;
     enter(deps, PipelineStep::ComputeKey);
     hook!(deps.hooks.compute_key(ctx, &req.headers).await);
     enter(deps, PipelineStep::TableLookup);
