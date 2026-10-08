@@ -1,0 +1,139 @@
+{
+  "schema": 1,
+  "harness": "llama-server",
+  "harness_version": "0.5.0 (build 11146)",
+  "captured_at": "2026-10-08T00:00:00Z",
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ]
+      ],
+      "body": {
+        "cache_prompt": true,
+        "max_tokens": 8,
+        "messages": [
+          {
+            "content": "xkZeapfodMBcNAx1EjPYZGeAySgBzcWDuA4zvUkV6E4LJZdjXgRyVqiYvakSWiCyJ23Vyjcub4xxq2jNsKhkxNMkW8ntMxudenCOji3qZSxHVWjqKeoBhdCwThGKSgVhsfcZ86i23guPBLPyuWlYHJukM7sWyFt502r2EYU7F3LFkxt99xa2r8nyoRUlHT7AgNqkPQ14fOXIFDrCFI9auuE9AkX4zqmI9ga5fVcjX5i9VBQ97JTF6CEaBWf3MZybxdW6xd5GvMjbkoEbB6biufLwCF7nRZXet61C8fJrvkmD0h7b2TzMU53VuFDEFwy6ZjbKplXvLd7NYSYGUYrql2wEhlm1bS49VtqrMWTjNZnp3t3yVvf7diQDvV2erMtIwspCAzO68uRhhgiHUHDEzRudVi0UexmigRLFd237UCOvxW7X6OyiuIQ2dG6i2KMAywyNyjMzaDfl0bKz1kPHMuef9o6eUSeJRXlsCVZ88KePxB3CKp5tOwNSNFKoahpH7ICiMOZLJB52YJhw5OWvXff23JWCoNNf4LabhfZTSd8PFhN6dN6L8ExsrouKL3LEW1izedWPWrNOPIcD0BG40CxPmdaDvlxjYMj9zUt2kv6vgJeWz0v2kmsBetCaYtaACjv8TioJTB52wVgiflx5AeFen3PBOP7gNCA5xDiCKkv9hFsAUFQ9b0ziSU0FbSy3wm4ASYCgafDAS4YoeAMJU0sVLwbA2FFNyFJpQ72GKeOLaAfliKoyE8FQVm2arzlUDrRRpqv7b0NEr1FF4ticIXtUrAuK2l4HYY0QeLWKj3e2DdihPWLiM6EZ3tlyBhuMufyF1PxXrdpIgnqN4lYBGQA6jmDfg7InpWI9pUYOqBEZzNwmYKf6V4AtzoT4C1S2k6dc51oezWC5OMDielAE1jgxOnxIwfMePCF6QoOot9zXtiMJU8bU6XuVmQvewcASduKUA5CZyHZP03nBRk4ZhYVYj1ZgKHHhB6QadbJTi5G2A3J9ZSw8PfrwspvykMPGqI5VjpclBgkH7AHYd6ZFdr1vMGpeYLKOwdBRvgaU1gnC4pX8jeosjdIjjmcc8cjnRf04Gj3mrmqHy2dJeFtQyZz7K2TfX3nrLEeedhScy83PZFhh7XjnM5UeqZkhss1tB5oVVLWuOEtCHFgTyrvAMRVt2LRx51KULcGoLFYICTYHAaAKr7mE43HhXJlEXorYZtoS8iXFuKLAczFPthuzlI7yczjmQU3IxmsIJ9uyvhUCMjMUidg7xhOMjJfsQ7p1EGEfnMfmykjaSI9X8kMqJo1xJhp9IMIYGGm0hurAdA9JNbc99FLTyY4FB3WUCQ4SzWXVgdOvJfoBIGL3ed17BT6f0SgBF9ipXBrWp8E7GcD8NcrezJaYd9G9eCBl5WexmEXK7BTtCmGI2tdcxCJibS3tB4TStOhYG6N6luR3ACZVGadLwqB6OpGVnLQ1zaUto7N82FhkvrH8jgREXdhn3tMcZs7XKPXcKDIZqkjvpAEsW8EeTvha7DLpy6ljLtJV3zQAw9hDse3jtLq52Ed0hfcsjsnDC4OhIufTDnksHiA7z948aQ7bh2u2VZ39sqzLc23c8GEaubLBPB07b2Ldn3QHSjbjndl3Jo0NoWFVrVvaZKxhiS65nc7tzmh8TQihkmKp9cYDefyPJAa3YvpXpaKDkQ6YhYGeIdIpRVeDi0om0B5wEqptvUuwiL45tkC7Bo1J2Fxp1aW8mXWAO4XlXn5J8DdXs3cSWPaO10D75EJsfFMO4heAN54X0WAKRWFjcB3bGrVhfCuO2fpo",
+            "role": "user"
+          }
+        ],
+        "model": "x",
+        "stream": true,
+        "stream_options": {
+          "include_usage": true
+        }
+      },
+      "response_status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/v1/chat/completions#first-content-chunk",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ]
+      ],
+      "body": {
+        "choices": [
+          {
+            "delta": {
+              "content": null,
+              "role": "assistant"
+            },
+            "finish_reason": null,
+            "index": 0
+          }
+        ],
+        "created": 1791420896,
+        "id": "NfMtbjRliCTHbERdVqrQKiaEniX1AORJFA7810I5P",
+        "model": "CYwRsBH0YcFjiYwWjXios2rg6gVJfSaEzCKZ7ohD1PUSoK45Y5bGzzRf2gDmBIucEmc55L21GkwLYytPuz0LgTsZhrpxU3MxVBPEDnLKDr",
+        "object": "chat.completion.chunk",
+        "system_fingerprint": "ld3h5rJHTdopHK4l"
+      },
+      "response_status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/v1/chat/completions#terminal-chunk-cold-turn",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ]
+      ],
+      "body": {
+        "choices": [],
+        "created": 1791420896,
+        "id": "PFhDodTbL9IxdNaNySZzxjFf0FcZ2ugbSQlQ80Zxr",
+        "model": "CYwRsBH0YcFjiYwWjXios2rg6gVJfSaEzCKZ7ohD1PUSoK45Y5bGzzRf2gDmBIucEmc55L21GkwLYytPuz0LgTsZhrpxU3MxVBPEDnLKDr",
+        "object": "chat.completion.chunk",
+        "system_fingerprint": "ld3h5rJHTdopHK4l",
+        "timings": {
+          "cache_n": 0,
+          "predicted_ms": 142.832,
+          "predicted_n": 8,
+          "predicted_per_second": 49.008625518091186,
+          "predicted_per_token_ms": 20.404571428571423,
+          "prompt_ms": 553.112,
+          "prompt_n": 412,
+          "prompt_per_second": 744.8762637585155,
+          "prompt_per_token_ms": 1.342504854368932
+        },
+        "usage": {
+          "completion_tokens": 8,
+          "prompt_tokens": 412,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "total_tokens": 420
+        }
+      },
+      "response_status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/v1/chat/completions#terminal-chunk-second-identical-turn",
+      "headers": [
+        [
+          "content-type",
+          "application/json"
+        ]
+      ],
+      "body": {
+        "choices": [],
+        "created": 1791420896,
+        "id": "NfMtbjRliCTHbERdVqrQKiaEniX1AORJFA7810I5P",
+        "model": "CYwRsBH0YcFjiYwWjXios2rg6gVJfSaEzCKZ7ohD1PUSoK45Y5bGzzRf2gDmBIucEmc55L21GkwLYytPuz0LgTsZhrpxU3MxVBPEDnLKDr",
+        "object": "chat.completion.chunk",
+        "system_fingerprint": "ld3h5rJHTdopHK4l",
+        "timings": {
+          "cache_n": 411,
+          "predicted_ms": 134.657,
+          "predicted_n": 8,
+          "predicted_per_second": 51.98392953949664,
+          "predicted_per_token_ms": 19.23671428571429,
+          "prompt_ms": 21.439,
+          "prompt_n": 1,
+          "prompt_per_second": 46.64396660291991,
+          "prompt_per_token_ms": 21.439
+        },
+        "usage": {
+          "completion_tokens": 8,
+          "prompt_tokens": 412,
+          "prompt_tokens_details": {
+            "cached_tokens": 411
+          },
+          "total_tokens": 420
+        }
+      },
+      "response_status": 200
+    }
+  ],
+  "scan_stamp": "leak-scan-v1:16"
+}

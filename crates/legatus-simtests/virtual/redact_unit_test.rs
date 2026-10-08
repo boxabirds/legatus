@@ -246,3 +246,29 @@ fn tc09_the_file_name_stamp_is_utc_to_the_millisecond_and_sorts_in_time_order() 
     assert!(utc_stamp(1_000) < utc_stamp(1_001));
     assert!(utc_stamp(86_399_999) < utc_stamp(86_400_000));
 }
+
+const HOME_PATH_MODEL: &str = "/Users/someone/.ollama/models/blobs/sha256-3d0b790534fe4b79525fc3692950408dca41171676ed7e21db57af5c65ef6ab6";
+
+#[test]
+fn a_model_value_that_is_a_path_is_text_not_structure_and_never_survives() {
+    let mut raw = pi_like();
+    raw.requests[0].body["model"] = json!(HOME_PATH_MODEL);
+    let out = Redactor::new_run(SEED_ONE).redact(&raw).unwrap();
+    let kept = out.requests[0].body["model"].as_str().unwrap();
+    assert_ne!(kept, HOME_PATH_MODEL, "a path in a structural key is text");
+    assert_eq!(kept.len(), HOME_PATH_MODEL.len());
+    assert!(scan_and_stamp(&raw, &out, LEAK_SCAN_MIN_CHARS).is_ok());
+    // A plain model name stays, because the router reads it.
+    let mut named = pi_like();
+    named.requests[0].body["model"] = json!("qwen3:1.7b");
+    assert_eq!(Redactor::new_run(SEED_ONE).redact(&named).unwrap().requests[0].body["model"], "qwen3:1.7b");
+}
+
+#[test]
+fn a_leaking_structural_value_is_caught_by_the_scan_when_a_broken_redactor_keeps_it() {
+    let mut raw = pi_like();
+    raw.requests[0].body["model"] = json!(HOME_PATH_MODEL);
+    let mut leaky = Redactor::new_run(SEED_ONE).redact(&raw).unwrap();
+    leaky.requests[0].body["model"] = json!(HOME_PATH_MODEL);
+    assert_eq!(leak_scan(&raw, &leaky, LEAK_SCAN_MIN_CHARS).unwrap_err().path, "requests.0.body.model");
+}

@@ -90,8 +90,18 @@ pub(crate) fn secret_kind_of_body_key(key: &str) -> Option<SecretKind> {
     SECRET_BODY_KEYS.iter().find(|(k, _)| *k == key).map(|(_, kind)| *kind)
 }
 
-pub(crate) fn body_key_is_structural(key: &str) -> bool {
-    STRUCTURAL_BODY_KEYS.contains(&key)
+/// The longest structural value that is kept as recorded.
+const STRUCTURE_VALUE_MAX_CHARS: usize = 64;
+
+/// Structure is a short plain identifier: letters, digits and `. - _ :` only. A path, a URL or a
+/// sentence in a structural key (an engine echoing its model file in `model`) is text.
+fn is_plain_identifier(value: &str) -> bool {
+    value.len() <= STRUCTURE_VALUE_MAX_CHARS && value.chars().all(|c| c.is_ascii_alphanumeric() || matches!(c, '.' | '-' | '_' | ':'))
+}
+
+/// Is this value kept as structure? Its key must be a structural key and the value a plain identifier.
+pub(crate) fn body_value_is_structural(key: Option<&str>, value: &str) -> bool {
+    key.is_some_and(|k| STRUCTURAL_BODY_KEYS.contains(&k)) && is_plain_identifier(value)
 }
 
 /// Where a string in a capture counts as text to protect: its path and its text.
@@ -111,7 +121,7 @@ pub(crate) fn sensitive_strings(capture: &Capture) -> Vec<(String, &str)> {
 fn collect_body<'a>(value: &'a Value, path: &str, key: Option<&str>, out: &mut Vec<(String, &'a str)>) {
     match value {
         Value::String(text) => {
-            if !key.is_some_and(body_key_is_structural) {
+            if !body_value_is_structural(key, text) {
                 out.push((path.to_string(), text.as_str()));
             }
         }
@@ -169,7 +179,7 @@ impl Redactor {
                     return Err(RedactError::TooLarge(path.to_string()));
                 }
                 match key {
-                    _ if key.is_some_and(body_key_is_structural) => Value::String(text.clone()),
+                    _ if body_value_is_structural(key, text) => Value::String(text.clone()),
                     Some(k) if secret_kind_of_body_key(k).is_some() => Value::String(secret::token_for(&self.key, secret_kind_of_body_key(k).unwrap_or(SecretKind::Session), text)),
                     _ => Value::String(self.filler(text)),
                 }
