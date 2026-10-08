@@ -20,6 +20,8 @@ mod node_warnings_test;
 #[cfg(test)]
 mod capture_replay_test;
 #[cfg(test)]
+mod engine_alloc_test;
+#[cfg(test)]
 mod engine_unit_test;
 #[cfg(test)]
 mod harness_unit_test;
