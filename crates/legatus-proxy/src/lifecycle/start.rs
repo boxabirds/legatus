@@ -8,6 +8,8 @@ use crate::config::registry::{LoadedRegistry, RegistryWarning};
 use crate::config::settings::{setting_views, SettingView};
 use crate::config::typed::{Registry, RegistryHandle};
 use crate::config::validate::{report_warnings, WarningSink};
+use crate::affinity::sweeper::run_sweeper;
+use crate::affinity::table::TableParams;
 use crate::deps::{build_router, RouterDeps};
 use crate::engine::NodeFactsRefresher;
 use crate::lifecycle::exit::{EXIT_BIND_FAILED, EXIT_OK, EXIT_REGISTRY_INVALID};
@@ -242,6 +244,7 @@ async fn run(args: Vec<String>) -> u8 {
     let registry = Arc::new(RegistryHandle::empty());
     let deps = RouterDeps::for_test(seams).with_registry(registry.clone()).with_hooks(Arc::new(gate_hooks)).with_adapters(Arc::new(crate::engine::AdapterRegistry::standard())).with_key_secret(&crate::net::secret::process_secret());
     let (stop_tx, mut stop_rx) = watch::channel(false);
+    let affinity = deps.affinity.clone();
     let router = build_router(deps);
     let server = tokio::spawn(listen::serve(listener, router, async move {
         let _ = stop_rx.wait_for(|stop| *stop).await;
@@ -251,6 +254,13 @@ async fn run(args: Vec<String>) -> u8 {
     match load_registry(&path, &mut std::io::stderr(), &reporter) {
         Ok(loaded) => {
             transport.configure(Duration::from_secs(u64::from(loaded.settings.upstream_idle_reuse_max_s)));
+            // The table parameters are fixed from here on; the sweeper removes idle entries when due.
+            affinity.configure(TableParams {
+                ttl: Duration::from_secs(u64::from(loaded.settings.table_ttl_s)),
+                cap: usize::try_from(loaded.settings.table_cap).unwrap_or(usize::MAX),
+                mature_turns: u8::try_from(loaded.settings.mature_turns).unwrap_or(u8::MAX),
+            });
+            tokio::spawn(run_sweeper(affinity.clone(), stop_tx.subscribe()));
             let first = Arc::new(Registry::from_loaded(&loaded, FIRST_GENERATION));
             admin.publish(&first);
             Arc::new(NodeFactsRefresher::new(transport.clone(), admin.facts.clone())).spawn_join(&first);

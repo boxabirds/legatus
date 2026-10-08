@@ -197,6 +197,19 @@ const fn exclusive_max(mut d: SettingDef) -> SettingDef {
 }
 
 /// Every setting of the registry, declared once. A change of a default is a change here only.
+/// The catalogue default of a whole-number setting; 0 for a name that has none.
+pub fn default_int(name: &str) -> u64 {
+    match CATALOGUE.iter().find(|d| d.name == name).map(|d| &d.default) {
+        Some(DefaultValue::Int(n)) => *n,
+        _ => 0,
+    }
+}
+
+/// The catalogue defaults of the affinity table: (`table_ttl_s`, `table_cap`, `mature_turns`).
+pub fn table_defaults() -> (u64, u64, u64) {
+    (default_int("table_ttl_s"), default_int("table_cap"), default_int("mature_turns"))
+}
+
 pub const CATALOGUE: &[SettingDef] = &[
     def("listen", Unit::Address, DefaultValue::None, (Bound::None, Bound::None), Status::Approved, true, ("121", "PRX-REG-048")),
     exclusive_min(def("hold_limit_s", Unit::Seconds, DefaultValue::Int(HOLD_LIMIT_DEFAULT_S as u64), (Bound::Setting("protected_window_s"), Bound::Int(SECONDS_PER_HOUR)), Status::Proposed, false, ("187", "PRX-ADM-014, PRX-ADM-043"))),

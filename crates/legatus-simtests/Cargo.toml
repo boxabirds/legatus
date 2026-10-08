@@ -26,3 +26,4 @@ serde_json = "1"
 serde = "1"
 yaml_serde.workspace = true
 async-trait = "0.1"
+tower = { workspace = true }

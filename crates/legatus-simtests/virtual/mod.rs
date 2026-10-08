@@ -4,6 +4,10 @@ mod adapters_path_test;
 #[cfg(test)]
 mod adapters_unit_test;
 #[cfg(test)]
+mod affinity_path_test;
+#[cfg(test)]
+mod affinity_unit_test;
+#[cfg(test)]
 mod alias_fields_test;
 #[cfg(test)]
 mod alias_helpers;
@@ -101,3 +105,5 @@ mod stubs_ollama_test;
 mod stubs_scenario_test;
 #[cfg(test)]
 mod transport_test;
+#[cfg(test)]
+mod ttl_replay_test;

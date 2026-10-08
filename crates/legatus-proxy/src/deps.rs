@@ -1,5 +1,7 @@
 //! What the proxy needs from outside, as one value (story 121 declares the first two fields).
 use crate::config::typed::RegistryHandle;
+use crate::affinity::seams::{AllUp, AlwaysOn, NodeAvailability, NodeModes};
+use crate::affinity::table::{AffinityTable, TableParams};
 use crate::engine::AdapterRegistry;
 use crate::key::harness::HarnessTable;
 use crate::key::hasher::{KeyHasher, KeySecret, SECRET_LEN_BYTES};
@@ -43,6 +45,11 @@ pub struct RouterDeps {
     pub key_warn: Arc<WarnOnce>,
     /// Test builds count the body parses made for a key here.
     pub key_probe: Option<KeyProbe>,
+    /// Story 143 adds these three: the affinity table, whether affinity is on for a node (story 194
+    /// supplies the live source) and whether a node is available (story 175 supplies it).
+    pub affinity: Arc<AffinityTable>,
+    pub modes: Arc<dyn NodeModes>,
+    pub availability: Arc<dyn NodeAvailability>,
 }
 
 /// The secret of a test build: fixed, so keys are the same on every run.
@@ -52,7 +59,7 @@ impl RouterDeps {
     /// An empty fleet, no hooks and no trace.
     pub fn for_test(seams: Seams) -> RouterDeps {
         let key_warn = Arc::new(WarnOnce::new(seams.log.clone()));
-        RouterDeps { seams, registry: Arc::new(RegistryHandle::empty()), hooks: Arc::new(NoHooks), trace: None, response_guard: Arc::new(NoGuard), adapters: Arc::new(AdapterRegistry::new()), harnesses: Arc::new(HarnessTable::default()), key_hasher: Arc::new(KeyHasher::new(&KeySecret::from_bytes(TEST_SECRET))), key_warn, key_probe: None }
+        RouterDeps { seams, registry: Arc::new(RegistryHandle::empty()), hooks: Arc::new(NoHooks), trace: None, response_guard: Arc::new(NoGuard), adapters: Arc::new(AdapterRegistry::new()), harnesses: Arc::new(HarnessTable::default()), key_hasher: Arc::new(KeyHasher::new(&KeySecret::from_bytes(TEST_SECRET))), key_warn, key_probe: None, affinity: Arc::new(AffinityTable::new(TableParams::default())), modes: Arc::new(AlwaysOn), availability: Arc::new(AllUp) }
     }
 
     pub fn with_registry(mut self, registry: Arc<RegistryHandle>) -> RouterDeps {
@@ -87,6 +94,21 @@ impl RouterDeps {
 
     pub fn with_key_probe(mut self, probe: KeyProbe) -> RouterDeps {
         self.key_probe = Some(probe);
+        self
+    }
+
+    pub fn with_affinity(mut self, affinity: Arc<AffinityTable>) -> RouterDeps {
+        self.affinity = affinity;
+        self
+    }
+
+    pub fn with_modes(mut self, modes: Arc<dyn NodeModes>) -> RouterDeps {
+        self.modes = modes;
+        self
+    }
+
+    pub fn with_availability(mut self, availability: Arc<dyn NodeAvailability>) -> RouterDeps {
+        self.availability = availability;
         self
     }
 

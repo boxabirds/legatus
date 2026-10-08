@@ -1,5 +1,7 @@
 //! Scaled tier: real sockets, compressed time.
 #[cfg(test)]
+mod affinity_scan_test;
+#[cfg(test)]
 mod alias_routing_test;
 #[cfg(test)]
 mod body_limit_test;

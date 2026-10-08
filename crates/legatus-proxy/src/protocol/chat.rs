@@ -4,7 +4,9 @@ use crate::config::node::{EndpointProtocol, NodeSpec};
 use crate::config::typed::Registry;
 use crate::deps::RouterDeps;
 use crate::protocol::ctx::RequestCtx;
+use crate::affinity::table::{Lookup, RequestEnd, TableKey};
 use crate::key::choose_map;
+use crate::key::KeyClass;
 use crate::key::lazy_body::LazyBody;
 use crate::key::sources::{resolve_key, SourceUsed};
 use crate::engine::patch::{apply_patch, patch_applies_to};
@@ -232,6 +234,10 @@ impl From<RefusalKind> for Refused {
     }
 }
 
+/// The statuses that count as a successful answer.
+const STATUS_OK_MIN: u16 = 200;
+const STATUS_OK_MAX: u16 = 299;
+
 /// Run the sixteen steps for one request. The event step runs for a refused request too.
 pub async fn run_pipeline(deps: &RouterDeps, req: ParsedRequest) -> Response {
     let mut ctx: Option<RequestCtx> = None;
@@ -284,13 +290,34 @@ async fn run_steps(deps: &RouterDeps, req: ParsedRequest, ctx_slot: &mut Option<
     hook!(deps.hooks.compute_key(ctx, &req.headers).await);
     enter(deps, PipelineStep::TableLookup);
     hook!(deps.hooks.table_lookup(ctx).await);
+    // A returning conversation goes to the node that served it last, when that node is still in
+    // the alias, available, and affinity is on for it (story 143). Whether the node has room is
+    // admission's question, not this table's.
+    let now = Instant::now();
+    let table_key = ctx.key.map(|key| TableKey { alias: ctx.alias.clone(), key, credential: None });
+    let sticky = table_key.as_ref().and_then(|tk| match deps.affinity.lookup(tk, now, deps.availability.as_ref()) {
+        Lookup::Hit { node } if alias.nodes.contains(&node) && deps.modes.mode_of(&node, now) => Some(node),
+        _ => None,
+    });
     // Step 7: place. A placer replaces the default rule.
     enter(deps, PipelineStep::Place);
-    let node_id = match deps.hooks.place(ctx).await {
+    let node_id = match sticky.clone() {
         Some(id) => id,
-        None => default_node(alias, &registry).cloned().ok_or(RefusalKind::ModelNotFound)?,
+        None => match deps.hooks.place(ctx).await {
+            Some(id) => id,
+            None => default_node(alias, &registry).cloned().ok_or(RefusalKind::ModelNotFound)?,
+        },
     };
     ctx.node = Some(node_id.clone());
+    if let (Some(tk), None) = (&table_key, &sticky) {
+        if deps.modes.allows_entries(&node_id, now) {
+            let class = match ctx.key_source {
+                SourceUsed::Header(_) | SourceUsed::HeaderPair(..) | SourceUsed::BodyField(_) => KeyClass::Strong,
+                _ => KeyClass::Derived,
+            };
+            deps.affinity.place(tk.clone(), node_id.clone(), class, deps.harnesses.classify(&req.headers), now);
+        }
+    }
     enter(deps, PipelineStep::Hold);
     hook!(deps.hooks.hold(ctx).await);
     enter(deps, PipelineStep::HoldRefuse);
@@ -328,6 +355,9 @@ async fn run_steps(deps: &RouterDeps, req: ParsedRequest, ctx_slot: &mut Option<
         headers.insert(HOST, host);
     }
     let upstream = UpstreamRequest { method: req.method, uri, headers, body };
+    // This request now runs on the entry of its conversation; the guard lives until the reply
+    // ends, and a drop without an end (a cancel, a disconnect) lowers the count and nothing else.
+    let running = table_key.as_ref().and_then(|tk| deps.affinity.begin(tk));
     let reply = match send_to_node(deps.seams.transport.as_ref(), &node_id, upstream).await {
         Ok(reply) => reply,
         Err(UpstreamError::Connect | UpstreamError::Reset) => return Err(RefusalKind::NodeConnectFailed.into()),
@@ -338,8 +368,16 @@ async fn run_steps(deps: &RouterDeps, req: ParsedRequest, ctx_slot: &mut Option<
     let head = ResponseHead { status: reply.status, headers: reply.headers, protocol: ctx.protocol };
     let hooks = deps.hooks.clone();
     let (alias_name, reply_node) = (ctx.alias.clone(), node_id.clone());
+    let running = std::sync::Mutex::new(running);
     let observer = EndObserver::new(ctx.protocol).with_report(move |end, flags| {
         hooks.reply_end(&ReplySummary { alias: alias_name.clone(), node: reply_node.clone(), status, end, flags });
+        if let Some(guard) = running.lock().ok().and_then(|mut held| held.take()) {
+            // Only a complete success of a normal answer refreshes the entry. The token counts of
+            // the turn come from the usage scanner of story 171.
+            let ok = end == StreamEnd::Complete && (STATUS_OK_MIN..=STATUS_OK_MAX).contains(&status);
+            let outcome = if ok { RequestEnd::CompleteSuccess { prompt_tokens: 0, completion_tokens: 0 } } else { RequestEnd::Failed };
+            guard.finish(outcome, Instant::now());
+        }
     });
     let mut taps: Vec<Box<dyn ResponseTap>> = vec![Box::new(observer)];
     if guarded {
