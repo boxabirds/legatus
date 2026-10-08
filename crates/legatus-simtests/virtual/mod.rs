@@ -18,6 +18,12 @@ mod node_shape_test;
 #[cfg(test)]
 mod node_warnings_test;
 #[cfg(test)]
+mod capture_replay_test;
+#[cfg(test)]
+mod harness_unit_test;
+#[cfg(test)]
+mod redact_unit_test;
+#[cfg(test)]
 mod refusal_unit_test;
 #[cfg(test)]
 mod reload_diff_test;

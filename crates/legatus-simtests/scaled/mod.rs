@@ -4,6 +4,8 @@ mod alias_routing_test;
 #[cfg(test)]
 mod body_limit_test;
 #[cfg(test)]
+mod capture_files_test;
+#[cfg(test)]
 mod chat_wire_forms_test;
 #[cfg(test)]
 mod node_flags_admin_test;

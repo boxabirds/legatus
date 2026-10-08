@@ -19,8 +19,15 @@ futures-util = "0.3"
 http = "1"
 http-body-util = "0.1"
 regex = "1"
+serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+hmac = "0.12"
+sha2 = "0.10"
 
 [[bin]]
 name = "legatus-stub"
 path = "src/bin/stub.rs"
+
+[[bin]]
+name = "legatus-capture"
+path = "src/bin/capture.rs"
