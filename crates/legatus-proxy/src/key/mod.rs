@@ -2,6 +2,68 @@
 pub mod harness;
 pub mod hasher;
 pub mod sources;
+
+use hasher::KEY_LEN_BYTES;
+
+#[derive(Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
+pub struct ConversationKey(pub [u8; KEY_LEN_BYTES]);
+
+impl std::fmt::Debug for ConversationKey {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("ConversationKey(..)")
+    }
+}
+
+/// How sure a key is that it names one conversation (the logic is story 180).
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum KeyClass {
+    Strong,
+    Derived,
+    Weak,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum KeySource {
+    Header(String),
+    HeaderPair(String, String),
+    BodyField(String),
+    BodyHash,
+    Credential,
+    None,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum SourceUsed {
+    Header(String),
+    HeaderPair(String, String),
+    BodyField(String),
+    BodyHash,
+    Credential,
+    None,
+}
+
+impl SourceUsed {
+    /// The `key_source` of the request event: `header:<name>`, `derived` or `none` (the names of
+    /// the other sources are fixed words).
+    pub fn label(&self) -> String {
+        match self {
+            SourceUsed::Header(name) => format!("header:{name}"),
+            SourceUsed::HeaderPair(session, _) => format!("header:{session}"),
+            SourceUsed::BodyField(name) => format!("body_field:{name}"),
+            SourceUsed::BodyHash => "derived".to_string(),
+            SourceUsed::Credential => "credential".to_string(),
+            SourceUsed::None => "none".to_string(),
+        }
+    }
+}
+
+/// What `resolve_key` found: the key and the source it came from.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct KeyResolution {
+    pub key: Option<ConversationKey>,
+    pub source: SourceUsed,
+}
+
 pub mod lazy_body;
 
 use crate::config::alias::AliasSpec;

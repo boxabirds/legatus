@@ -3,6 +3,8 @@
 use hmac::{Hmac, Mac};
 use sha2::Sha256;
 
+pub use crate::key::{ConversationKey, KeyClass};
+
 /// Length of a conversation key in bytes (the digest is cut to this).
 pub const KEY_LEN_BYTES: usize = 16;
 /// Length of the secret in bytes (spec 03 section 4.4).
@@ -11,15 +13,6 @@ pub const SECRET_LEN_BYTES: usize = 32;
 pub const KEY_VERSION_TAG: &str = "v1";
 /// Joins the two values of a header pair; a byte that does not occur in a header value.
 pub const FIELD_SEPARATOR: u8 = 0x1F;
-
-#[derive(Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
-pub struct ConversationKey(pub [u8; KEY_LEN_BYTES]);
-
-impl std::fmt::Debug for ConversationKey {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str("ConversationKey(..)")
-    }
-}
 
 /// The secret of the keyed hash. Its Debug form shows nothing.
 pub struct KeySecret([u8; SECRET_LEN_BYTES]);
@@ -35,14 +28,6 @@ impl std::fmt::Debug for KeySecret {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str("KeySecret(..)")
     }
-}
-
-/// How sure a key is that it names one conversation (the logic is story 180).
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum KeyClass {
-    Strong,
-    Derived,
-    Weak,
 }
 
 type HmacSha256 = Hmac<Sha256>;

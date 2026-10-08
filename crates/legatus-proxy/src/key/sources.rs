@@ -3,6 +3,7 @@
 //! of one pair are joined. The raw value is never logged.
 use crate::config::routes::{KeyMapEntry, KeySourceKind};
 use crate::key::harness::HarnessTable;
+pub use crate::key::{KeyResolution, KeySource, SourceUsed};
 use crate::key::hasher::{ConversationKey, KeyHasher, FIELD_SEPARATOR};
 use crate::obs::log_sink::{LogRecord, LogSink, SystemRecord};
 use http::HeaderMap;
@@ -34,48 +35,6 @@ pub fn read_header(headers: &HeaderMap, name: &str) -> HeaderRead {
     }
     let repeated_differs = lines.any(|other| other.as_bytes().trim_ascii() != value.as_slice());
     HeaderRead::Present { value, repeated_differs }
-}
-
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub enum KeySource {
-    Header(String),
-    HeaderPair(String, String),
-    BodyField(String),
-    BodyHash,
-    Credential,
-    None,
-}
-
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub enum SourceUsed {
-    Header(String),
-    HeaderPair(String, String),
-    BodyField(String),
-    BodyHash,
-    Credential,
-    None,
-}
-
-impl SourceUsed {
-    /// The `key_source` of the request event: `header:<name>`, `derived` or `none` (the names of
-    /// the other sources are fixed words).
-    pub fn label(&self) -> String {
-        match self {
-            SourceUsed::Header(name) => format!("header:{name}"),
-            SourceUsed::HeaderPair(session, _) => format!("header:{session}"),
-            SourceUsed::BodyField(name) => format!("body_field:{name}"),
-            SourceUsed::BodyHash => "derived".to_string(),
-            SourceUsed::Credential => "credential".to_string(),
-            SourceUsed::None => "none".to_string(),
-        }
-    }
-}
-
-/// What `resolve_key` found: the key and the source it came from.
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub struct KeyResolution {
-    pub key: Option<ConversationKey>,
-    pub source: SourceUsed,
 }
 
 /// The sources of a route, read in list order. A map that the operator wrote warns once for a
