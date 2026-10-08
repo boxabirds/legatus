@@ -339,9 +339,54 @@ pub struct EffectiveSettings {
     pub client_tokens_ref: Option<String>,
     alias_hold: BTreeMap<String, u32>,
     resolved: Vec<(&'static SettingDef, SettingValue, Source)>,
+    /// Start-only settings whose declared value differs from the running one, as text.
+    declared_pending: Vec<(&'static str, String)>,
 }
 
 impl EffectiveSettings {
+    /// The value of every setting by name, for comparison across a reload.
+    pub fn values(&self) -> Vec<(&'static str, String)> {
+        self.resolved.iter().map(|(d, v, _)| (d.name, v.show())).collect()
+    }
+
+    /// Start-only settings whose new declared value waits for a restart (name, declared value).
+    pub fn pending_restart(&self) -> &[(&'static str, String)] {
+        &self.declared_pending
+    }
+
+    /// Keep the running value of every setting that binds at start. Returns the names whose
+    /// declared value differs; the declared values are kept for the admin read.
+    pub fn pin_restart_keys(&mut self, running: &EffectiveSettings) -> Vec<&'static str> {
+        let mut changed = Vec::new();
+        self.declared_pending.clear();
+        for def in CATALOGUE.iter().filter(|d| d.restart) {
+            let old = running.value(def.name).clone();
+            let new = self.value(def.name).clone();
+            if old == new {
+                continue;
+            }
+            changed.push(def.name);
+            self.declared_pending.push((def.name, new.show()));
+            if let Some(entry) = self.resolved.iter_mut().find(|(d, _, _)| d.name == def.name) {
+                entry.1 = old.clone();
+            }
+            self.restore_typed(def.name, running);
+        }
+        changed
+    }
+
+    fn restore_typed(&mut self, name: &str, running: &EffectiveSettings) {
+        match name {
+            "listen" => self.listen = running.listen.clone(),
+            "log_dir" => self.log_dir = running.log_dir.clone(),
+            "log_queue_capacity" => self.log_queue_capacity = running.log_queue_capacity,
+            "state_dir" => self.state_dir = running.state_dir.clone(),
+            "admin.listen" => self.admin_listen = running.admin_listen.clone(),
+            "admin.token_file" => self.admin_token_file = running.admin_token_file.clone(),
+            _ => {}
+        }
+    }
+
     /// The hold limit of an alias: its own value, else the global one.
     pub fn hold_limit_s(&self, alias: &legatus_common::ids::AliasName) -> u32 {
         self.alias_hold.get(&alias.0).copied().unwrap_or(self.hold_limit_s)
@@ -621,6 +666,7 @@ fn build(resolved: Vec<(&'static SettingDef, SettingValue, Source)>, aliases: &A
         client_tokens_ref: None,
         alias_hold: BTreeMap::new(),
         resolved,
+        declared_pending: Vec::new(),
     };
     let u32_of = |s: &EffectiveSettings, name: &str| u32::try_from(s.int(name)).unwrap_or(u32::MAX);
     let text_of = |s: &EffectiveSettings, name: &str| match s.value(name) {
@@ -720,6 +766,8 @@ pub struct SettingView {
     pub range: String,
     pub source: Source,
     pub restart: bool,
+    /// For a start-only setting changed by a reload: the declared value that waits for a restart.
+    pub declared: Option<String>,
 }
 
 const RANGE_NOT_SET: &str = "NOT SET";
@@ -761,6 +809,7 @@ pub fn setting_views(s: &EffectiveSettings) -> Vec<SettingView> {
             range: range_text(def),
             source: *source,
             restart: def.restart,
+            declared: s.declared_pending.iter().find(|(n, _)| *n == def.name).map(|(_, v)| v.clone()),
         })
         .collect();
     for (alias, v) in &s.alias_hold {
@@ -773,6 +822,7 @@ pub fn setting_views(s: &EffectiveSettings) -> Vec<SettingView> {
             range: range_text(find("hold_limit_s").unwrap_or(&CATALOGUE[0])),
             source: Source::File,
             restart: false,
+            declared: None,
         });
     }
     views

@@ -220,6 +220,14 @@ pub struct ValidationReport {
     pub warnings: Vec<RegistryWarning>,
 }
 
+/// The outcome of the last reload, as the admin read shows it.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum ReloadResult {
+    NoneYet,
+    Loaded { generation: u64, at: crate::time::WallTime, nodes: usize, aliases: usize, changed: bool },
+    Rejected { at: crate::time::WallTime, errors: Vec<RegistryError> },
+}
+
 #[derive(Debug)]
 pub struct LoadedRegistry {
     pub raw: RawRegistry,

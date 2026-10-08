@@ -181,6 +181,28 @@ pub struct NodeSpec {
     pub affinity_mode: AffinityModeSetting,
     pub cold_allowance_tokens: Option<u32>,
     pub always_on: bool,
+    /// The request edits of the node as canonical JSON text (applied by story 190); kept so a
+    /// reload can tell that they changed.
+    pub patch: Option<String>,
+    /// The reference name of the node key (`auth.key_ref`); never a value. Story 135 checks it.
+    pub auth_key_ref: Option<RefText>,
+}
+
+/// A secret reference as written in the file (for example `env:NAME`). Its Debug output hides the
+/// text, so a registry printed in a log cannot show it. Story 135 owns the grammar.
+#[derive(Clone, PartialEq, Eq)]
+pub struct RefText(String);
+
+impl RefText {
+    pub fn name(&self) -> &str {
+        &self.0
+    }
+}
+
+impl std::fmt::Debug for RefText {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("RefText(..)")
+    }
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -442,6 +464,8 @@ fn read_node(name: &str, map: &Mapping, machines: &[String], out: &mut Validatio
         affinity_mode,
         cold_allowance_tokens,
         always_on: flag_value(map, "always_on").unwrap_or(true),
+        patch: map.get("patch").and_then(|p| serde_json::to_string(p).ok()),
+        auth_key_ref: sub(map, "auth").and_then(|a| text(a, "key_ref")).map(|t| RefText(t.to_string())),
     })
 }
 

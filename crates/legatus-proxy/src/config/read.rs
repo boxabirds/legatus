@@ -11,13 +11,13 @@ use std::path::Path;
 /// Part of the parser message for a repeated key (yaml_serde 0.10.7).
 const PARSER_DUPLICATE_MARK: &str = "duplicate entry";
 
-fn read_failure(path: &Path, kind: std::io::ErrorKind) -> RegistryError {
+fn read_failure(label: &str, kind: std::io::ErrorKind) -> RegistryError {
     let text = match kind {
         std::io::ErrorKind::NotFound => TEXT_FILE_MISSING,
         std::io::ErrorKind::PermissionDenied => TEXT_FILE_NOT_READABLE,
         _ => TEXT_FILE_CANNOT_READ,
     };
-    error_fixed(ErrorCode::FileUnreadable, &path.display().to_string(), text)
+    error_fixed(ErrorCode::FileUnreadable, label, text)
 }
 
 /// Parse registry text. A parse error gives only the line and column, never the text.
@@ -37,14 +37,39 @@ pub fn parse_registry_text(text: &str, path_label: &str) -> Result<RawRegistry, 
     })
 }
 
-/// Read, parse and check the whole file. `Ok` only when there is no error.
-pub fn read_registry(path: &Path) -> Result<LoadedRegistry, Vec<RegistryError>> {
-    let bytes = crate::net::file_system::read_file_bytes(path).map_err(|e| vec![read_failure(path, e.kind())])?;
-    let label = path.display().to_string();
+/// Where the registry bytes come from. The file is the real one; a test supplies text in memory,
+/// which keeps the reload tests free of disk.
+pub trait RegistrySource: Send + Sync {
+    /// The name shown in errors (the path of the file).
+    fn label(&self) -> String;
+    fn read_bytes(&self) -> std::io::Result<Vec<u8>>;
+}
+
+/// The registry file on disk.
+pub struct FileSource(pub std::path::PathBuf);
+
+impl RegistrySource for FileSource {
+    fn label(&self) -> String {
+        self.0.display().to_string()
+    }
+    fn read_bytes(&self) -> std::io::Result<Vec<u8>> {
+        crate::net::file_system::read_file_bytes(&self.0)
+    }
+}
+
+/// Read, parse and check everything a source gives. `Ok` only when there is no error.
+pub fn read_registry_from(source: &dyn RegistrySource) -> Result<LoadedRegistry, Vec<RegistryError>> {
+    let label = source.label();
+    let bytes = source.read_bytes().map_err(|e| vec![read_failure(&label, e.kind())])?;
     let Ok(text) = String::from_utf8(bytes) else {
         return Err(vec![error_fixed(ErrorCode::FileUnparsable, &label, TEXT_FILE_NOT_UTF8)]);
     };
     read_registry_text(&text, &label)
+}
+
+/// Read, parse and check the whole file. `Ok` only when there is no error.
+pub fn read_registry(path: &Path) -> Result<LoadedRegistry, Vec<RegistryError>> {
+    read_registry_from(&FileSource(path.to_path_buf()))
 }
 
 /// The same as `read_registry` for text that is already in memory (no file is read).

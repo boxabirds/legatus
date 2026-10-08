@@ -93,6 +93,11 @@ impl AliasTable {
         self.by_name.values().map(|a| &a.name).collect()
     }
 
+    /// Every alias in name order.
+    pub fn iter(&self) -> impl Iterator<Item = &AliasSpec> {
+        self.by_name.values()
+    }
+
     pub fn len(&self) -> usize {
         self.by_name.len()
     }

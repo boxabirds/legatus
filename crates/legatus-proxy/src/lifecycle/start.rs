@@ -1,7 +1,9 @@
 //! Start of the process: command line, listen address, bind, registry load, serve (story 121).
 //! Story 119 adds the full start state machine; stories 168 and 179 add bind mapping and reload.
 use crate::config::node::NodeConfigView;
-use crate::config::read::{print_errors, read_registry};
+use crate::config::diff::RegistryDiff;
+use crate::config::read::{print_errors, read_registry, FileSource};
+use crate::config::reload::{ReloadHub, ReloadObserver, ReloadParts, ReloadState, Reloader, SighupTrigger};
 use crate::config::registry::{LoadedRegistry, RegistryWarning};
 use crate::config::settings::{setting_views, SettingView};
 use crate::config::typed::{Registry, RegistryHandle};
@@ -72,6 +74,31 @@ impl AdminSettingViews {
     }
     pub fn get(&self) -> Vec<SettingView> {
         self.0.lock().map(|held| held.clone()).unwrap_or_default()
+    }
+}
+
+/// Everything the admin read serves about the loaded registry (story 159 reads it). It is also
+/// the first observer of a reload, so a swapped registry replaces all of it.
+#[derive(Default)]
+pub struct AdminState {
+    pub warnings: Arc<AdminWarnings>,
+    pub node_views: AdminNodeViews,
+    pub setting_views: AdminSettingViews,
+    pub reload: Arc<ReloadState>,
+}
+
+impl AdminState {
+    /// Replace the served views with those of this registry generation.
+    pub fn publish(&self, registry: &Registry) {
+        self.warnings.replace(&registry.warnings);
+        self.node_views.replace(crate::config::node::node_config_views(&registry.nodes, &registry.warnings));
+        self.setting_views.replace(setting_views(&registry.settings));
+    }
+}
+
+impl ReloadObserver for AdminState {
+    fn on_reload(&self, _old: &Registry, new: &Registry, _diff: &RegistryDiff) {
+        self.publish(new);
     }
 }
 
@@ -216,14 +243,15 @@ async fn run(args: Vec<String>) -> u8 {
     let server = tokio::spawn(listen::serve(listener, router, async move {
         let _ = stop_rx.wait_for(|stop| *stop).await;
     }));
-    let reporter = LoadReporter { out: Mutex::new(Box::new(std::io::stderr())), log, state: Arc::new(AdminWarnings::default()) };
+    let admin = Arc::new(AdminState::default());
+    let reporter = LoadReporter { out: Mutex::new(Box::new(std::io::stderr())), log: log.clone(), state: admin.warnings.clone() };
     match load_registry(&path, &mut std::io::stderr(), &reporter) {
         Ok(loaded) => {
             transport.configure(Duration::from_secs(u64::from(loaded.settings.upstream_idle_reuse_max_s)));
-            registry.store(Arc::new(Registry::from_loaded(&loaded, 1)));
-            publish_node_views(&loaded, &AdminNodeViews::default());
-            publish_setting_views(&loaded, &AdminSettingViews::default());
-            install_reload_hook();
+            let first = Arc::new(Registry::from_loaded(&loaded, FIRST_GENERATION));
+            admin.publish(&first);
+            registry.store(first);
+            install_reloader(&path, registry.clone(), admin.clone(), log.clone());
             let _ = gate_tx.send(GateState::Ready);
             eprintln!("registry loaded: {} ({} warnings)", path.display(), loaded.warnings.len());
             eprintln!("legatus listening on {addr}");
@@ -245,5 +273,28 @@ async fn run(args: Vec<String>) -> u8 {
     }
 }
 
-/// The place where story 179 plugs in the reload on SIGHUP. Nothing reloads yet.
-fn install_reload_hook() {}
+/// The generation of the registry loaded at start; every reload that swaps adds one.
+const FIRST_GENERATION: u64 = 1;
+
+/// Start the reload task: the hang-up signal is the only trigger. The admin state is the first
+/// observer. If the signal cannot be registered the proxy runs without reload and says so.
+fn install_reloader(path: &Path, handle: Arc<RegistryHandle>, admin: Arc<AdminState>, log: Arc<dyn LogSink>) {
+    let hub = Arc::new(ReloadHub::new());
+    hub.register(admin.clone());
+    let reloader = Arc::new(Reloader::new(ReloadParts {
+        source: Arc::new(FileSource(path.to_path_buf())),
+        handle,
+        hub,
+        wall: Arc::new(SystemWallClock),
+        sink: log,
+        sim: SimPoints::new(),
+        state: admin.reload.clone(),
+        out: Box::new(std::io::stderr()),
+    }));
+    match SighupTrigger::new() {
+        Ok(trigger) => {
+            tokio::spawn(reloader.run(trigger));
+        }
+        Err(e) => eprintln!("legatus: cannot listen for the reload signal: {e}"),
+    }
+}

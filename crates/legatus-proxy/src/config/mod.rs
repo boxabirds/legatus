@@ -2,8 +2,10 @@
 pub mod alias;
 pub mod checks_alias;
 pub mod checks_node;
+pub mod diff;
 pub mod node;
 pub mod read;
+pub mod reload;
 pub mod routes;
 pub mod settings;
 pub mod typed;

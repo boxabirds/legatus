@@ -53,6 +53,8 @@ pub struct Registry {
     pub aliases: AliasTable,
     pub routes: Vec<RouteSpec>,
     pub harness_rows: Vec<HarnessRowSpec>,
+    /// The load warnings of this generation (a reload replaces them with those of the new file).
+    pub warnings: Vec<crate::config::registry::RegistryWarning>,
 }
 
 impl Registry {
@@ -65,6 +67,7 @@ impl Registry {
             aliases: l.aliases.clone(),
             routes: l.routes.clone(),
             harness_rows: read_harness_rows(&l.raw.0),
+            warnings: l.warnings.clone(),
         }
     }
 

@@ -20,6 +20,16 @@ mod node_warnings_test;
 #[cfg(test)]
 mod refusal_unit_test;
 #[cfg(test)]
+mod reload_diff_test;
+#[cfg(test)]
+mod reload_helpers;
+#[cfg(test)]
+mod reload_reject_test;
+#[cfg(test)]
+mod reload_span_test;
+#[cfg(test)]
+mod reload_state_test;
+#[cfg(test)]
 mod refusals_test;
 #[cfg(test)]
 mod registry_redact_test;
