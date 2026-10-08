@@ -1,0 +1,16 @@
+# Ollama 0.40.0, qwen3:1.7b (llamacpp runner, context 4096). body bytes of the whole JSON request, prompt_tokens from the reply.
+label bytes prompt_tokens bytes_per_token estimate_at_3 estimate_over_actual
+english-prose 9210 2344 3.93 3070 1.31
+rust-code 9406 2325 4.05 3136 1.35
+json-body 1804 360 5.01 602 1.67
+cjk-text 17384 2410 7.21 5795 2.40
+numbers 8341 2050 4.07 2781 1.36
+# Reading (story 174 task 1). Five text families, one model (qwen3:1.7b), one engine version (0.40.0).
+# bytes per token ranged from 3.05 (a repeated-prose probe, not in the table) to 7.21 (Japanese text).
+# With ollama_bytes_per_token = 3 the estimate (bytes / 3, rounded up) was never below the engine's
+# count in any sample: it over-counts by a factor of 1.31 to 2.40. So the guard does not let a cut
+# through for these families, and it refuses good prompts that are 1.3 to 2.4 times under the limit.
+# Setting the divisor to 4 would cut the false refusals for prose and code to about 1.0 to 1.1 but
+# would let through a prompt of the dense 3.05 bytes-per-token kind. NOT decided here: 3 stays the
+# PROPOSED value and the truncation record (reported count against estimate) is the backstop.
+# The tokenizer differs per model; this bound holds for qwen3 only.
