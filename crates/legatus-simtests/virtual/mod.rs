@@ -30,6 +30,10 @@ mod engine_unit_test;
 #[cfg(test)]
 mod harness_unit_test;
 #[cfg(test)]
+mod ollama_path_test;
+#[cfg(test)]
+mod ollama_unit_test;
+#[cfg(test)]
 mod redact_unit_test;
 #[cfg(test)]
 mod refusal_unit_test;

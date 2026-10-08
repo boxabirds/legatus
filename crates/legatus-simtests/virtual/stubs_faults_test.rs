@@ -98,7 +98,7 @@ async fn tc27_reset_once_then_served_reset_always_never_served_and_idle_close_is
 }
 
 fn record() -> LogRecord {
-    LogRecord::System(SystemRecord { kind: SystemEventKind::Warning })
+    LogRecord::System(SystemRecord::new(SystemEventKind::Warning))
 }
 
 #[tokio::test(start_paused = true)]

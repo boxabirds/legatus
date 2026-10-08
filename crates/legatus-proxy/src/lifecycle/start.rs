@@ -127,7 +127,7 @@ impl WarningSink for LoadReporter {
         if let Ok(mut out) = self.out.lock() {
             let _ = writeln!(out, "{w}");
         }
-        let _ = self.log.offer(LogRecord::System(SystemRecord { kind: SystemEventKind::Warning }));
+        let _ = self.log.offer(LogRecord::System(SystemRecord::new(SystemEventKind::Warning)));
     }
     fn done(&self, all: &[RegistryWarning]) {
         self.state.replace(all);

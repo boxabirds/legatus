@@ -24,7 +24,7 @@ fn request() -> UpstreamRequest {
 }
 
 fn system_record() -> LogRecord {
-    LogRecord::System(SystemRecord { kind: SystemEventKind::Start })
+    LogRecord::System(SystemRecord::new(SystemEventKind::Start))
 }
 
 #[tokio::test(start_paused = true)]

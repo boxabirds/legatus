@@ -19,6 +19,23 @@ pub struct RequestRecord {}
 #[derive(Debug, Clone)]
 pub struct SystemRecord {
     pub kind: SystemEventKind,
+    /// Set for `TruncationDetected` (story 174): counts and the node name, never text.
+    pub truncation: Option<TruncationFields>,
+}
+
+impl SystemRecord {
+    pub fn new(kind: SystemEventKind) -> SystemRecord {
+        SystemRecord { kind, truncation: None }
+    }
+}
+
+/// The fields of the event `truncation_detected`.
+#[derive(Debug, Clone, PartialEq)]
+pub struct TruncationFields {
+    pub node: legatus_common::ids::NodeId,
+    pub prompt_tokens_sent: u32,
+    pub prompt_tokens_seen: u32,
+    pub ratio: f32,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

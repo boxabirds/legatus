@@ -4,7 +4,10 @@ use crate::config::node::{EndpointProtocol, NodeSpec};
 use crate::config::typed::Registry;
 use crate::deps::RouterDeps;
 use crate::protocol::ctx::RequestCtx;
+use crate::engine::guard::{context_decision, estimate_sent, GuardDecision, TruncationTap};
 use crate::protocol::errors::{refuse, RefusalDetail, RefusalKind};
+use crate::stream::tap::ResponseTap;
+use legatus_common::engine::OverflowBehaviour;
 use crate::protocol::headers::forward_headers;
 use crate::protocol::paths::{recognise, RouteKind};
 use crate::protocol::route::{route_by_model, Refusal};
@@ -207,9 +210,21 @@ fn node_uri(node: &NodeSpec, inbound: &Uri) -> Option<Uri> {
 macro_rules! hook {
     ($outcome:expr) => {
         if let HookOutcome::Refuse(kind) = $outcome {
-            return Err(kind);
+            return Err(Refused::from(kind));
         }
     };
+}
+
+/// A refusal with the facts its message needs (the limit and the size of an over-long prompt).
+struct Refused {
+    kind: RefusalKind,
+    detail: RefusalDetail,
+}
+
+impl From<RefusalKind> for Refused {
+    fn from(kind: RefusalKind) -> Refused {
+        Refused { kind, detail: RefusalDetail::default() }
+    }
 }
 
 /// Run the sixteen steps for one request. The event step runs for a refused request too.
@@ -222,21 +237,21 @@ pub async fn run_pipeline(deps: &RouterDeps, req: ParsedRequest) -> Response {
             let status = response.status().as_u16();
             (response, PipelineOutcome::Served(status))
         }
-        Err(kind) => {
+        Err(Refused { kind, detail }) => {
             let protocol = ctx.as_ref().map(|c| c.protocol).unwrap_or(Protocol::OpenAiChat);
-            (refuse(kind, protocol, &RefusalDetail::default()), PipelineOutcome::Refused(kind))
+            (refuse(kind, protocol, &detail), PipelineOutcome::Refused(kind))
         }
     };
     deps.hooks.write_event(ctx.as_ref(), &outcome).await;
     response
 }
 
-async fn run_steps(deps: &RouterDeps, req: ParsedRequest, ctx_slot: &mut Option<RequestCtx>) -> Result<Response, RefusalKind> {
+async fn run_steps(deps: &RouterDeps, req: ParsedRequest, ctx_slot: &mut Option<RequestCtx>) -> Result<Response, Refused> {
     let started = Instant::now();
     // Steps 1 to 3: accept, recognise, body (the body is already read).
     enter(deps, PipelineStep::AcceptAndAuth);
     let Some((protocol, route)) = recognise(req.uri.path()) else {
-        return Err(RefusalKind::ModelNotFound);
+        return Err(RefusalKind::ModelNotFound.into());
     };
     hook!(deps.hooks.accept_and_auth(protocol, &req.headers).await);
     enter(deps, PipelineStep::RecogniseProtocol);
@@ -249,7 +264,7 @@ async fn run_steps(deps: &RouterDeps, req: ParsedRequest, ctx_slot: &mut Option<
     let alias = route_by_model(&registry.aliases, &model).map_err(|Refusal::ModelNotFound| RefusalKind::ModelNotFound)?;
     let chat_nodes: Vec<&NodeId> = alias.nodes.iter().filter(|id| registry.node(id).is_some_and(serves_chat)).collect();
     if chat_nodes.is_empty() {
-        return Err(RefusalKind::ProtocolNotServed);
+        return Err(RefusalKind::ProtocolNotServed.into());
     }
     let ctx = ctx_slot.insert(RequestCtx { protocol, route, model, stream: peek.stream().unwrap_or(false), peek, alias: alias.name.clone(), node: None, started });
     hook!(deps.hooks.after_alias(ctx).await);
@@ -276,6 +291,15 @@ async fn run_steps(deps: &RouterDeps, req: ParsedRequest, ctx_slot: &mut Option<
     hook!(deps.hooks.patch_body(ctx, &mut body, &fresh).await);
     enter(deps, PipelineStep::ContextCheck);
     hook!(deps.hooks.context_check(ctx, &body).await);
+    // An engine that silently cuts a prompt that is too long is guarded here: an over-long prompt
+    // is refused and never reaches the node (story 174).
+    let adapter = deps.adapters.for_node(node);
+    let guarded = adapter.overflow_behaviour() == OverflowBehaviour::SilentTruncate;
+    if let GuardDecision::Refuse { limit_tokens, estimate_tokens } = context_decision(adapter, node, body.len(), &registry.settings) {
+        let detail = RefusalDetail { max_tokens: Some(limit_tokens), used_tokens: Some(estimate_tokens), retry_after_s: None };
+        return Err(Refused { kind: RefusalKind::ContextLengthExceeded, detail });
+    }
+    let sent_estimate = estimate_sent(&registry.settings, body.len());
     // Step 12: the single send.
     enter(deps, PipelineStep::Send);
     let uri = node_uri(node, &req.uri).ok_or(RefusalKind::NodeConnectFailed)?;
@@ -286,7 +310,7 @@ async fn run_steps(deps: &RouterDeps, req: ParsedRequest, ctx_slot: &mut Option<
     let upstream = UpstreamRequest { method: req.method, uri, headers, body };
     let reply = match send_to_node(deps.seams.transport.as_ref(), &node_id, upstream).await {
         Ok(reply) => reply,
-        Err(UpstreamError::Connect | UpstreamError::Reset) => return Err(RefusalKind::NodeConnectFailed),
+        Err(UpstreamError::Connect | UpstreamError::Reset) => return Err(RefusalKind::NodeConnectFailed.into()),
     };
     // Step 13: relay the reply through the pull-through copy (story 145).
     enter(deps, PipelineStep::CopyResponse);
@@ -297,7 +321,11 @@ async fn run_steps(deps: &RouterDeps, req: ParsedRequest, ctx_slot: &mut Option<
     let observer = EndObserver::new(ctx.protocol).with_report(move |end, flags| {
         hooks.reply_end(&ReplySummary { alias: alias_name.clone(), node: reply_node.clone(), status, end, flags });
     });
-    let (reply_status, reply_headers, reply_body) = copy_response(head, reply.body, deps.response_guard.clone(), vec![Box::new(observer)]);
+    let mut taps: Vec<Box<dyn ResponseTap>> = vec![Box::new(observer)];
+    if guarded {
+        taps.push(Box::new(TruncationTap::new(node_id.clone(), sent_estimate, registry.settings.truncation_report_ratio, deps.seams.log.clone(), ctx.protocol, ctx.stream)));
+    }
+    let (reply_status, reply_headers, reply_body) = copy_response(head, reply.body, deps.response_guard.clone(), taps);
     let mut response = Response::new(reply_body);
     *response.status_mut() = reply_status;
     *response.headers_mut() = reply_headers;

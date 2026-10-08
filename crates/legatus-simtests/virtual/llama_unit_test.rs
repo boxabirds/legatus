@@ -106,7 +106,7 @@ fn tc13_the_adapter_facts_and_it_ignores_the_probe_state() {
 fn the_standard_registry_serves_llama_server_with_this_adapter_and_others_with_the_unknown_one() {
     let registry = AdapterRegistry::standard();
     assert_eq!(registry.for_family(EngineFamily::LlamaServer).cap_source(), CapSource::PropsTotalSlots);
-    assert_eq!(registry.for_family(EngineFamily::Ollama).cap_source(), CapSource::FixedOne);
+    assert_eq!(registry.for_family(EngineFamily::Vllm).cap_source(), CapSource::FixedOne);
 }
 
 #[test]

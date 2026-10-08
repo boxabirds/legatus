@@ -20,6 +20,8 @@ mod registry_binary_test;
 #[cfg(test)]
 mod registry_file_test;
 #[cfg(test)]
+mod ollama_scan_test;
+#[cfg(test)]
 mod reload_signal_test;
 #[cfg(test)]
 mod router_sockets_test;

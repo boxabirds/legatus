@@ -27,29 +27,6 @@ use std::time::Duration;
 const NODE_URL: &str = "http://node.invalid";
 const SLOTS_PATH: &str = "/slots";
 
-/// Wraps a transport and records the path of every request, so a test can show what was asked.
-struct Recording {
-    inner: Arc<dyn UpstreamTransport>,
-    paths: Mutex<Vec<String>>,
-}
-
-impl Recording {
-    fn new(inner: Arc<dyn UpstreamTransport>) -> Arc<Recording> {
-        Arc::new(Recording { inner, paths: Mutex::default() })
-    }
-    fn paths(&self) -> Vec<String> {
-        self.paths.lock().unwrap().clone()
-    }
-}
-
-#[async_trait]
-impl UpstreamTransport for Recording {
-    async fn send(&self, req: UpstreamRequest) -> Result<UpstreamResponse, UpstreamError> {
-        self.paths.lock().unwrap().push(req.uri.path().to_string());
-        self.inner.send(req).await
-    }
-}
-
 fn spec(slots: u32) -> StubSpec {
     let mut s = StubSpec::new("llama", StubKind::MultiSlotLlama);
     s.speed.load_time_ms = 0;

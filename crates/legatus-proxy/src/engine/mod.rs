@@ -1,6 +1,9 @@
 //! One adapter per engine family (contract C60). The routing core calls this trait only; engine
 //! names appear in this directory and in `config/` and nowhere else.
+pub mod estimate;
+pub mod guard;
 pub mod llama_server;
+pub mod ollama;
 pub mod reuse;
 pub mod unknown;
 pub mod version;
@@ -118,6 +121,7 @@ impl AdapterRegistry {
     pub fn standard() -> AdapterRegistry {
         let mut registry = AdapterRegistry::new();
         registry.register(Arc::new(llama_server::LlamaServerAdapter));
+        registry.register(Arc::new(ollama::OllamaAdapter));
         registry
     }
 

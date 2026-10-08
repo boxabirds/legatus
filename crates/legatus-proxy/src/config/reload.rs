@@ -170,7 +170,7 @@ impl Reloader {
     }
 
     fn event(&self, kind: SystemEventKind) {
-        let _ = self.sink.offer(LogRecord::System(SystemRecord { kind }));
+        let _ = self.sink.offer(LogRecord::System(SystemRecord::new(kind)));
     }
 
     /// One reload cycle. The handle changes only at the swap, and only for a valid file whose

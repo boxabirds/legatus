@@ -1,8 +1,10 @@
 //! Helpers shared by the stub kit tests (test-local).
+use async_trait::async_trait;
 use bytes::Bytes;
 use futures_util::StreamExt;
 use http::{HeaderMap, Method};
 use legatus_proxy::upstream::transport::{UpstreamError, UpstreamRequest, UpstreamResponse, UpstreamTransport};
+use std::sync::{Arc, Mutex};
 use tokio::time::Instant;
 
 pub fn post(path: &str, body: &str) -> UpstreamRequest {
@@ -47,3 +49,27 @@ pub fn err_kind(e: UpstreamError) -> &'static str {
         UpstreamError::Reset => "reset",
     }
 }
+
+/// Wraps a transport and records the path of every request, so a test can show what was asked.
+pub struct Recording {
+    inner: Arc<dyn UpstreamTransport>,
+    paths: Mutex<Vec<String>>,
+}
+
+impl Recording {
+    pub fn new(inner: Arc<dyn UpstreamTransport>) -> Arc<Recording> {
+        Arc::new(Recording { inner, paths: Mutex::default() })
+    }
+    pub fn paths(&self) -> Vec<String> {
+        self.paths.lock().unwrap().clone()
+    }
+}
+
+#[async_trait]
+impl UpstreamTransport for Recording {
+    async fn send(&self, req: UpstreamRequest) -> Result<UpstreamResponse, UpstreamError> {
+        self.paths.lock().unwrap().push(req.uri.path().to_string());
+        self.inner.send(req).await
+    }
+}
+
