@@ -1,0 +1,7 @@
+# Table expiry replay on idle-return gaps. Source: Claude Code transcripts on the owner machine (not harness traffic through the proxy).
+sessions 754  returning turns 13968  median 84.8 s  p90 885.2 s  p99 33380.7 s
+ttl_s  returns_found  returns_total  found_percent  entries_expired_unreturned_or_late  peak_concurrent_entries  idle_entry_hours
+300  10887  13968  77.9  3835  19  538.0
+600  12037  13968  86.2  2685  19  799.8
+3600  13328  13968  95.4  1394  24  2196.2
+86400  13923  13968  99.7  799  64  22748.9
