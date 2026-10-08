@@ -50,11 +50,14 @@ fn tc20_a_planted_violation_is_reported_with_file_line_and_pattern() {
     let dir = root.join("crates/legatus-proxy/src");
     std::fs::create_dir_all(&dir).unwrap();
     std::fs::write(dir.join("bad.rs"), "fn a() {}\nfn b() { std::process::Command::new(\"x\"); }\n// reads /api/ps only\n").unwrap();
+    std::fs::write(dir.join("unload.rs"), "fn a() {}\nfn b() {}\nconst P: &str = \"/models/unload\";\n").unwrap();
     std::fs::write(dir.join("good.rs"), "let path = \"/api/ps\";\nlet models = \"/v1/models\";\n").unwrap();
     let found = scan_for_banned_patterns(&root, &["crates/legatus-proxy/src"], BANNED_PATTERNS);
-    assert_eq!(found.len(), 1, "{found:?}");
-    assert!(found[0].file.ends_with("bad.rs"));
-    assert_eq!((found[0].line, found[0].pattern.as_str()), (2, "std::process::Command"));
+    assert_eq!(found.len(), 2, "{found:?}");
+    let bad = found.iter().find(|v| v.file.ends_with("bad.rs")).unwrap();
+    assert_eq!((bad.line, bad.pattern.as_str()), (2, "std::process::Command"));
+    let unload = found.iter().find(|v| v.file.ends_with("unload.rs")).unwrap();
+    assert_eq!((unload.line, unload.pattern.as_str()), (3, "/models/unload"));
     for pattern in ["tokio::process::Command", "std::env::set_var", "/api/pull", "/api/delete", "/api/create", "/models/load", "/models/unload", "docker", "launchctl", "systemctl"] {
         assert!(BANNED_PATTERNS.contains(&pattern), "{pattern}");
     }

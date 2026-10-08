@@ -139,6 +139,7 @@ fn tc07_every_declared_version_of_the_families_without_a_list_is_untested() {
 fn tc08_an_absent_version_is_unknown_for_every_family_and_so_is_an_empty_one() {
     for family in [EngineFamily::LlamaServer, EngineFamily::Ollama, EngineFamily::MlxLm, EngineFamily::Vllm, EngineFamily::Sglang, EngineFamily::Gufo, EngineFamily::Unknown] {
         assert_eq!(version_status(family, None), EngineVersionStatus::Unknown);
+        assert_eq!(version_status(family, Some("")), EngineVersionStatus::Unknown);
         assert_eq!(version_status(family, Some("  ")), EngineVersionStatus::Unknown);
         assert_eq!(version_status(family, Some("v")), EngineVersionStatus::Unknown);
     }
