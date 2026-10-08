@@ -296,3 +296,19 @@ async fn next_due_is_one_millisecond_after_the_expiry_of_the_oldest_idle_entry_a
     assert_eq!(t.expire(at + TTL), 0);
     assert_eq!(t.expire(at + TTL + MS), 1);
 }
+
+#[tokio::test(start_paused = true)]
+async fn a_poisoned_lock_rebuilds_the_table_empty_and_writes_one_table_inconsistent_warning() {
+    use legatus_proxy::obs::log_sink::LogRecord;
+    use legatus_testkit::virt::MemorySink;
+    let t = table(10);
+    let sink = Arc::new(MemorySink::new(16));
+    t.attach_sink(sink.clone());
+    put(&t, &tk("x", 1), "a");
+    t.poison_for_test();
+    assert!(t.is_empty(), "a table that might be half-updated is not trusted");
+    assert_eq!(put(&t, &tk("x", 2), "a"), PlaceOutcome::Created, "and it works again");
+    assert_eq!(t.len(), 1);
+    let warnings: Vec<_> = sink.take().into_iter().filter(|r| matches!(r, LogRecord::System(s) if s.code == Some("table_inconsistent"))).collect();
+    assert_eq!(warnings.len(), 1);
+}

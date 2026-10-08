@@ -7,6 +7,8 @@ use crate::affinity::seams::{NodeAvailability, UnavailableReason};
 use crate::key::harness::HarnessLabel;
 use crate::key::hasher::KEY_LEN_BYTES;
 use crate::key::{ConversationKey, KeyClass};
+use crate::obs::log_sink::{LogRecord, LogSink, SystemRecord};
+use legatus_common::event::SystemEventKind;
 use legatus_common::ids::{AliasName, NodeId};
 use std::collections::{BTreeMap, HashMap};
 use std::sync::{Arc, Mutex, MutexGuard};
@@ -14,6 +16,8 @@ use std::time::Duration;
 use tokio::sync::Notify;
 use tokio::time::Instant;
 
+/// The fixed code of the warning written when a poisoned lock empties the table.
+pub const WARNING_TABLE_INCONSISTENT: &str = "table_inconsistent";
 /// `done_count` stops here (it is a `u8`, so the saturating add holds it).
 pub const MAX_DONE_COUNT: u8 = u8::MAX;
 /// An entry is due for removal this long after its expiry instant: it is expired when more than
@@ -141,6 +145,8 @@ pub struct AffinityTable {
     params: Mutex<TableParams>,
     inner: Mutex<Inner>,
     wake: Notify,
+    /// Where the `table_inconsistent` warning goes (set once the log sink exists).
+    sink: Mutex<Option<Arc<dyn LogSink>>>,
 }
 
 fn expired(entry: &Entry, now: Instant, ttl: Duration) -> bool {
@@ -149,7 +155,7 @@ fn expired(entry: &Entry, now: Instant, ttl: Duration) -> bool {
 
 impl AffinityTable {
     pub fn new(params: TableParams) -> AffinityTable {
-        AffinityTable { params: Mutex::new(params), inner: Mutex::new(Inner::default()), wake: Notify::new() }
+        AffinityTable { params: Mutex::new(params), inner: Mutex::new(Inner::default()), wake: Notify::new(), sink: Mutex::new(None) }
     }
 
     pub fn params(&self) -> TableParams {
@@ -165,14 +171,37 @@ impl AffinityTable {
         }
     }
 
-    /// The lock; a poisoned one is rebuilt empty, because a half-updated table cannot be trusted.
+    /// Where the warning `table_inconsistent` is written.
+    pub fn attach_sink(&self, sink: Arc<dyn LogSink>) {
+        if let Ok(mut held) = self.sink.lock() {
+            *held = Some(sink);
+        }
+    }
+
+    /// The lock; a poisoned one is rebuilt empty, because a half-updated table cannot be trusted,
+    /// and one warning with the code `table_inconsistent` is written.
     fn lock(&self) -> MutexGuard<'_, Inner> {
         self.inner.lock().unwrap_or_else(|poisoned| {
             let mut guard = poisoned.into_inner();
             *guard = Inner::default();
             self.inner.clear_poison();
+            if let Some(sink) = self.sink.lock().ok().and_then(|held| held.clone()) {
+                let record = SystemRecord { code: Some(WARNING_TABLE_INCONSISTENT), ..SystemRecord::new(SystemEventKind::Warning) };
+                let _ = sink.offer(LogRecord::System(record));
+            }
             guard
         })
+    }
+
+    /// Poison the lock the way a panic inside the table would. For tests only.
+    #[doc(hidden)]
+    pub fn poison_for_test(self: &Arc<Self>) {
+        let table = self.clone();
+        let _ = std::thread::spawn(move || {
+            let _guard = table.inner.lock();
+            panic!("poisoning the affinity table on purpose");
+        })
+        .join();
     }
 
     /// Wakes the sweeper when an entry becomes idle with a due time it may not know.

@@ -245,6 +245,7 @@ async fn run(args: Vec<String>) -> u8 {
     let deps = RouterDeps::for_test(seams).with_registry(registry.clone()).with_hooks(Arc::new(gate_hooks)).with_adapters(Arc::new(crate::engine::AdapterRegistry::standard())).with_key_secret(&crate::net::secret::process_secret());
     let (stop_tx, mut stop_rx) = watch::channel(false);
     let affinity = deps.affinity.clone();
+    affinity.attach_sink(log.clone());
     let router = build_router(deps);
     let server = tokio::spawn(listen::serve(listener, router, async move {
         let _ = stop_rx.wait_for(|stop| *stop).await;
