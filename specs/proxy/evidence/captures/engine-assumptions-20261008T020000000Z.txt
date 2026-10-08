@@ -1,0 +1,20 @@
+# Facts the adapters of stories 127, 151, 174 and 183 rely on for engines that have NOT been run on this
+# machine (story 183 task 1). One row per fact: engine | fact | label | status | where it is used.
+# Labels: ASSUMPTION = read from source or documents. Status: NOT_CAPTURED until a capture named
+# <engine>-*.json exists in this folder; then the row must be changed to CONFIRMED or CONTRADICTED
+# (the test engine_assumptions_test.rs fails otherwise).
+# Engines on this machine on 2026-10-08: llama-server 0.5.0 and Ollama 0.40.0 (measured, see the
+# llama-* and ollama-* captures). vLLM, SGLang, gufo and mlx_lm are not installed.
+vllm | usage.prompt_tokens_details.cached_tokens exists only with the prompt-tokens-details flag on | ASSUMPTION | NOT_CAPTURED | vllm.rs reuse gate
+vllm | with the flag on, a silent zero cached_tokens can occur (issue 45238) and is a reading, not unknown | ASSUMPTION | NOT_CAPTURED | vllm.rs
+vllm | smallest block size in the notes is 528 tokens; shorter prompts show no reuse | ASSUMPTION | NOT_CAPTURED | VLLM_REUSE_MEASURE_FLOOR_TOKENS
+vllm | overflow behaviour is not known; load is the proxy's own count | ASSUMPTION | NOT_CAPTURED | vllm.rs
+vllm | status pages for load are unverified | ASSUMPTION | NOT_CAPTURED | vllm.rs
+sglang | usage.prompt_tokens_details.cached_tokens is the reuse field | ASSUMPTION | NOT_CAPTURED | sglang.rs
+sglang | reuse follows a checkpoint grid of 256 so single readings saw-tooth | ASSUMPTION | NOT_CAPTURED | reuse_noisy_per_request
+sglang | a session_id request field gives soft protection with no rule to close it | ASSUMPTION | NOT_CAPTURED | forbidden_added_fields
+sglang | meaning of cached_tokens after a Mamba truncation | ASSUMPTION | NOT_CAPTURED | open question
+gufo | timings.cache_n in the terminal chunk, llama-compatible | ASSUMPTION | NOT_CAPTURED | gufo.rs
+gufo | exact-prefix reuse; an edited middle message resets reuse to the common prefix | ASSUMPTION | NOT_CAPTURED | gufo.rs
+mlx_lm | headers within 10 to 40 ms; no props, metrics or slots pages; keeps prefilling after the client leaves | ASSUMPTION | NOT_CAPTURED | mlx_lm.rs (spike S3 notes, not re-run here)
+mlx_lm | usage.prompt_tokens_details.cached_tokens is the reuse field | ASSUMPTION | NOT_CAPTURED | mlx_lm.rs

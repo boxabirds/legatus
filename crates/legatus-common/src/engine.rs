@@ -146,3 +146,29 @@ pub enum AnswerShape {
     OllamaLike,
     Other,
 }
+
+/// A note shown with a node: a code and a fixed text, never node data.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct Advisory {
+    pub code: AdvisoryCode,
+    pub text: &'static str,
+}
+
+/// How sure a recorded fact is.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum GapLabel {
+    /// Written in the engine's own documents.
+    Documented,
+    /// Read from the engine's source.
+    Inferred,
+    /// Not checked.
+    Unverified,
+}
+
+/// A known gap in the Responses API support of an engine.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct ResponsesGap {
+    pub text: &'static str,
+    pub label: GapLabel,
+    pub source: &'static str,
+}

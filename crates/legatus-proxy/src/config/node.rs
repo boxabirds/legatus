@@ -6,7 +6,10 @@ use crate::config::registry::*;
 use crate::config::schema::join_path;
 use crate::engine::family_of;
 use crate::engine::version::version_status;
-use legatus_common::engine::EngineVersionStatus;
+use crate::engine::advisory::{node_advisories, reuse_state_for_node, AdvisoryFacts};
+use crate::engine::responses_gaps::responses_gaps;
+use crate::engine::standard_adapters;
+use legatus_common::engine::{Advisory, EngineVersionStatus, ReuseProbeState, ResponsesGap};
 use legatus_common::ids::NodeId;
 use yaml_serde::{Mapping, Value};
 
@@ -525,6 +528,10 @@ pub struct NodeConfigView {
     pub prefix_caching: TriState,
     pub speculative_decoding: TriState,
     pub warnings: Vec<WarningCode>,
+    /// Notes of the adapter of this node that apply to it (story 183).
+    pub advisories: Vec<Advisory>,
+    /// Known Responses gaps of the engine, listed only for a node that serves Responses.
+    pub responses_gaps: &'static [ResponsesGap],
 }
 
 pub fn node_config_views(nodes: &[NodeSpec], warnings: &[RegistryWarning]) -> Vec<NodeConfigView> {
@@ -544,6 +551,12 @@ pub fn node_config_views(nodes: &[NodeSpec], warnings: &[RegistryWarning]) -> Ve
                 prefix_caching: n.engine_flags.prefix_caching,
                 speculative_decoding: n.engine_flags.speculative_decoding,
                 warnings: warnings.iter().filter(|w| w.path.starts_with(&prefix)).map(|w| w.code).collect(),
+                advisories: {
+                    let facts = AdvisoryFacts { cache_kind: n.cache_kind, responses: n.responses, declared_prompt_tokens_details: n.prompt_tokens_details };
+                    let probe = reuse_state_for_node(n.prompt_tokens_details, ReuseProbeState::Unprobed);
+                    node_advisories(standard_adapters().for_node(n), &facts, probe)
+                },
+                responses_gaps: if n.responses { responses_gaps(n.engine.as_str()) } else { &[] },
             }
         })
         .collect()

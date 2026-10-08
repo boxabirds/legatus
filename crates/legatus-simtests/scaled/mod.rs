@@ -8,6 +8,8 @@ mod capture_files_test;
 #[cfg(test)]
 mod chat_wire_forms_test;
 #[cfg(test)]
+mod engine_assumptions_test;
+#[cfg(test)]
 mod engine_scan_test;
 #[cfg(test)]
 mod llama_idle_test;

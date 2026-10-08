@@ -1,9 +1,15 @@
 //! One adapter per engine family (contract C60). The routing core calls this trait only; engine
 //! names appear in this directory and in `config/` and nowhere else.
+pub mod advisory;
 pub mod estimate;
+pub mod gufo;
 pub mod guard;
 pub mod llama_server;
+pub mod mlx_lm;
 pub mod ollama;
+pub mod responses_gaps;
+pub mod sglang;
+pub mod vllm;
 pub mod reuse;
 pub mod unknown;
 pub mod version;
@@ -99,6 +105,12 @@ pub fn family_of(engine_name: &str) -> EngineFamily {
     }
 }
 
+/// The adapters that ship, built once (the admin node view asks them for notes).
+pub fn standard_adapters() -> &'static AdapterRegistry {
+    static STANDARD: std::sync::OnceLock<AdapterRegistry> = std::sync::OnceLock::new();
+    STANDARD.get_or_init(AdapterRegistry::standard)
+}
+
 /// The adapters by family, built at start and shared read-only. The unknown adapter is always
 /// present.
 pub struct AdapterRegistry {
@@ -122,6 +134,10 @@ impl AdapterRegistry {
         let mut registry = AdapterRegistry::new();
         registry.register(Arc::new(llama_server::LlamaServerAdapter));
         registry.register(Arc::new(ollama::OllamaAdapter));
+        registry.register(Arc::new(mlx_lm::MlxLmAdapter));
+        registry.register(Arc::new(vllm::VllmAdapter));
+        registry.register(Arc::new(sglang::SglangAdapter));
+        registry.register(Arc::new(gufo::GufoAdapter));
         registry
     }
 
