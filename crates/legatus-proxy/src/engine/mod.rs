@@ -5,6 +5,9 @@ pub mod reuse;
 pub mod unknown;
 pub mod version;
 
+/// The names the rest of the proxy uses, so it never names an engine.
+pub use llama_server::{FactsRefresher as NodeFactsRefresher, NodeFactsStore as EngineFactsStore};
+
 use crate::config::node::NodeSpec;
 use legatus_common::engine::*;
 use std::collections::HashMap;

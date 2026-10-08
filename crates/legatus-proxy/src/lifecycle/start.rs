@@ -9,7 +9,7 @@ use crate::config::settings::{setting_views, SettingView};
 use crate::config::typed::{Registry, RegistryHandle};
 use crate::config::validate::{report_warnings, WarningSink};
 use crate::deps::{build_router, RouterDeps};
-use crate::engine::llama_server::FactsRefresher;
+use crate::engine::NodeFactsRefresher;
 use crate::lifecycle::exit::{EXIT_BIND_FAILED, EXIT_OK, EXIT_REGISTRY_INVALID};
 use crate::net::hyper_transport::HyperTransport;
 use crate::net::listen;
@@ -83,8 +83,8 @@ impl AdminSettingViews {
 #[derive(Default)]
 pub struct AdminState {
     pub warnings: Arc<AdminWarnings>,
-    /// Slots and slot context of the llama-server nodes (story 151).
-    pub facts: Arc<crate::engine::llama_server::NodeFactsStore>,
+    /// Slots and slot context of the nodes whose adapter reads them.
+    pub facts: Arc<crate::engine::EngineFactsStore>,
     pub node_views: AdminNodeViews,
     pub setting_views: AdminSettingViews,
     pub reload: Arc<ReloadState>,
@@ -253,7 +253,7 @@ async fn run(args: Vec<String>) -> u8 {
             transport.configure(Duration::from_secs(u64::from(loaded.settings.upstream_idle_reuse_max_s)));
             let first = Arc::new(Registry::from_loaded(&loaded, FIRST_GENERATION));
             admin.publish(&first);
-            Arc::new(FactsRefresher::new(transport.clone(), admin.facts.clone())).spawn_join(&first);
+            Arc::new(NodeFactsRefresher::new(transport.clone(), admin.facts.clone())).spawn_join(&first);
             registry.store(first);
             install_reloader(&path, registry.clone(), admin.clone(), log.clone(), transport.clone());
             let _ = gate_tx.send(GateState::Ready);
@@ -285,7 +285,7 @@ const FIRST_GENERATION: u64 = 1;
 fn install_reloader(path: &Path, handle: Arc<RegistryHandle>, admin: Arc<AdminState>, log: Arc<dyn LogSink>, transport: Arc<dyn crate::upstream::transport::UpstreamTransport>) {
     let hub = Arc::new(ReloadHub::new());
     hub.register(admin.clone());
-    hub.register(Arc::new(Arc::new(FactsRefresher::new(transport, admin.facts.clone()))));
+    hub.register(Arc::new(Arc::new(NodeFactsRefresher::new(transport, admin.facts.clone()))));
     let reloader = Arc::new(Reloader::new(ReloadParts {
         source: Arc::new(FileSource(path.to_path_buf())),
         handle,
