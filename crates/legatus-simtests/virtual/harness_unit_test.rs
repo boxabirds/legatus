@@ -179,3 +179,31 @@ fn tc25_expected_d_is_exactly_the_shared_prefix_in_every_mode() {
     let appended = turns(SEED, GenMode::Append);
     assert!(appended.windows(2).all(|p| p[1].tokens.len() > p[0].tokens.len()));
 }
+
+#[test]
+fn tc24_opencode_stops_on_must_stop_statuses_without_the_retry_words_and_retries_with_one() {
+    let rule = retry_rule_for(HarnessKind::Opencode).unwrap();
+    for status in [400u16, 401, 404, 413] {
+        let clean = format!("{{\"error\":{{\"message\":\"model {status} is unknown here\",\"code\":\"model_not_found\"}}}}");
+        let clean = clean.replace(&status.to_string(), "x");
+        assert_eq!(rule.classify(status, &clean, None), RetryVerdict::Stop, "{status}");
+    }
+    for word in ["503", "server_error", "timeout", "rate limit", "overloaded", "terminated"] {
+        let body = format!("{{\"error\":{{\"message\":\"upstream {word}\"}}}}");
+        assert_eq!(rule.classify(400, &body, None), RetryVerdict::Retry, "{word} retries on every status");
+    }
+}
+
+#[test]
+fn tc24_pi_stops_on_a_clean_400_body_and_retries_on_a_node_error() {
+    let rule = retry_rule_for(HarnessKind::Pi).unwrap();
+    let clean = "{\"error\":{\"message\":\"unknown model\",\"code\":\"model_not_found\"}}";
+    assert_eq!(rule.classify(404, clean, None), RetryVerdict::Stop);
+    assert_eq!(rule.classify(503, "{\"error\":{\"message\":\"service unavailable\"}}", None), RetryVerdict::Retry);
+}
+
+#[test]
+fn tc23_claude_code_at_90_seconds_stops() {
+    let rule = retry_rule_for(HarnessKind::ClaudeCode).unwrap();
+    assert_eq!(rule.classify(429, MESSAGES_429, Some(SECS(90))), RetryVerdict::Stop);
+}
